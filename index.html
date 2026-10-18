@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Khourouj Tabligh — Gestion des Sorties</title>
+  <title>Khourouj Tabligh</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @media print {
-      .no-print { display: none !important; }
-      body { background: white !important; }
-    }
+    @media print { .no-print { display: none !important; } body { background: white !important; } }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen font-sans">
@@ -23,68 +20,36 @@
 
   <nav class="bg-white border-b shadow-sm no-print">
     <div class="max-w-6xl mx-auto px-4 flex">
-      <button id="tab-consult" data-tab="consult"
-        class="tab-btn px-4 py-3 font-medium border-b-2 border-emerald-600 text-emerald-700">
-        Consultation
-      </button>
-      <button id="tab-admin" data-tab="admin"
-        class="tab-btn px-4 py-3 font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-800">
-        Gestionnaire
-      </button>
+      <button id="tab-consult" data-tab="consult" class="tab-btn px-4 py-3 font-medium border-b-2 border-emerald-600 text-emerald-700">Consultation</button>
+      <button id="tab-admin" data-tab="admin" class="tab-btn px-4 py-3 font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-800">Gestionnaire</button>
     </div>
   </nav>
 
   <main class="max-w-6xl mx-auto px-4 py-6">
-
-    <!-- ===================== CONSULTATION ===================== -->
+    <!-- CONSULTATION -->
     <section id="view-consult">
       <div class="bg-white rounded-lg shadow p-4 md:p-6 mb-6 no-print">
         <h2 class="text-lg font-semibold mb-4">🔎 Filtrer les sorties</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div>
-            <label class="block text-sm font-medium mb-1">Année</label>
-            <select id="sel-annee" class="w-full border rounded px-3 py-2 bg-white"></select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Mois</label>
-            <select id="sel-mois" class="w-full border rounded px-3 py-2 bg-white"></select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Pays</label>
-            <select id="sel-pays" class="w-full border rounded px-3 py-2 bg-white"></select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Ville</label>
-            <select id="sel-ville" class="w-full border rounded px-3 py-2 bg-white"></select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Halaka</label>
-            <select id="sel-halaka" class="w-full border rounded px-3 py-2 bg-white"></select>
-          </div>
+          <div><label class="block text-sm font-medium mb-1">Année</label><select id="sel-annee" class="w-full border rounded px-3 py-2 bg-white"></select></div>
+          <div><label class="block text-sm font-medium mb-1">Mois</label><select id="sel-mois" class="w-full border rounded px-3 py-2 bg-white"></select></div>
+          <div><label class="block text-sm font-medium mb-1">Pays</label><select id="sel-pays" class="w-full border rounded px-3 py-2 bg-white"></select></div>
+          <div><label class="block text-sm font-medium mb-1">Ville</label><select id="sel-ville" class="w-full border rounded px-3 py-2 bg-white"></select></div>
+          <div><label class="block text-sm font-medium mb-1">Halaka</label><select id="sel-halaka" class="w-full border rounded px-3 py-2 bg-white"></select></div>
         </div>
       </div>
 
       <div class="bg-white rounded-lg shadow overflow-hidden">
-        <div id="planning-empty" class="p-8 text-center text-gray-500">
-          Sélectionnez un pays, une ville puis une halaka pour afficher le planning.
-        </div>
-
+        <div id="planning-empty" class="p-8 text-center text-gray-500">Sélectionnez un pays, une ville puis une halaka pour afficher le planning.</div>
         <div id="planning-content" class="hidden">
           <div class="p-4 md:p-6 border-b bg-emerald-50">
             <h2 id="planning-title" class="text-lg md:text-xl font-bold text-emerald-800"></h2>
             <p id="planning-subtitle" class="text-sm text-emerald-700"></p>
             <div class="mt-3 flex flex-wrap gap-2 no-print">
-              <button id="btn-whatsapp"
-                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium">
-                📱 Copier pour WhatsApp
-              </button>
-              <button id="btn-print"
-                class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded text-sm font-medium">
-                🖨️ Imprimer / PDF
-              </button>
+              <button id="btn-whatsapp" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium">📱 Copier pour WhatsApp</button>
+              <button id="btn-print" class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded text-sm font-medium">🖨️ Imprimer / PDF</button>
             </div>
           </div>
-
           <div id="print-area">
             <table class="w-full text-sm">
               <thead class="bg-gray-100">
@@ -102,13 +67,140 @@
       </div>
     </section>
 
-    <!-- ===================== ADMIN ===================== -->
+    <!-- ADMIN -->
     <section id="view-admin" class="hidden"></section>
-
   </main>
 
-  <!-- On charge la librairie Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js"></script>
+  <script>
+    // VOS CLÉS SUPABASE
+    const SUPABASE_URL = 'https://rhtaqusrkgqawtbqysgw.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_JIjs3oxZszYHTaON8iH06g_-mnoCVfl';
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let dataCache = { pays: [], villes: [], halakat: [], mosquees: [] };
+    const MONTHS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+    function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+    function getNthFriday(year, month, n) { const first = new Date(year, month - 1, 1); const firstDow = first.getDay(); const daysUntilFri = (5 - firstDow + 7) % 7; const day = 1 + daysUntilFri + (n - 1) * 7; return new Date(year, month - 1, day); }
+    function getOusboueDates(year, month, ousboue) { const friday = getNthFriday(year, month, ousboue); const sunday = new Date(friday); sunday.setDate(friday.getDate() + 2); return { friday, sunday }; }
+    function getStatus(friday, sunday) { const today = new Date(); today.setHours(0,0,0,0); const f = new Date(friday); f.setHours(0,0,0,0); const s = new Date(sunday); s.setHours(23,59,59,999); if (today > s) return { label: 'Terminée', cls: 'bg-gray-200 text-gray-700' }; if (today >= f) return { label: 'En cours', cls: 'bg-orange-100 text-orange-800' }; return { label: 'À venir', cls: 'bg-emerald-100 text-emerald-800' }; }
+    function formatLongDate(d) { return d.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' }); }
+
+    async function loadData() {
+      const { data: pays } = await supabase.from('pays').select('*');
+      const { data: villes } = await supabase.from('villes').select('*');
+      const { data: halakat } = await supabase.from('halakat').select('*');
+      const { data: mosquees } = await supabase.from('mosquees').select('*');
+      dataCache = { pays: pays || [], villes: villes || [], halakat: halakat || [], mosquees: mosquees || [] };
+    }
+
+    async function reloadDataAndRefresh() { await loadData(); refreshConsultationSelects(); renderAdminLists(); renderPlanning(); }
+
+    async function initConsultation() {
+      const yearSel = document.getElementById('sel-annee'); const curYear = new Date().getFullYear();
+      yearSel.innerHTML = ''; for (let y = curYear - 1; y <= curYear + 1; y++) { const o = document.createElement('option'); o.value = y; o.textContent = y; if (y === curYear) o.selected = true; yearSel.appendChild(o); }
+      const monthSel = document.getElementById('sel-mois'); monthSel.innerHTML = '';
+      MONTHS.forEach((m, i) => { const o = document.createElement('option'); o.value = i + 1; o.textContent = m; if (i === new Date().getMonth()) o.selected = true; monthSel.appendChild(o); });
+      await loadData(); refreshConsultationSelects();
+      document.getElementById('sel-pays').addEventListener('change', onPaysChange);
+      document.getElementById('sel-ville').addEventListener('change', onVilleChange);
+      document.getElementById('sel-halaka').addEventListener('change', renderPlanning);
+      yearSel.addEventListener('change', renderPlanning); monthSel.addEventListener('change', renderPlanning);
+      document.getElementById('btn-whatsapp').addEventListener('click', exportWhatsApp);
+      document.getElementById('btn-print').addEventListener('click', () => window.print());
+    }
+
+    function refreshConsultationSelects() {
+      const paysSel = document.getElementById('sel-pays'); const prev = paysSel.value;
+      paysSel.innerHTML = '<option value="">-- Choisir un pays --</option>' + dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('');
+      if (prev && dataCache.pays.some(p => String(p.id) === prev)) { paysSel.value = prev; onPaysChange(); } else { document.getElementById('sel-ville').innerHTML = '<option value="">-- Choisir une ville --</option>'; document.getElementById('sel-halaka').innerHTML = '<option value="">-- Choisir une halaka --</option>'; hidePlanning(); }
+    }
+
+    function onPaysChange() {
+      const paysId = document.getElementById('sel-pays').value;
+      document.getElementById('sel-ville').innerHTML = '<option value="">-- Choisir une ville --</option>'; document.getElementById('sel-halaka').innerHTML = '<option value="">-- Choisir une halaka --</option>'; hidePlanning();
+      if (!paysId) return;
+      dataCache.villes.filter(v => String(v.pays_id) === paysId).forEach(v => { document.getElementById('sel-ville').insertAdjacentHTML('beforeend', `<option value="${v.id}">${escapeHtml(v.nom)}</option>`); });
+    }
+
+    function onVilleChange() {
+      const villeId = document.getElementById('sel-ville').value;
+      document.getElementById('sel-halaka').innerHTML = '<option value="">-- Choisir une halaka --</option>'; hidePlanning();
+      if (!villeId) return;
+      dataCache.halakat.filter(h => String(h.ville_id) === villeId).forEach(h => { document.getElementById('sel-halaka').insertAdjacentHTML('beforeend', `<option value="${h.id}">${escapeHtml(h.nom)}</option>`); });
+    }
+
+    function hidePlanning() { document.getElementById('planning-empty').classList.remove('hidden'); document.getElementById('planning-content').classList.add('hidden'); }
+
+    function renderPlanning() {
+      const halakaId = document.getElementById('sel-halaka').value; if (!halakaId) return hidePlanning();
+      const year = +document.getElementById('sel-annee').value; const month = +document.getElementById('sel-mois').value;
+      const halaka = dataCache.halakat.find(h => String(h.id) === halakaId); const ville = dataCache.villes.find(v => String(v.id) === String(halaka.ville_id)); const pays = dataCache.pays.find(p => String(p.id) === String(ville.pays_id));
+      const mosquees = dataCache.mosquees.filter(m => String(m.halaka_id) === halakaId).sort((a, b) => a.ousboue - b.ousboue || a.nom.localeCompare(b.nom));
+      document.getElementById('planning-empty').classList.add('hidden'); document.getElementById('planning-content').classList.remove('hidden');
+      document.getElementById('planning-title').textContent = `${halaka.nom} — ${ville.nom}, ${pays.nom}`;
+      document.getElementById('planning-subtitle').textContent = `Programme de ${MONTHS[month - 1]} ${year}`;
+      const tbody = document.getElementById('planning-tbody'); tbody.innerHTML = '';
+      if (mosquees.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-gray-500">Aucune mosquée.</td></tr>'; return; }
+      mosquees.forEach(m => {
+        const { friday, sunday } = getOusboueDates(year, month, m.ousboue); const st = getStatus(friday, sunday);
+        tbody.insertAdjacentHTML('beforeend', `<tr class="border-t"><td class="p-3"><div class="font-medium">${escapeHtml(m.nom)}</div>${m.responsable ? `<div class="text-xs text-gray-500">${escapeHtml(m.responsable)}${m.contact ? ' · ' + escapeHtml(m.contact) : ''}</div>` : ''}</td><td class="p-3 text-center">Ousboue ${m.ousboue}</td><td class="p-3 text-center">${formatLongDate(friday)} → ${formatLongDate(sunday)}</td><td class="p-3 text-center"><span class="inline-block px-2 py-1 rounded text-xs font-medium ${st.cls}">${st.label}</span></td></tr>`);
+      });
+    }
+
+    function exportWhatsApp() {
+      const halakaId = document.getElementById('sel-halaka').value; if (!halakaId) return;
+      const year = +document.getElementById('sel-annee').value; const month = +document.getElementById('sel-mois').value;
+      const halaka = dataCache.halakat.find(h => String(h.id) === halakaId); const ville = dataCache.villes.find(v => String(v.id) === String(halaka.ville_id)); const pays = dataCache.pays.find(p => String(p.id) === String(ville.pays_id));
+      let txt = `🕌 *Programme des sorties 3 jours*\n📍 ${pays.nom} — ${ville.nom}\n⭕ ${halaka.nom}\n🗓️ ${MONTHS[month - 1]} ${year}\n\n`;
+      dataCache.mosquees.filter(m => String(m.halaka_id) === halakaId).sort((a, b) => a.ousboue - b.ousboue).forEach((m, i) => { const { friday, sunday } = getOusboueDates(year, month, m.ousboue); txt += `${i + 1}. *${m.nom}* — Ousboue ${m.ousboue}\n   📅 ${formatLongDate(friday)} → ${formatLongDate(sunday)}\n`; });
+      txt += `\nبارك الله فيكم`;
+      if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(() => alert('✅ Texte copié !')).catch(() => prompt('Copiez ce texte :', txt)); } else { prompt('Copiez ce texte :', txt); }
+    }
+
+    async function initAdmin() {
+      document.getElementById('view-admin').innerHTML = `
+        <div class="space-y-6">
+          <div class="bg-white rounded-lg shadow p-4 md:p-6"><h2 class="text-lg font-bold mb-3">🌍 Pays</h2><div class="flex flex-col sm:flex-row gap-2 mb-3"><input id="inp-pays" class="flex-1 border rounded px-3 py-2" placeholder="Nom du pays"><button onclick="addPays()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button></div><div id="list-pays" class="space-y-2"></div></div>
+          <div class="bg-white rounded-lg shadow p-4 md:p-6"><h2 class="text-lg font-bold mb-3">🏙️ Villes</h2><div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-3"><select id="inp-ville-pays" class="border rounded px-3 py-2"></select><input id="inp-ville" class="border rounded px-3 py-2" placeholder="Nom de la ville"><button onclick="addVille()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button></div><div id="list-villes" class="space-y-2"></div></div>
+          <div class="bg-white rounded-lg shadow p-4 md:p-6"><h2 class="text-lg font-bold mb-3">⭕ Halakat</h2><div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-3"><select id="inp-halaka-ville" class="border rounded px-3 py-2"></select><input id="inp-halaka" class="border rounded px-3 py-2" placeholder="Nom de la halaka"><button onclick="addHalaka()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button></div><div id="list-halakat" class="space-y-2"></div></div>
+          <div class="bg-white rounded-lg shadow p-4 md:p-6"><h2 class="text-lg font-bold mb-3">🕌 Mosquées</h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-2 mb-3"><select id="inp-mos-halaka" class="border rounded px-3 py-2"></select><input id="inp-mos-nom" class="border rounded px-3 py-2" placeholder="Nom"><select id="inp-mos-ousboue" class="border rounded px-3 py-2"><option value="1">Ousboue 1</option><option value="2">Ousboue 2</option><option value="3">Ousboue 3</option><option value="4">Ousboue 4</option></select><input id="inp-mos-resp" class="border rounded px-3 py-2" placeholder="Responsable"><input id="inp-mos-tel" class="border rounded px-3 py-2" placeholder="Téléphone"><button onclick="addMosquee()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button></div><div id="list-mosquees" class="space-y-2"></div></div>
+        </div>`;
+      renderAdminLists();
+    }
+
+    function renderAdminLists() {
+      document.getElementById('list-pays').innerHTML = dataCache.pays.map(p => `<div class="flex justify-between items-center border rounded px-3 py-2"><span>${escapeHtml(p.nom)}</span><button onclick="deletePays(${p.id})" class="text-red-600 text-sm">Supprimer</button></div>`).join('') || '<p class="text-gray-500 text-sm">Aucun pays.</p>';
+      const vp = document.getElementById('inp-ville-pays'); const prevVp = vp.value; vp.innerHTML = dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join(''); if (prevVp && dataCache.pays.some(p => String(p.id) === prevVp)) vp.value = prevVp;
+      document.getElementById('list-villes').innerHTML = dataCache.villes.map(v => { const p = dataCache.pays.find(x => String(x.id) === String(v.pays_id)); return `<div class="flex justify-between items-center border rounded px-3 py-2"><span>${escapeHtml(v.nom)} (${escapeHtml(p?.nom || '?')})</span><button onclick="deleteVille(${v.id})" class="text-red-600 text-sm">Supprimer</button></div>`; }).join('') || '<p class="text-gray-500 text-sm">Aucune ville.</p>';
+      const hv = document.getElementById('inp-halaka-ville'); const prevHv = hv.value; hv.innerHTML = dataCache.villes.map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join(''); if (prevHv && dataCache.villes.some(v => String(v.id) === prevHv)) hv.value = prevHv;
+      document.getElementById('list-halakat').innerHTML = dataCache.halakat.map(h => { const v = dataCache.villes.find(x => String(x.id) === String(h.ville_id)); return `<div class="flex justify-between items-center border rounded px-3 py-2"><span>${escapeHtml(h.nom)} (${escapeHtml(v?.nom || '?')})</span><button onclick="deleteHalaka(${h.id})" class="text-red-600 text-sm">Supprimer</button></div>`; }).join('') || '<p class="text-gray-500 text-sm">Aucune halaka.</p>';
+      const mh = document.getElementById('inp-mos-halaka'); const prevMh = mh.value; mh.innerHTML = dataCache.halakat.map(h => `<option value="${h.id}">${escapeHtml(h.nom)}</option>`).join(''); if (prevMh && dataCache.halakat.some(h => String(h.id) === prevMh)) mh.value = prevMh;
+      document.getElementById('list-mosquees').innerHTML = dataCache.mosquees.map(m => { const h = dataCache.halakat.find(x => String(x.id) === String(m.halaka_id)); return `<div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 border rounded px-3 py-2"><div><span class="font-medium">${escapeHtml(m.nom)}</span> <span class="text-xs text-gray-500">(${escapeHtml(h?.nom || '?')})</span></div><div class="flex items-center gap-2"><select onchange="updateOusboue(${m.id}, this.value)" class="border rounded px-2 py-1 text-sm">${[1,2,3,4].map(n => `<option value="${n}" ${m.ousboue === n ? 'selected' : ''}>Ousboue ${n}</option>`).join('')}</select><button onclick="deleteMosquee(${m.id})" class="text-red-600 text-sm">Supprimer</button></div></div>`; }).join('') || '<p class="text-gray-500 text-sm">Aucune mosquée.</p>';
+    }
+
+    async function addPays() { const nom = document.getElementById('inp-pays').value.trim(); if (!nom) return; await supabase.from('pays').insert({ nom }); document.getElementById('inp-pays').value = ''; await reloadDataAndRefresh(); }
+    async function deletePays(id) { if (!confirm('Supprimer ce pays et tout son contenu ?')) return; await supabase.from('pays').delete().eq('id', id); await reloadDataAndRefresh(); }
+    async function addVille() { const pays_id = document.getElementById('inp-ville-pays').value; const nom = document.getElementById('inp-ville').value.trim(); if (!pays_id || !nom) return; await supabase.from('villes').insert({ nom, pays_id }); document.getElementById('inp-ville').value = ''; await reloadDataAndRefresh(); }
+    async function deleteVille(id) { if (!confirm('Supprimer cette ville ?')) return; await supabase.from('villes').delete().eq('id', id); await reloadDataAndRefresh(); }
+    async function addHalaka() { const ville_id = document.getElementById('inp-halaka-ville').value; const nom = document.getElementById('inp-halaka').value.trim(); if (!ville_id || !nom) return; await supabase.from('halakat').insert({ nom, ville_id }); document.getElementById('inp-halaka').value = ''; await reloadDataAndRefresh(); }
+    async function deleteHalaka(id) { if (!confirm('Supprimer cette halaka ?')) return; await supabase.from('halakat').delete().eq('id', id); await reloadDataAndRefresh(); }
+    async function addMosquee() { const halaka_id = document.getElementById('inp-mos-halaka').value; const nom = document.getElementById('inp-mos-nom').value.trim(); const ousboue = +document.getElementById('inp-mos-ousboue').value; const responsable = document.getElementById('inp-mos-resp').value.trim(); const contact = document.getElementById('inp-mos-tel').value.trim(); if (!halaka_id || !nom) return; await supabase.from('mosquees').insert({ nom, halaka_id, ousboue, responsable, contact }); document.getElementById('inp-mos-nom').value = ''; document.getElementById('inp-mos-resp').value = ''; document.getElementById('inp-mos-tel').value = ''; await reloadDataAndRefresh(); }
+    async function deleteMosquee(id) { if (!confirm('Supprimer cette mosquée ?')) return; await supabase.from('mosquees').delete().eq('id', id); await reloadDataAndRefresh(); }
+    async function updateOusboue(id, value) { await supabase.from('mosquees').update({ ousboue: +value }).eq('id', id); await reloadDataAndRefresh(); }
+
+    function switchTab(tab) {
+      const isConsult = tab === 'consult';
+      document.getElementById('view-consult').classList.toggle('hidden', !isConsult); document.getElementById('view-admin').classList.toggle('hidden', isConsult);
+      const active = 'tab-btn px-4 py-3 font-medium border-b-2 border-emerald-600 text-emerald-700'; const idle = 'tab-btn px-4 py-3 font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-800';
+      document.getElementById('tab-consult').className = isConsult ? active : idle; document.getElementById('tab-admin').className = !isConsult ? active : idle;
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await initConsultation(); await initAdmin();
+      document.querySelectorAll('.tab-btn').forEach(btn => { btn.addEventListener('click', () => switchTab(btn.dataset.tab)); });
+    });
+  </script>
 </body>
 </html>
