@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Khourouj Tabligh — Gestion des Sorties</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen font-sans">
+
+  <header class="bg-emerald-700 text-white shadow-lg">
+    <div class="max-w-6xl mx-auto px-4 py-4">
+      <h1 class="text-xl md:text-2xl font-bold">🕌 Khourouj Tabligh</h1>
+      <p class="text-emerald-100 text-sm">Gestion des sorties de 3 jours</p>
+    </div>
+  </header>
+
+  <nav class="bg-white border-b shadow-sm no-print">
+    <div class="max-w-6xl mx-auto px-4 flex">
+      <button id="tab-consult" data-tab="consult"
+        class="tab-btn px-4 py-3 font-medium border-b-2 border-emerald-600 text-emerald-700">
+        Consultation
+      </button>
+      <button id="tab-admin" data-tab="admin"
+        class="tab-btn px-4 py-3 font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-800">
+        Gestionnaire
+      </button>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-6">
+
+    <!-- ===================== CONSULTATION ===================== -->
+    <section id="view-consult">
+      <div class="bg-white rounded-lg shadow p-4 md:p-6 mb-6 no-print">
+        <h2 class="text-lg font-semibold mb-4">🔎 Filtrer les sorties</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Année</label>
+            <select id="sel-annee" class="w-full border rounded px-3 py-2 bg-white"></select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Mois</label>
+            <select id="sel-mois" class="w-full border rounded px-3 py-2 bg-white"></select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Pays</label>
+            <select id="sel-pays" class="w-full border rounded px-3 py-2 bg-white"></select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Ville</label>
+            <select id="sel-ville" class="w-full border rounded px-3 py-2 bg-white"></select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Halaka</label>
+            <select id="sel-halaka" class="w-full border rounded px-3 py-2 bg-white"></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div id="planning-empty" class="p-8 text-center text-gray-500">
+          Sélectionnez un pays, une ville puis une halaka pour afficher le planning.
+        </div>
+
+        <div id="planning-content" class="hidden">
+          <div class="p-4 md:p-6 border-b bg-emerald-50">
+            <h2 id="planning-title" class="text-lg md:text-xl font-bold text-emerald-800"></h2>
+            <p id="planning-subtitle" class="text-sm text-emerald-700"></p>
+            <div class="mt-3 flex flex-wrap gap-2 no-print">
+              <button id="btn-whatsapp"
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium">
+                📱 Copier pour WhatsApp
+              </button>
+              <button id="btn-print"
+                class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded text-sm font-medium">
+                🖨️ Imprimer / PDF
+              </button>
+            </div>
+          </div>
+
+          <div id="print-area">
+            <table class="w-full text-sm">
+              <thead class="bg-gray-100">
+                <tr>
+                  <th class="text-left p-3 font-semibold">Mosquée</th>
+                  <th class="text-center p-3 font-semibold">Ousboue</th>
+                  <th class="text-center p-3 font-semibold">Vendredi → Dimanche</th>
+                  <th class="text-center p-3 font-semibold">Statut</th>
+                </tr>
+              </thead>
+              <tbody id="planning-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ADMIN ===================== -->
+    <section id="view-admin" class="hidden"></section>
+
+  </main>
+
+  <!-- On charge la librairie Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
