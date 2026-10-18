@@ -4,8 +4,8 @@
 
 /* ----------------------- CONFIGURATION SUPABASE ----------------------- */
 // ⚠️ REMPLACEZ CES DEUX VALEURS PAR CELLES DE VOTRE PROJET SUPABASE ⚠️
-const SUPABASE_URL = 'VOTRE_PROJECT_URL_ICI';
-const SUPABASE_ANON_KEY = 'VOTRE_CLE_ANON_ICI';
+const SUPABASE_URL = 'https://rhtaqusrkgqawtbqysgw.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_JIjs3oxZszYHTaON8iH06g_-mnoCVfl';
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
