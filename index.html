@@ -8,11 +8,17 @@
   <style>
     @media print { .no-print { display: none !important; } body { background: white !important; } }
     .debug-box { display: none; background: #dc2626; color: white; padding: 15px; font-weight: bold; text-align: center; font-family: sans-serif; position: fixed; top: 0; width: 100%; z-index: 9999;}
+    
+    /* Styles pour les menus pliables */
+    details > summary { list-style: none; cursor: pointer; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .icon-plus { display: none; }
+    details[open] .icon-minus { display: inline; }
+    .icon-minus { display: none; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen font-sans">
 
-  <!-- ZONE D'ERREUR ROUGE -->
   <div id="debug-box" class="debug-box"></div>
 
   <header class="bg-emerald-700 text-white shadow-lg no-print">
@@ -22,7 +28,6 @@
     </div>
   </header>
 
-  <!-- ONGLETS -->
   <nav class="bg-white border-b shadow-sm no-print">
     <div class="max-w-6xl mx-auto px-4 flex">
       <button id="tab-consult" onclick="switchTab('consult')" class="px-4 py-3 font-medium border-b-2 border-emerald-600 text-emerald-700">Consultation</button>
@@ -32,7 +37,6 @@
 
   <main class="max-w-6xl mx-auto px-4 py-6">
     
-    <!-- ================= CONSULTATION ================= -->
     <section id="view-consult">
       <div class="bg-white rounded-lg shadow p-4 md:p-6 mb-6 no-print">
         <h2 class="text-lg font-semibold mb-4">🔎 Filtrer les sorties</h2>
@@ -73,7 +77,6 @@
       </div>
     </section>
 
-    <!-- ================= ADMIN ================= -->
     <section id="view-admin" class="hidden"></section>
 
   </main>
@@ -88,7 +91,6 @@
     const MONTHS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
     function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
-    // --- CALCUL DES DATES ---
     function getNthFriday(year, month, n) { 
       const first = new Date(year, month - 1, 1); 
       const firstDow = first.getDay(); 
@@ -114,13 +116,11 @@
       return d.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' }); 
     }
 
-    // --- REMPLISSAGE ANNÉE / MOIS IMMÉDIAT ---
     const yearSel = document.getElementById('sel-annee'); const curYear = new Date().getFullYear();
     yearSel.innerHTML = ''; for (let y = curYear - 1; y <= curYear + 1; y++) { const o = document.createElement('option'); o.value = y; o.textContent = y; if (y === curYear) o.selected = true; yearSel.appendChild(o); }
     const monthSel = document.getElementById('sel-mois'); monthSel.innerHTML = '';
     MONTHS.forEach((m, i) => { const o = document.createElement('option'); o.value = i + 1; o.textContent = m; if (i === new Date().getMonth()) o.selected = true; monthSel.appendChild(o); });
 
-    // --- CHARGEMENT SUPABASE ---
     const script = document.createElement('script');
     script.src = "https://unpkg.com/@supabase/supabase-js@2";
     
@@ -138,20 +138,14 @@
           const { data: halakat, error: e3 } = await supabase.from('halakat').select('*');
           const { data: mosquees, error: e4 } = await supabase.from('mosquees').select('*');
           
-          if (e1 || e2 || e3 || e4) {
-            showError("Erreur de base de données. Avez-vous exécuté le code SQL ?"); return;
-          }
+          if (e1 || e2 || e3 || e4) { showError("Erreur de base de données. Avez-vous exécuté le code SQL ?"); return; }
           dataCache = { pays: pays || [], villes: villes || [], halakat: halakat || [], mosquees: mosquees || [] };
         }
 
         async function reloadDataAndRefresh() {
-          await loadData();
-          refreshConsultationSelects();
-          renderAdminLists();
-          renderPlanning();
+          await loadData(); refreshConsultationSelects(); renderAdminLists(); renderPlanning();
         }
 
-        // ================= CONSULTATION =================
         function refreshConsultationSelects() {
           const paysSel = document.getElementById('sel-pays'); const prev = paysSel.value;
           paysSel.innerHTML = '<option value="">-- Choisir un pays --</option>' + dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('');
@@ -194,14 +188,77 @@
           });
         };
 
-        // ================= ADMIN =================
+        // ================= ADMIN AVEC MENUS PLIABLES =================
         window.initAdmin = function() {
           document.getElementById('view-admin').innerHTML = `
-            <div class="space-y-6">
-              <div class="bg-white rounded-lg shadow p-4 md:p-6"><h2 class="text-lg font-bold mb-3">🌍 Pays</h2><div class="flex flex-col sm:flex-row gap-2 mb-3"><input id="inp-pays" class="flex-1 border rounded px-3 py-2" placeholder="Nom du pays"><button onclick="addPays()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button></div><div id="list-pays" class="space-y-2"></div></div>
-              <div class="bg-white rounded-lg shadow p-4 md:p-6"><h2 class="text-lg font-bold mb-3">🏙️ Villes</h2><div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-3"><select id="inp-ville-pays" class="border rounded px-3 py-2"></select><input id="inp-ville" class="border rounded px-3 py-2" placeholder="Nom de la ville"><button onclick="addVille()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button></div><div id="list-villes" class="space-y-2"></div></div>
-              <div class="bg-white rounded-lg shadow p-4 md:p-6"><h2 class="text-lg font-bold mb-3">⭕ Halakat</h2><div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-3"><select id="inp-halaka-ville" class="border rounded px-3 py-2"></select><input id="inp-halaka" class="border rounded px-3 py-2" placeholder="Nom de la halaka"><button onclick="addHalaka()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button></div><div id="list-halakat" class="space-y-2"></div></div>
-              <div class="bg-white rounded-lg shadow p-4 md:p-6"><h2 class="text-lg font-bold mb-3">🕌 Mosquées</h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-2 mb-3"><select id="inp-mos-halaka" class="border rounded px-3 py-2"></select><input id="inp-mos-nom" class="border rounded px-3 py-2" placeholder="Nom"><select id="inp-mos-ousboue" class="border rounded px-3 py-2"><option value="1">Ousboue 1</option><option value="2">Ousboue 2</option><option value="3">Ousboue 3</option><option value="4">Ousboue 4</option></select><input id="inp-mos-resp" class="border rounded px-3 py-2" placeholder="Responsable"><input id="inp-mos-tel" class="border rounded px-3 py-2" placeholder="Téléphone"><button onclick="addMosquee()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button></div><div id="list-mosquees" class="space-y-2"></div></div>
+            <div class="space-y-3">
+              
+              <!-- PAYS -->
+              <details class="bg-white rounded-lg shadow overflow-hidden group">
+                <summary class="p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors border-b border-transparent group-open:border-gray-200">
+                  <span class="font-bold text-lg text-gray-800">🌍 Gérer les Pays</span>
+                  <span class="text-emerald-600 text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
+                </summary>
+                <div class="p-4">
+                  <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                    <input id="inp-pays" class="flex-1 border rounded px-3 py-2" placeholder="Nom du pays">
+                    <button onclick="addPays()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button>
+                  </div>
+                  <div id="list-pays" class="space-y-2"></div>
+                </div>
+              </details>
+
+              <!-- VILLES -->
+              <details class="bg-white rounded-lg shadow overflow-hidden group">
+                <summary class="p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors border-b border-transparent group-open:border-gray-200">
+                  <span class="font-bold text-lg text-gray-800">🏙️ Gérer les Villes</span>
+                  <span class="text-emerald-600 text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
+                </summary>
+                <div class="p-4">
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+                    <select id="inp-ville-pays" class="border rounded px-3 py-2"></select>
+                    <input id="inp-ville" class="border rounded px-3 py-2" placeholder="Nom de la ville">
+                    <button onclick="addVille()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button>
+                  </div>
+                  <div id="list-villes" class="space-y-2"></div>
+                </div>
+              </details>
+
+              <!-- HALAKAT -->
+              <details class="bg-white rounded-lg shadow overflow-hidden group">
+                <summary class="p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors border-b border-transparent group-open:border-gray-200">
+                  <span class="font-bold text-lg text-gray-800">⭕ Gérer les Halakat</span>
+                  <span class="text-emerald-600 text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
+                </summary>
+                <div class="p-4">
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+                    <select id="inp-halaka-ville" class="border rounded px-3 py-2"></select>
+                    <input id="inp-halaka" class="border rounded px-3 py-2" placeholder="Nom de la halaka">
+                    <button onclick="addHalaka()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button>
+                  </div>
+                  <div id="list-halakat" class="space-y-2"></div>
+                </div>
+              </details>
+
+              <!-- MOSQUÉES -->
+              <details class="bg-white rounded-lg shadow overflow-hidden group">
+                <summary class="p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors border-b border-transparent group-open:border-gray-200">
+                  <span class="font-bold text-lg text-gray-800">🕌 Gérer les Mosquées</span>
+                  <span class="text-emerald-600 text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
+                </summary>
+                <div class="p-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-2 mb-4">
+                    <select id="inp-mos-halaka" class="border rounded px-3 py-2"></select>
+                    <input id="inp-mos-nom" class="border rounded px-3 py-2" placeholder="Nom">
+                    <select id="inp-mos-ousboue" class="border rounded px-3 py-2"><option value="1">Ousboue 1</option><option value="2">Ousboue 2</option><option value="3">Ousboue 3</option><option value="4">Ousboue 4</option></select>
+                    <input id="inp-mos-resp" class="border rounded px-3 py-2" placeholder="Responsable">
+                    <input id="inp-mos-tel" class="border rounded px-3 py-2" placeholder="Téléphone">
+                    <button onclick="addMosquee()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button>
+                  </div>
+                  <div id="list-mosquees" class="space-y-2"></div>
+                </div>
+              </details>
+
             </div>`;
           renderAdminLists();
         };
@@ -216,7 +273,6 @@
           document.getElementById('list-mosquees').innerHTML = dataCache.mosquees.map(m => { const h = dataCache.halakat.find(x => String(x.id) === String(m.halaka_id)); return `<div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 border rounded px-3 py-2"><div><span class="font-medium">${escapeHtml(m.nom)}</span> <span class="text-xs text-gray-500">(${escapeHtml(h?.nom || '?')})</span></div><div class="flex items-center gap-2"><select onchange="updateOusboue(${m.id}, this.value)" class="border rounded px-2 py-1 text-sm">${[1,2,3,4].map(n => `<option value="${n}" ${m.ousboue === n ? 'selected' : ''}>Ousboue ${n}</option>`).join('')}</select><button onclick="deleteMosquee(${m.id})" class="text-red-600 text-sm">Supprimer</button></div></div>`; }).join('') || '<p class="text-gray-500 text-sm">Aucune mosquée.</p>';
         };
 
-        // ACTIONS CRUD
         window.addPays = async () => { const nom = document.getElementById('inp-pays').value.trim(); if (!nom) return; await supabase.from('pays').insert({ nom }); document.getElementById('inp-pays').value = ''; await reloadDataAndRefresh(); };
         window.deletePays = async (id) => { if (!confirm('Supprimer ce pays et tout son contenu ?')) return; await supabase.from('pays').delete().eq('id', id); await reloadDataAndRefresh(); };
         window.addVille = async () => { const pays_id = document.getElementById('inp-ville-pays').value; const nom = document.getElementById('inp-ville').value.trim(); if (!pays_id || !nom) return; await supabase.from('villes').insert({ nom, pays_id }); document.getElementById('inp-ville').value = ''; await reloadDataAndRefresh(); };
@@ -227,7 +283,6 @@
         window.deleteMosquee = async (id) => { if (!confirm('Supprimer cette mosquée ?')) return; await supabase.from('mosquees').delete().eq('id', id); await reloadDataAndRefresh(); };
         window.updateOusboue = async (id, value) => { await supabase.from('mosquees').update({ ousboue: +value }).eq('id', id); await reloadDataAndRefresh(); };
 
-        // SWITCH TAB
         window.switchTab = function(tab) {
           const isConsult = tab === 'consult';
           document.getElementById('view-consult').classList.toggle('hidden', !isConsult);
@@ -237,7 +292,6 @@
           document.getElementById('tab-admin').className = !isConsult ? active : idle;
         };
 
-        // LANCEMENT
         loadData().then(() => {
           refreshConsultationSelects();
           initAdmin();
