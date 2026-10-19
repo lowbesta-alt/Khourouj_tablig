@@ -19,9 +19,9 @@
 
   <div id="debug-box" class="debug-box"></div>
 
-  <!-- FENÊTRE MODALE POUR LA SÉCURITÉ (Cachée par défaut) -->
+  <!-- FENÊTRE MODALE POUR LA SÉCURITÉ -->
   <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[100] flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 relative">
+    <div class="bg-white rounded-lg shadow-2xl w-full max-w-md p-6 relative">
       <button onclick="closeModal()" class="absolute top-2 right-4 text-3xl text-gray-400 hover:text-gray-800">&times;</button>
       <div id="modal-content"></div>
     </div>
@@ -43,7 +43,6 @@
 
   <main class="max-w-6xl mx-auto px-4 py-6">
     
-    <!-- ================= CONSULTATION ================= -->
     <section id="view-consult">
       <div class="bg-white rounded-lg shadow p-4 md:p-6 mb-6 no-print">
         <h2 class="text-lg font-semibold mb-4">🔎 Filtrer les sorties</h2>
@@ -56,11 +55,9 @@
         </div>
       </div>
 
-      <!-- STATISTIQUES CALCULÉES DE LA VILLE -->
       <div id="ville-stats-container" class="hidden mb-6">
         <div class="bg-white rounded-lg shadow p-4 md:p-6 border-l-4 border-emerald-600">
           <h2 class="text-lg font-bold text-emerald-800 mb-4" id="stats-title">Données globales de la ville</h2>
-          
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center mb-4">
             <div class="bg-blue-100 p-3 rounded-lg shadow-sm border border-blue-200">
               <div class="text-xs text-blue-800 font-semibold">Total Mosquées (Manuel)</div>
@@ -79,7 +76,6 @@
               <div class="font-bold text-xl text-amber-900" id="st-maisons-5amal">0</div>
             </div>
           </div>
-
           <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center text-sm">
             <div class="bg-green-50 p-2 rounded"><div class="text-xs text-gray-600">Frères 4 mois</div><div class="font-bold text-lg text-green-700" id="st-fr-4m">0</div></div>
             <div class="bg-green-50 p-2 rounded"><div class="text-xs text-gray-600">Frères 4 mois/an</div><div class="font-bold text-lg text-green-700" id="st-fr-4ma">0</div></div>
@@ -94,7 +90,6 @@
         </div>
       </div>
 
-      <!-- PLANNING -->
       <div class="bg-white rounded-lg shadow overflow-hidden">
         <div id="planning-empty" class="p-8 text-center text-gray-500">Sélectionnez une ville puis un sous-halaka pour afficher le planning.</div>
         <div id="planning-content" class="hidden">
@@ -123,25 +118,21 @@
       </div>
     </section>
 
-    <!-- ================= ADMIN ================= -->
     <section id="view-admin" class="hidden"></section>
 
   </main>
 
   <script>
     function showError(msg) { const box = document.getElementById('debug-box'); box.style.display = 'block'; box.innerHTML = "⚠️ " + msg; }
+    window.showModal = function(content) { document.getElementById('modal-content').innerHTML = content; document.getElementById('modal').classList.remove('hidden'); }
+    window.closeModal = function() { document.getElementById('modal').classList.add('hidden'); }
+    
     const MONTHS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
     function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
     function getNthFriday(year, month, n) { const first = new Date(year, month - 1, 1); const firstDow = first.getDay(); const daysUntilFri = (5 - firstDow + 7) % 7; const day = 1 + daysUntilFri + (n - 1) * 7; return new Date(year, month - 1, day); }
     function getOusboueDates(year, month, ousboue) { const friday = getNthFriday(year, month, ousboue); const sunday = new Date(friday); sunday.setDate(friday.getDate() + 2); return { friday, sunday }; }
     function getStatus(friday, sunday) { const today = new Date(); today.setHours(0,0,0,0); const f = new Date(friday); f.setHours(0,0,0,0); const s = new Date(sunday); s.setHours(23,59,59,999); if (today > s) return { label: 'Terminée', cls: 'bg-gray-200 text-gray-700' }; if (today >= f) return { label: 'En cours', cls: 'bg-orange-100 text-orange-800' }; return { label: 'À venir', cls: 'bg-emerald-100 text-emerald-800' }; }
     function formatLongDate(d) { return d.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' }); }
-
-    window.showModal = function(content) {
-        document.getElementById('modal-content').innerHTML = content;
-        document.getElementById('modal').classList.remove('hidden');
-    }
-    window.closeModal = function() { document.getElementById('modal').classList.add('hidden'); }
 
     const yearSel = document.getElementById('sel-annee'); const curYear = new Date().getFullYear();
     yearSel.innerHTML = ''; for (let y = curYear - 1; y <= curYear + 1; y++) { const o = document.createElement('option'); o.value = y; o.textContent = y; if (y === curYear) o.selected = true; yearSel.appendChild(o); }
@@ -157,4 +148,412 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_JIjs3oxZszYHTaON8iH06g_-mnoCVfl';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        let dataCache = {
+        let dataCache = { pays: [], villes: [], halakat: [], mosquees: [] };
+
+        async function loadData() {
+          const { data: pays, error: e1 } = await supabase.from('pays').select('*');
+          const { data: villes, error: e2 } = await supabase.from('villes').select('*');
+          const { data: halakat, error: e3 } = await supabase.from('halakat').select('*');
+          const { data: mosquees, error: e4 } = await supabase.from('mosquees').select('*');
+          
+          if (e1 || e2 || e3 || e4) { showError("Erreur de base de données. Avez-vous exécuté le dernier code SQL ?"); return; }
+          dataCache = { pays: pays || [], villes: villes || [], halakat: halakat || [], mosquees: mosquees || [] };
+        }
+
+        async function reloadDataAndRefresh() {
+          await loadData(); refreshConsultationSelects(); renderAdminLists(); renderPlanning();
+        }
+
+        function refreshConsultationSelects() {
+          const paysSel = document.getElementById('sel-pays'); const prev = paysSel.value;
+          paysSel.innerHTML = '<option value="">-- Choisir un pays --</option>' + dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('');
+          if (prev && dataCache.pays.some(p => String(p.id) === prev)) { paysSel.value = prev; onPaysChange(); } 
+          else { document.getElementById('sel-ville').innerHTML = '<option value="">-- Choisir une ville --</option>'; document.getElementById('sel-halaka').innerHTML = '<option value="">-- Choisir un sous-halaka --</option>'; hidePlanning(); document.getElementById('ville-stats-container').classList.add('hidden'); }
+        }
+
+        window.onPaysChange = function() {
+          const paysId = document.getElementById('sel-pays').value;
+          document.getElementById('sel-ville').innerHTML = '<option value="">-- Choisir une ville (Halaka) --</option>'; document.getElementById('sel-halaka').innerHTML = '<option value="">-- Choisir un sous-halaka --</option>'; hidePlanning(); document.getElementById('ville-stats-container').classList.add('hidden');
+          if (!paysId) return;
+          dataCache.villes.filter(v => String(v.pays_id) === paysId).forEach(v => { document.getElementById('sel-ville').insertAdjacentHTML('beforeend', `<option value="${v.id}">${escapeHtml(v.nom)}</option>`); });
+        };
+
+        window.onVilleChange = function() {
+          const villeId = document.getElementById('sel-ville').value;
+          document.getElementById('sel-halaka').innerHTML = '<option value="">-- Choisir un sous-halaka --</option>'; hidePlanning();
+          if (!villeId) { document.getElementById('ville-stats-container').classList.add('hidden'); return; }
+          
+          const ville = dataCache.villes.find(v => String(v.id) === villeId);
+          
+          const halakasDeLaVille = dataCache.halakat.filter(h => String(h.ville_id) === villeId).map(h => String(h.id));
+          const mosqueesDeLaVille = dataCache.mosquees.filter(m => halakasDeLaVille.includes(String(m.halaka_id)));
+          
+          const sum = (field) => mosqueesDeLaVille.reduce((total, m) => total + (m[field] || 0), 0);
+          const count5Amal = mosqueesDeLaVille.filter(m => m.est_5amal === true).length;
+
+          if(ville) {
+            document.getElementById('stats-title').textContent = `Données globales : ${ville.nom}`;
+            document.getElementById('st-mosquees-total').textContent = ville.nb_mosquees_total || 0;
+            document.getElementById('st-mosquees-5amal').textContent = count5Amal;
+            document.getElementById('st-maisons-autour').textContent = sum('nb_maisons_autour');
+            document.getElementById('st-maisons-5amal').textContent = sum('nb_maisons_5amal');
+            document.getElementById('st-fr-4m').textContent = sum('nb_freres_4mois');
+            document.getElementById('st-fr-4ma').textContent = sum('nb_freres_4mois_an');
+            document.getElementById('st-fr-40j').textContent = sum('nb_freres_40jours');
+            document.getElementById('st-jamaats-3j').textContent = sum('nb_jamaats_3jours');
+            document.getElementById('st-ziara-2h30').textContent = sum('nb_freres_ziara_2h30');
+            document.getElementById('st-ziara-moins').textContent = sum('nb_freres_ziara_moins');
+            document.getElementById('st-so-2m').textContent = sum('nb_soeurs_2mois');
+            document.getElementById('st-so-15j').textContent = sum('nb_soeurs_15jours');
+            document.getElementById('st-so-3j').textContent = sum('nb_soeurs_3jours');
+            document.getElementById('ville-stats-container').classList.remove('hidden');
+          }
+
+          dataCache.halakat.filter(h => String(h.ville_id) === villeId).forEach(h => { document.getElementById('sel-halaka').insertAdjacentHTML('beforeend', `<option value="${h.id}">${escapeHtml(h.nom)}</option>`); });
+        };
+
+        function hidePlanning() { document.getElementById('planning-empty').classList.remove('hidden'); document.getElementById('planning-content').classList.add('hidden'); }
+
+        window.renderPlanning = function() {
+          const halakaId = document.getElementById('sel-halaka').value; if (!halakaId) return hidePlanning();
+          const year = +document.getElementById('sel-annee').value; const month = +document.getElementById('sel-mois').value;
+          const halaka = dataCache.halakat.find(h => String(h.id) === halakaId); const ville = dataCache.villes.find(v => String(v.id) === String(halaka.ville_id)); const pays = dataCache.pays.find(p => String(p.id) === String(ville.pays_id));
+          const mosquees = dataCache.mosquees.filter(m => String(m.halaka_id) === halakaId).sort((a, b) => a.ousboue - b.ousboue || a.nom.localeCompare(b.nom));
+          
+          document.getElementById('planning-empty').classList.add('hidden'); document.getElementById('planning-content').classList.remove('hidden');
+          document.getElementById('planning-title').textContent = `${ville.nom} (Halaka) — ${halaka.nom}`;
+          document.getElementById('planning-subtitle').textContent = `Programme de ${MONTHS[month - 1]} ${year} | ${pays.nom}`;
+          
+          const tbody = document.getElementById('planning-tbody'); tbody.innerHTML = '';
+          if (mosquees.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-gray-500">Aucune mosquée.</td></tr>'; return; }
+          
+          mosquees.forEach(m => {
+            const { friday, sunday } = getOusboueDates(year, month, m.ousboue); const st = getStatus(friday, sunday);
+            tbody.insertAdjacentHTML('beforeend', `<tr class="border-t"><td class="p-3"><div class="font-medium">${escapeHtml(m.nom)}</div>${m.responsable ? `<div class="text-xs text-gray-500">${escapeHtml(m.responsable)}${m.contact ? ' · ' + escapeHtml(m.contact) : ''}</div>` : ''}</td><td class="p-3 text-center">Ousboue ${m.ousboue}</td><td class="p-3 text-center">${formatLongDate(friday)} → ${formatLongDate(sunday)}</td><td class="p-3 text-center"><span class="inline-block px-2 py-1 rounded text-xs font-medium ${st.cls}">${st.label}</span></td></tr>`);
+          });
+        };
+
+        window.initAdmin = function() {
+          document.getElementById('view-admin').innerHTML = `
+            <div class="mb-4 bg-blue-50 text-blue-800 p-3 rounded text-sm">
+              <strong>Sécurité :</strong> Chaque mosquée a son mot de passe. La modification du total de la ville nécessite 2 mots de passe de mosquées différentes.
+            </div>
+            <div class="space-y-3">
+              
+              <details class="bg-white rounded-lg shadow overflow-hidden group">
+                <summary class="p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors border-b border-transparent group-open:border-gray-200">
+                  <span class="font-bold text-lg text-gray-800">🌍 1. Gérer les Pays</span>
+                  <span class="text-emerald-600 text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
+                </summary>
+                <div class="p-4">
+                  <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                    <input id="inp-pays" class="flex-1 border rounded px-3 py-2" placeholder="Ex: Cameroun">
+                    <button onclick="addPays()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button>
+                  </div>
+                  <div id="list-pays" class="space-y-2"></div>
+                </div>
+              </details>
+
+              <details class="bg-white rounded-lg shadow overflow-hidden group">
+                <summary class="p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors border-b border-transparent group-open:border-gray-200">
+                  <span class="font-bold text-lg text-gray-800">🏙️ 2. Gérer les Villes (Halakat)</span>
+                  <span class="text-emerald-600 text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
+                </summary>
+                <div class="p-4">
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+                    <select id="inp-ville-pays" class="border rounded px-3 py-2"><option value="">-- Choisir le pays --</option></select>
+                    <input id="inp-ville" class="border rounded px-3 py-2" placeholder="Ex: Douala (Halaka 16)">
+                    <button onclick="addVille()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter la ville</button>
+                  </div>
+                  <div id="list-villes" class="space-y-2"></div>
+                </div>
+              </details>
+
+              <details class="bg-white rounded-lg shadow overflow-hidden group">
+                <summary class="p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors border-b border-transparent group-open:border-gray-200">
+                  <span class="font-bold text-lg text-gray-800">⭕ 3. Gérer les Sous-Halakat (Secteurs)</span>
+                  <span class="text-emerald-600 text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
+                </summary>
+                <div class="p-4">
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+                    <select id="inp-halaka-ville" class="border rounded px-3 py-2"><option value="">-- Choisir la ville --</option></select>
+                    <input id="inp-halaka" class="border rounded px-3 py-2" placeholder="Ex: Halaka 1, Secteur Bassa...">
+                    <button onclick="addHalaka()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button>
+                  </div>
+                  <div id="list-halakat" class="space-y-2"></div>
+                </div>
+              </details>
+
+              <details class="bg-white rounded-lg shadow overflow-hidden group">
+                <summary class="p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors border-b border-transparent group-open:border-gray-200">
+                  <span class="font-bold text-lg text-gray-800">🕌 4. Gérer les Mosquées</span>
+                  <span class="text-emerald-600 text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
+                </summary>
+                <div class="p-4">
+                  
+                  <div class="border border-gray-300 p-4 rounded-lg mb-6 bg-gray-50 shadow-sm">
+                    <h3 class="font-bold text-emerald-800 mb-3">Ajouter une nouvelle mosquée</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                      <div><label class="text-xs font-semibold">Sous-Halaka</label><select id="inp-mos-halaka" class="w-full border rounded px-3 py-2"><option value="">-- Choisir --</option></select></div>
+                      <div><label class="text-xs font-semibold">Nom de la mosquée</label><input id="inp-mos-nom" class="w-full border rounded px-3 py-2" placeholder="Ex: Mosquée Centrale"></div>
+                      <div><label class="text-xs font-semibold">Ousboue de sortie</label><select id="inp-mos-ousboue" class="w-full border rounded px-3 py-2"><option value="1">Ousboue 1</option><option value="2">Ousboue 2</option><option value="3">Ousboue 3</option><option value="4">Ousboue 4</option></select></div>
+                      <div><label class="text-xs font-semibold">Mot de passe (Sécurité)</label><input id="inp-mos-pass" type="password" class="w-full border rounded px-3 py-2 bg-yellow-50" placeholder="Ex: secret123"></div>
+                      <div><label class="text-xs font-semibold">Responsable</label><input id="inp-mos-resp" class="w-full border rounded px-3 py-2" placeholder="Nom"></div>
+                      <div><label class="text-xs font-semibold">Téléphone</label><input id="inp-mos-tel" class="w-full border rounded px-3 py-2" placeholder="Numéro"></div>
+                    </div>
+
+                    <details class="mt-2 bg-white border border-gray-200 rounded-lg">
+                      <summary class="p-3 bg-blue-50 text-blue-800 font-semibold cursor-pointer rounded-lg hover:bg-blue-100 flex justify-between items-center">
+                        <span>➕ Remplir les statistiques de cette mosquée</span>
+                        <span class="text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
+                      </summary>
+                      <div class="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-blue-50 p-2 rounded border border-blue-100">
+                           <label class="flex items-center gap-2 text-sm font-bold text-blue-900 cursor-pointer">
+                             <input type="checkbox" id="st-m-5amal" class="w-5 h-5 text-emerald-600 rounded"> 
+                             Mosquée avec 5 Amal ?
+                           </label>
+                        </div>
+                        <div><label class="text-xs text-gray-600">Nb Maisons autour</label><input id="st-m-maisons" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Nb Maisons 5 Amal</label><input id="st-m-maisons-5amal" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Frères 4 mois</label><input id="st-m-fr4m" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Frères 4 mois/an</label><input id="st-m-fr4ma" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Frères 40 jours</label><input id="st-m-fr40j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Jamaats 3 jours</label><input id="st-m-jamaats" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Frères Ziyara 2h30/j</label><input id="st-m-z2h30" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Frères Ziyara &lt; 2h30/j</label><input id="st-m-zmoins" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Sœurs 2 mois</label><input id="st-m-so2m" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Sœurs 15 jours</label><input id="st-m-so15j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Sœurs 3 jours</label><input id="st-m-so3j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                      </div>
+                    </details>
+
+                    <button onclick="addMosquee()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded w-full mt-4 font-bold">Enregistrer la mosquée</button>
+                  </div>
+
+                  <div id="list-mosquees" class="space-y-2"></div>
+                </div>
+              </details>
+
+            </div>`;
+          renderAdminLists();
+        };
+
+        window.renderAdminLists = function() {
+          document.getElementById('list-pays').innerHTML = dataCache.pays.map(p => `<div class="flex justify-between items-center border rounded px-3 py-2"><span>${escapeHtml(p.nom)}</span><button onclick="deletePays(${p.id})" class="text-red-600 text-sm">Supprimer</button></div>`).join('') || '<p class="text-gray-500 text-sm">Aucun pays.</p>';
+          
+          const vp = document.getElementById('inp-ville-pays'); const prevVp = vp.value; 
+          vp.innerHTML = '<option value="">-- Choisir le pays --</option>' + dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join(''); 
+          if (prevVp && dataCache.pays.some(p => String(p.id) === prevVp)) vp.value = prevVp;
+          
+          document.getElementById('list-villes').innerHTML = dataCache.villes.map(v => { 
+            const p = dataCache.pays.find(x => String(x.id) === String(v.pays_id)); 
+            return `<div class="flex justify-between items-center border rounded px-3 py-2">
+              <span>${escapeHtml(v.nom)} (${escapeHtml(p?.nom || '?')}) - Total Mosq: <b>${v.nb_mosquees_total || 0}</b></span>
+              <div class="flex gap-2">
+                <button onclick="promptUpdateVilleTotal(${v.id}, ${v.nb_mosquees_total || 0})" class="text-blue-600 text-sm hover:underline">Modifier Total</button>
+                <button onclick="deleteVille(${v.id})" class="text-red-600 text-sm">Supprimer</button>
+              </div>
+            </div>`; 
+          }).join('') || '<p class="text-gray-500 text-sm">Aucune ville.</p>';
+          
+          const hv = document.getElementById('inp-halaka-ville'); const prevHv = hv.value; 
+          hv.innerHTML = '<option value="">-- Choisir la ville --</option>' + dataCache.villes.map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join(''); 
+          if (prevHv && dataCache.villes.some(v => String(v.id) === prevHv)) hv.value = prevHv;
+          
+          document.getElementById('list-halakat').innerHTML = dataCache.halakat.map(h => { const v = dataCache.villes.find(x => String(x.id) === String(h.ville_id)); return `<div class="flex justify-between items-center border rounded px-3 py-2"><span>${escapeHtml(h.nom)} (${escapeHtml(v?.nom || '?')})</span><button onclick="deleteHalaka(${h.id})" class="text-red-600 text-sm">Supprimer</button></div>`; }).join('') || '<p class="text-gray-500 text-sm">Aucun sous-halaka.</p>';
+          
+          const mh = document.getElementById('inp-mos-halaka'); const prevMh = mh.value; 
+          mh.innerHTML = '<option value="">-- Choisir --</option>' + dataCache.halakat.map(h => `<option value="${h.id}">${escapeHtml(h.nom)}</option>`).join(''); 
+          if (prevMh && dataCache.halakat.some(h => String(h.id) === prevMh)) mh.value = prevMh;
+          
+          document.getElementById('list-mosquees').innerHTML = dataCache.mosquees.map(m => { const h = dataCache.halakat.find(x => String(x.id) === String(m.halaka_id)); return `<div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 border rounded px-3 py-2"><div><span class="font-medium">${escapeHtml(m.nom)}</span> <span class="text-xs text-gray-500">(${escapeHtml(h?.nom || '?')})</span> ${m.est_5amal ? '<span class="text-xs bg-blue-100 text-blue-800 px-1 rounded ml-1">5 Amal</span>' : ''}</div><div class="flex flex-wrap items-center gap-2">
+            <select onchange="promptUpdateOusboue(${m.id}, this.value)" class="border rounded px-2 py-1 text-sm">${[1,2,3,4].map(n => `<option value="${n}" ${m.ousboue === n ? 'selected' : ''}>Ousboue ${n}</option>`).join('')}</select>
+            <button onclick="promptResetPassword(${m.id})" class="text-orange-600 text-xs hover:underline">Reset MDP</button>
+            <button onclick="promptDeleteMosquee(${m.id})" class="text-red-600 text-sm">Supprimer</button>
+          </div></div>`; }).join('') || '<p class="text-gray-500 text-sm">Aucune mosquée.</p>';
+        };
+
+        // --- FONCTIONS DE SÉCURITÉ (MODALES) ---
+
+        window.promptUpdateVilleTotal = function(villeId, currentTotal) {
+            showModal(`
+                <h3 class="text-xl font-bold mb-4 text-emerald-800">Modifier le total (Ville)</h3>
+                <p class="text-sm mb-3">Pour modifier ce chiffre, vous avez besoin des mots de passe de <b>2 mosquées différentes</b> de cette ville.</p>
+                <input id="m-total" type="number" value="${currentTotal}" class="w-full border rounded px-3 py-2 mb-3" placeholder="Nouveau total">
+                <input id="m-pass1" type="password" class="w-full border rounded px-3 py-2 mb-2" placeholder="Mot de passe Mosquée 1">
+                <input id="m-pass2" type="password" class="w-full border rounded px-3 py-2 mb-3" placeholder="Mot de passe Mosquée 2">
+                <button onclick="doUpdateVilleTotal(${villeId})" class="bg-emerald-600 text-white w-full py-2 rounded">Valider</button>
+            `);
+        }
+
+        window.doUpdateVilleTotal = async function(villeId) {
+            const total = document.getElementById('m-total').value;
+            const p1 = document.getElementById('m-pass1').value;
+            const p2 = document.getElementById('m-pass2').value;
+            const { data, error } = await supabase.rpc('update_ville_total_rpc', { p_ville_id: villeId, p_nouveau_total: +total, p_pass1: p1, p_pass2: p2 });
+            if (error) { alert("Erreur: " + error.message); return; }
+            if (data === true) { alert("Total mis à jour !"); closeModal(); await reloadDataAndRefresh(); }
+            else { alert("Mots de passe incorrects ou identiques. Action refusée."); }
+        }
+
+        window.promptDeleteMosquee = function(id) {
+            showModal(`
+                <h3 class="text-xl font-bold mb-4 text-red-600">Supprimer la mosquée</h3>
+                <p class="text-sm mb-3">Entrez le mot de passe de cette mosquée pour confirmer.</p>
+                <input id="m-pass" type="password" class="w-full border rounded px-3 py-2 mb-3" placeholder="Mot de passe">
+                <button onclick="doDeleteMosquee(${id})" class="bg-red-600 text-white w-full py-2 rounded">Supprimer</button>
+            `);
+        }
+
+        window.doDeleteMosquee = async function(id) {
+            const p = document.getElementById('m-pass').value;
+            const { data, error } = await supabase.rpc('delete_mosquee_rpc', { p_id: id, p_password: p });
+            if (error) { alert("Erreur: " + error.message); return; }
+            if (data === true) { closeModal(); await reloadDataAndRefresh(); }
+            else { alert("Mot de passe incorrect."); }
+        }
+
+        window.promptUpdateOusboue = function(id, newOusboue) {
+            showModal(`
+                <h3 class="text-xl font-bold mb-4">Changer la date de sortie</h3>
+                <p class="text-sm mb-3">Entrez le mot de passe de cette mosquée pour passer à l'Ousboue ${newOusboue}.</p>
+                <input id="m-pass" type="password" class="w-full border rounded px-3 py-2 mb-3" placeholder="Mot de passe">
+                <button onclick="doUpdateOusboue(${id}, ${newOusboue})" class="bg-emerald-600 text-white w-full py-2 rounded">Valider</button>
+            `);
+        }
+
+        window.doUpdateOusboue = async function(id, newOusboue) {
+            const p = document.getElementById('m-pass').value;
+            // On utilise update_mosquee_rpc mais on récupère l'ancienne mosquée pour ne changer que l'ousboue
+            const m = dataCache.mosquees.find(x => x.id === id);
+            const { data, error } = await supabase.rpc('update_mosquee_rpc', { 
+                p_id: id, p_password: p, p_nom: m.nom, p_ousboue: newOusboue, p_responsable: m.responsable, p_contact: m.contact,
+                p_est_5amal: m.est_5amal, p_nb_maisons_autour: m.nb_maisons_autour, p_nb_maisons_5amal: m.nb_maisons_5amal,
+                p_nb_freres_4mois: m.nb_freres_4mois, p_nb_freres_4mois_an: m.nb_freres_4mois_an, p_nb_freres_40jours: m.nb_freres_40jours,
+                p_nb_jamaats_3jours: m.nb_jamaats_3jours, p_nb_freres_ziara_2h30: m.nb_freres_ziara_2h30, p_nb_freres_ziara_moins: m.nb_freres_ziara_moins,
+                p_nb_soeurs_2mois: m.nb_soeurs_2mois, p_nb_soeurs_15jours: m.nb_soeurs_15jours, p_nb_soeurs_3jours: m.nb_soeurs_3jours
+            });
+            if (error) { alert("Erreur: " + error.message); return; }
+            if (data === true) { closeModal(); await reloadDataAndRefresh(); }
+            else { alert("Mot de passe incorrect."); renderAdminLists(); }
+        }
+
+        window.promptResetPassword = function(id) {
+             showModal(`
+                <h3 class="text-xl font-bold mb-4 text-orange-600">Réinitialiser le mot de passe</h3>
+                <p class="text-sm mb-3">Entrez les mots de passe de <b>2 autres mosquées</b> de la même ville pour prouver votre bonne foi.</p>
+                <input id="m-pass1" type="password" class="w-full border rounded px-3 py-2 mb-2" placeholder="Mot de passe d'une autre mosquée">
+                <input id="m-pass2" type="password" class="w-full border rounded px-3 py-2 mb-3" placeholder="Mot de passe d'une 2ème mosquée">
+                <input id="m-newpass" type="text" class="w-full border rounded px-3 py-2 mb-3 bg-yellow-50" placeholder="Nouveau mot de passe à créer">
+                <button onclick="doResetPassword(${id})" class="bg-orange-600 text-white w-full py-2 rounded">Réinitialiser</button>
+            `);
+        }
+
+        window.doResetPassword = async function(id) {
+            const p1 = document.getElementById('m-pass1').value;
+            const p2 = document.getElementById('m-pass2').value;
+            const np = document.getElementById('m-newpass').value;
+            if(!np) { alert("Veuillez entrer un nouveau mot de passe."); return; }
+            const { data, error } = await supabase.rpc('reset_mosquee_password_rpc', { p_mosquee_id: id, p_pass1: p1, p_pass2: p2, p_nouveau_pass: np });
+            if (error) { alert("Erreur: " + error.message); return; }
+            if (data === true) { alert("Mot de passe réinitialisé avec succès !"); closeModal(); }
+            else { alert("Echec. Les 2 mots de passe sont incorrects, identiques, ou n'appartiennent pas à des mosquées de cette ville."); }
+        }
+
+        // --- CRUD BASIQUE (PAYS, VILLES, HALAKAT) ---
+        window.addPays = async () => { const nom = document.getElementById('inp-pays').value.trim(); if (!nom) return; await supabase.from('pays').insert({ nom }); document.getElementById('inp-pays').value = ''; await reloadDataAndRefresh(); };
+        window.deletePays = async (id) => { if (!confirm('Supprimer ce pays et tout son contenu ?')) return; await supabase.from('pays').delete().eq('id', id); await reloadDataAndRefresh(); };
+        
+        window.addVille = async () => { 
+          const pays_id = document.getElementById('inp-ville-pays').value; 
+          const nom = document.getElementById('inp-ville').value.trim(); 
+          if (!pays_id || !nom) return; 
+          await supabase.from('villes').insert({ nom, pays_id, nb_mosquees_total: 0 }); 
+          document.getElementById('inp-ville').value = ''; 
+          await reloadDataAndRefresh(); 
+        };
+        window.deleteVille = async (id) => { if (!confirm('Supprimer cette ville ?')) return; await supabase.from('villes').delete().eq('id', id); await reloadDataAndRefresh(); };
+        
+        window.addHalaka = async () => { const ville_id = document.getElementById('inp-halaka-ville').value; const nom = document.getElementById('inp-halaka').value.trim(); if (!ville_id || !nom) return; await supabase.from('halakat').insert({ nom, ville_id }); document.getElementById('inp-halaka').value = ''; await reloadDataAndRefresh(); };
+        window.deleteHalaka = async (id) => { if (!confirm('Supprimer ce sous-halaka ?')) return; await supabase.from('halakat').delete().eq('id', id); await reloadDataAndRefresh(); };
+        
+        window.addMosquee = async () => { 
+          const halaka_id = document.getElementById('inp-mos-halaka').value; 
+          const nom = document.getElementById('inp-mos-nom').value.trim(); 
+          const ousboue = +document.getElementById('inp-mos-ousboue').value; 
+          const pass = document.getElementById('inp-mos-pass').value.trim();
+          const responsable = document.getElementById('inp-mos-resp').value.trim(); 
+          const contact = document.getElementById('inp-mos-tel').value.trim(); 
+          
+          if (!halaka_id || !nom || !pass) { alert("Le nom et le mot de passe sont obligatoires."); return; }
+          
+          const { data, error } = await supabase.rpc('add_mosquee_rpc', {
+            p_nom: nom, p_halaka_id: +halaka_id, p_ousboue: ousboue, p_responsable: responsable, p_contact: contact, p_password: pass,
+            p_est_5amal: document.getElementById('st-m-5amal').checked,
+            p_nb_maisons_autour: +document.getElementById('st-m-maisons').value || 0,
+            p_nb_maisons_5amal: +document.getElementById('st-m-maisons-5amal').value || 0,
+            p_nb_freres_4mois: +document.getElementById('st-m-fr4m').value || 0,
+            p_nb_freres_4mois_an: +document.getElementById('st-m-fr4ma').value || 0,
+            p_nb_freres_40jours: +document.getElementById('st-m-fr40j').value || 0,
+            p_nb_jamaats_3jours: +document.getElementById('st-m-jamaats').value || 0,
+            p_nb_freres_ziara_2h30: +document.getElementById('st-m-z2h30').value || 0,
+            p_nb_freres_ziara_moins: +document.getElementById('st-m-zmoins').value || 0,
+            p_nb_soeurs_2mois: +document.getElementById('st-m-so2m').value || 0,
+            p_nb_soeurs_15jours: +document.getElementById('st-m-so15j').value || 0,
+            p_nb_soeurs_3jours: +document.getElementById('st-m-so3j').value || 0
+          });
+
+          if (error) { alert("Erreur: " + error.message); return; }
+
+          document.getElementById('inp-mos-nom').value = ''; 
+          document.getElementById('inp-mos-pass').value = ''; 
+          document.getElementById('inp-mos-resp').value = ''; 
+          document.getElementById('inp-mos-tel').value = ''; 
+          document.getElementById('st-m-5amal').checked = false;
+          document.querySelectorAll('input[type="number"]').forEach(inp => inp.value = '0');
+          
+          await reloadDataAndRefresh(); 
+          alert("Mosquée ajoutée avec succès !");
+        };
+
+        window.switchTab = function(tab) {
+          const isConsult = tab === 'consult';
+          document.getElementById('view-consult').classList.toggle('hidden', !isConsult);
+          document.getElementById('view-admin').classList.toggle('hidden', isConsult);
+          const active = 'px-4 py-3 font-medium border-b-2 border-emerald-600 text-emerald-700'; const idle = 'px-4 py-3 font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-800';
+          document.getElementById('tab-consult').className = isConsult ? active : idle;
+          document.getElementById('tab-admin').className = !isConsult ? active : idle;
+        };
+
+        loadData().then(() => {
+          refreshConsultationSelects();
+          initAdmin();
+          
+          document.getElementById('sel-pays').addEventListener('change', onPaysChange);
+          document.getElementById('sel-ville').addEventListener('change', onVilleChange);
+          document.getElementById('sel-halaka').addEventListener('change', renderPlanning);
+          document.getElementById('sel-annee').addEventListener('change', renderPlanning);
+          document.getElementById('sel-mois').addEventListener('change', renderPlanning);
+          
+          document.getElementById('btn-print').addEventListener('click', () => window.print());
+          document.getElementById('btn-whatsapp').addEventListener('click', () => {
+            const halakaId = document.getElementById('sel-halaka').value;
+            if (!halakaId) return;
+            const year = +document.getElementById('sel-annee').value; const month = +document.getElementById('sel-mois').value;
+            const halaka = dataCache.halakat.find(h => String(h.id) === halakaId); const ville = dataCache.villes.find(v => String(v.id) === String(halaka.ville_id)); const pays = dataCache.pays.find(p => String(p.id) === String(ville.pays_id));
+            let txt = `🕌 *Programme des sorties 3 jours*\n📍 ${pays.nom} — ${ville.nom} (Halaka)\n⭕ ${halaka.nom} (Sous-Halaka)\n🗓️ ${MONTHS[month - 1]} ${year}\n\n`;
+            dataCache.mosquees.filter(m => String(m.halaka_id) === halakaId).sort((a, b) => a.ousboue - b.ousboue).forEach((m, i) => { const { friday, sunday } = getOusboueDates(year, month, m.ousboue); txt += `${i + 1}. *${m.nom}* — Ousboue ${m.ousboue}\n   📅 ${formatLongDate(friday)} → ${formatLongDate(sunday)}\n`; });
+            txt += `\nبارك الله فيكم`;
+            if (navigator.clipboard) { navigator.clipboard.writeText(txt).then(() => alert('✅ Texte copié !')).catch(() => prompt('Copiez ce texte :', txt)); } else { prompt('Copiez ce texte :', txt); }
+          });
+        });
+
+      } catch (err) { showError("Erreur d'initialisation : " + err.message); }
+    };
+
+    script.onerror = () => { showError("Votre réseau bloque Supabase. Essayez avec un autre réseau."); };
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>
