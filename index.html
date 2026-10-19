@@ -9,7 +9,7 @@
     @media print { .no-print { display: none !important; } body { background: white !important; } }
     .debug-box { display: none; background: #dc2626; color: white; padding: 15px; font-weight: bold; text-align: center; font-family: sans-serif; position: fixed; top: 0; width: 100%; z-index: 9999;}
     
-    /* Styles pour les menus pliables */
+    /* Styles pour les menus pliables (accordéons) */
     details > summary { list-style: none; cursor: pointer; }
     details > summary::-webkit-details-marker { display: none; }
     details[open] .icon-plus { display: none; }
@@ -44,13 +44,17 @@
           <div><label class="block text-sm font-medium mb-1">Année</label><select id="sel-annee" class="w-full border rounded px-3 py-2 bg-white"></select></div>
           <div><label class="block text-sm font-medium mb-1">Mois</label><select id="sel-mois" class="w-full border rounded px-3 py-2 bg-white"></select></div>
           <div><label class="block text-sm font-medium mb-1">Pays</label><select id="sel-pays" class="w-full border rounded px-3 py-2 bg-white"></select></div>
-          <div><label class="block text-sm font-medium mb-1">Ville</label><select id="sel-ville" class="w-full border rounded px-3 py-2 bg-white"></select></div>
-          <div><label class="block text-sm font-medium mb-1">Halaka</label><select id="sel-halaka" class="w-full border rounded px-3 py-2 bg-white"></select></div>
+          
+          <!-- NOUVEAU NOM : Ville (Halaka) -->
+          <div><label class="block text-sm font-medium mb-1">Ville (Halaka)</label><select id="sel-ville" class="w-full border rounded px-3 py-2 bg-white"></select></div>
+          
+          <!-- NOUVEAU NOM : Sous-Halaka -->
+          <div><label class="block text-sm font-medium mb-1">Sous-Halaka (Secteur)</label><select id="sel-halaka" class="w-full border rounded px-3 py-2 bg-white"></select></div>
         </div>
       </div>
 
       <div class="bg-white rounded-lg shadow overflow-hidden">
-        <div id="planning-empty" class="p-8 text-center text-gray-500">Sélectionnez un pays, une ville puis une halaka pour afficher le planning.</div>
+        <div id="planning-empty" class="p-8 text-center text-gray-500">Sélectionnez un pays, une ville (halaka) puis un sous-halaka pour afficher le planning.</div>
         <div id="planning-content" class="hidden">
           <div class="p-4 md:p-6 border-b bg-emerald-50">
             <h2 id="planning-title" class="text-lg md:text-xl font-bold text-emerald-800"></h2>
@@ -150,19 +154,19 @@
           const paysSel = document.getElementById('sel-pays'); const prev = paysSel.value;
           paysSel.innerHTML = '<option value="">-- Choisir un pays --</option>' + dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('');
           if (prev && dataCache.pays.some(p => String(p.id) === prev)) { paysSel.value = prev; onPaysChange(); } 
-          else { document.getElementById('sel-ville').innerHTML = '<option value="">-- Choisir une ville --</option>'; document.getElementById('sel-halaka').innerHTML = '<option value="">-- Choisir une halaka --</option>'; hidePlanning(); }
+          else { document.getElementById('sel-ville').innerHTML = '<option value="">-- Choisir une ville --</option>'; document.getElementById('sel-halaka').innerHTML = '<option value="">-- Choisir un sous-halaka --</option>'; hidePlanning(); }
         }
 
         window.onPaysChange = function() {
           const paysId = document.getElementById('sel-pays').value;
-          document.getElementById('sel-ville').innerHTML = '<option value="">-- Choisir une ville --</option>'; document.getElementById('sel-halaka').innerHTML = '<option value="">-- Choisir une halaka --</option>'; hidePlanning();
+          document.getElementById('sel-ville').innerHTML = '<option value="">-- Choisir une ville (Halaka) --</option>'; document.getElementById('sel-halaka').innerHTML = '<option value="">-- Choisir un sous-halaka --</option>'; hidePlanning();
           if (!paysId) return;
           dataCache.villes.filter(v => String(v.pays_id) === paysId).forEach(v => { document.getElementById('sel-ville').insertAdjacentHTML('beforeend', `<option value="${v.id}">${escapeHtml(v.nom)}</option>`); });
         };
 
         window.onVilleChange = function() {
           const villeId = document.getElementById('sel-ville').value;
-          document.getElementById('sel-halaka').innerHTML = '<option value="">-- Choisir une halaka --</option>'; hidePlanning();
+          document.getElementById('sel-halaka').innerHTML = '<option value="">-- Choisir un sous-halaka --</option>'; hidePlanning();
           if (!villeId) return;
           dataCache.halakat.filter(h => String(h.ville_id) === villeId).forEach(h => { document.getElementById('sel-halaka').insertAdjacentHTML('beforeend', `<option value="${h.id}">${escapeHtml(h.nom)}</option>`); });
         };
@@ -176,8 +180,8 @@
           const mosquees = dataCache.mosquees.filter(m => String(m.halaka_id) === halakaId).sort((a, b) => a.ousboue - b.ousboue || a.nom.localeCompare(b.nom));
           
           document.getElementById('planning-empty').classList.add('hidden'); document.getElementById('planning-content').classList.remove('hidden');
-          document.getElementById('planning-title').textContent = `${halaka.nom} — ${ville.nom}, ${pays.nom}`;
-          document.getElementById('planning-subtitle').textContent = `Programme de ${MONTHS[month - 1]} ${year}`;
+          document.getElementById('planning-title').textContent = `${ville.nom} (Halaka) — ${halaka.nom}`;
+          document.getElementById('planning-subtitle').textContent = `Programme de ${MONTHS[month - 1]} ${year} | ${pays.nom}`;
           
           const tbody = document.getElementById('planning-tbody'); tbody.innerHTML = '';
           if (mosquees.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-gray-500">Aucune mosquée.</td></tr>'; return; }
@@ -188,53 +192,56 @@
           });
         };
 
-        // ================= ADMIN AVEC MENUS PLIABLES =================
+        // ================= ADMIN AVEC MENUS PLIABLES ET TEXTES CLAIRS =================
         window.initAdmin = function() {
           document.getElementById('view-admin').innerHTML = `
+            <div class="mb-4 bg-blue-50 text-blue-800 p-3 rounded text-sm">
+              <strong>Rappel de l'organisation :</strong> Ville qui est le Halaka (ex: Douala - Halaka 16) ➔ Sous-Halaka (ex: Halaka 1, Secteur Bassa) ➔ Mosquée.
+            </div>
             <div class="space-y-3">
               
               <!-- PAYS -->
               <details class="bg-white rounded-lg shadow overflow-hidden group">
                 <summary class="p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors border-b border-transparent group-open:border-gray-200">
-                  <span class="font-bold text-lg text-gray-800">🌍 Gérer les Pays</span>
+                  <span class="font-bold text-lg text-gray-800">🌍 1. Gérer les Pays</span>
                   <span class="text-emerald-600 text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
                 </summary>
                 <div class="p-4">
                   <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                    <input id="inp-pays" class="flex-1 border rounded px-3 py-2" placeholder="Nom du pays">
-                    <button onclick="addPays()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button>
+                    <input id="inp-pays" class="flex-1 border rounded px-3 py-2" placeholder="Ex: Cameroun">
+                    <button onclick="addPays()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter le pays</button>
                   </div>
                   <div id="list-pays" class="space-y-2"></div>
                 </div>
               </details>
 
-              <!-- VILLES -->
+              <!-- VILLES (HALAKAT) -->
               <details class="bg-white rounded-lg shadow overflow-hidden group">
                 <summary class="p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors border-b border-transparent group-open:border-gray-200">
-                  <span class="font-bold text-lg text-gray-800">🏙️ Gérer les Villes</span>
+                  <span class="font-bold text-lg text-gray-800">🏙️ 2. Gérer les Villes (Halakat)</span>
                   <span class="text-emerald-600 text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
                 </summary>
                 <div class="p-4">
                   <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
-                    <select id="inp-ville-pays" class="border rounded px-3 py-2"></select>
-                    <input id="inp-ville" class="border rounded px-3 py-2" placeholder="Nom de la ville">
-                    <button onclick="addVille()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button>
+                    <select id="inp-ville-pays" class="border rounded px-3 py-2"><option value="">-- Choisir le pays --</option></select>
+                    <input id="inp-ville" class="border rounded px-3 py-2" placeholder="Ex: Douala (Halaka 16)">
+                    <button onclick="addVille()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter la ville</button>
                   </div>
                   <div id="list-villes" class="space-y-2"></div>
                 </div>
               </details>
 
-              <!-- HALAKAT -->
+              <!-- SOUS-HALAKAT -->
               <details class="bg-white rounded-lg shadow overflow-hidden group">
                 <summary class="p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors border-b border-transparent group-open:border-gray-200">
-                  <span class="font-bold text-lg text-gray-800">⭕ Gérer les Halakat</span>
+                  <span class="font-bold text-lg text-gray-800">⭕ 3. Gérer les Sous-Halakat (Secteurs)</span>
                   <span class="text-emerald-600 text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
                 </summary>
                 <div class="p-4">
                   <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
-                    <select id="inp-halaka-ville" class="border rounded px-3 py-2"></select>
-                    <input id="inp-halaka" class="border rounded px-3 py-2" placeholder="Nom de la halaka">
-                    <button onclick="addHalaka()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button>
+                    <select id="inp-halaka-ville" class="border rounded px-3 py-2"><option value="">-- Choisir la ville --</option></select>
+                    <input id="inp-halaka" class="border rounded px-3 py-2" placeholder="Ex: Halaka 1, Secteur Bassa...">
+                    <button onclick="addHalaka()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter le sous-halaka</button>
                   </div>
                   <div id="list-halakat" class="space-y-2"></div>
                 </div>
@@ -243,16 +250,16 @@
               <!-- MOSQUÉES -->
               <details class="bg-white rounded-lg shadow overflow-hidden group">
                 <summary class="p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors border-b border-transparent group-open:border-gray-200">
-                  <span class="font-bold text-lg text-gray-800">🕌 Gérer les Mosquées</span>
+                  <span class="font-bold text-lg text-gray-800">🕌 4. Gérer les Mosquées</span>
                   <span class="text-emerald-600 text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
                 </summary>
                 <div class="p-4">
                   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-2 mb-4">
-                    <select id="inp-mos-halaka" class="border rounded px-3 py-2"></select>
-                    <input id="inp-mos-nom" class="border rounded px-3 py-2" placeholder="Nom">
+                    <select id="inp-mos-halaka" class="border rounded px-3 py-2"><option value="">-- Choisir le sous-halaka --</option></select>
+                    <input id="inp-mos-nom" class="border rounded px-3 py-2" placeholder="Ex: Mosquée Centrale">
                     <select id="inp-mos-ousboue" class="border rounded px-3 py-2"><option value="1">Ousboue 1</option><option value="2">Ousboue 2</option><option value="3">Ousboue 3</option><option value="4">Ousboue 4</option></select>
-                    <input id="inp-mos-resp" class="border rounded px-3 py-2" placeholder="Responsable">
-                    <input id="inp-mos-tel" class="border rounded px-3 py-2" placeholder="Téléphone">
+                    <input id="inp-mos-resp" class="border rounded px-3 py-2" placeholder="Responsable (optionnel)">
+                    <input id="inp-mos-tel" class="border rounded px-3 py-2" placeholder="Téléphone (optionnel)">
                     <button onclick="addMosquee()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button>
                   </div>
                   <div id="list-mosquees" class="space-y-2"></div>
@@ -265,11 +272,23 @@
 
         window.renderAdminLists = function() {
           document.getElementById('list-pays').innerHTML = dataCache.pays.map(p => `<div class="flex justify-between items-center border rounded px-3 py-2"><span>${escapeHtml(p.nom)}</span><button onclick="deletePays(${p.id})" class="text-red-600 text-sm">Supprimer</button></div>`).join('') || '<p class="text-gray-500 text-sm">Aucun pays.</p>';
-          const vp = document.getElementById('inp-ville-pays'); const prevVp = vp.value; vp.innerHTML = dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join(''); if (prevVp && dataCache.pays.some(p => String(p.id) === prevVp)) vp.value = prevVp;
+          
+          const vp = document.getElementById('inp-ville-pays'); const prevVp = vp.value; 
+          vp.innerHTML = '<option value="">-- Choisir le pays --</option>' + dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join(''); 
+          if (prevVp && dataCache.pays.some(p => String(p.id) === prevVp)) vp.value = prevVp;
+          
           document.getElementById('list-villes').innerHTML = dataCache.villes.map(v => { const p = dataCache.pays.find(x => String(x.id) === String(v.pays_id)); return `<div class="flex justify-between items-center border rounded px-3 py-2"><span>${escapeHtml(v.nom)} (${escapeHtml(p?.nom || '?')})</span><button onclick="deleteVille(${v.id})" class="text-red-600 text-sm">Supprimer</button></div>`; }).join('') || '<p class="text-gray-500 text-sm">Aucune ville.</p>';
-          const hv = document.getElementById('inp-halaka-ville'); const prevHv = hv.value; hv.innerHTML = dataCache.villes.map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join(''); if (prevHv && dataCache.villes.some(v => String(v.id) === prevHv)) hv.value = prevHv;
-          document.getElementById('list-halakat').innerHTML = dataCache.halakat.map(h => { const v = dataCache.villes.find(x => String(x.id) === String(h.ville_id)); return `<div class="flex justify-between items-center border rounded px-3 py-2"><span>${escapeHtml(h.nom)} (${escapeHtml(v?.nom || '?')})</span><button onclick="deleteHalaka(${h.id})" class="text-red-600 text-sm">Supprimer</button></div>`; }).join('') || '<p class="text-gray-500 text-sm">Aucune halaka.</p>';
-          const mh = document.getElementById('inp-mos-halaka'); const prevMh = mh.value; mh.innerHTML = dataCache.halakat.map(h => `<option value="${h.id}">${escapeHtml(h.nom)}</option>`).join(''); if (prevMh && dataCache.halakat.some(h => String(h.id) === prevMh)) mh.value = prevMh;
+          
+          const hv = document.getElementById('inp-halaka-ville'); const prevHv = hv.value; 
+          hv.innerHTML = '<option value="">-- Choisir la ville --</option>' + dataCache.villes.map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join(''); 
+          if (prevHv && dataCache.villes.some(v => String(v.id) === prevHv)) hv.value = prevHv;
+          
+          document.getElementById('list-halakat').innerHTML = dataCache.halakat.map(h => { const v = dataCache.villes.find(x => String(x.id) === String(h.ville_id)); return `<div class="flex justify-between items-center border rounded px-3 py-2"><span>${escapeHtml(h.nom)} (${escapeHtml(v?.nom || '?')})</span><button onclick="deleteHalaka(${h.id})" class="text-red-600 text-sm">Supprimer</button></div>`; }).join('') || '<p class="text-gray-500 text-sm">Aucun sous-halaka.</p>';
+          
+          const mh = document.getElementById('inp-mos-halaka'); const prevMh = mh.value; 
+          mh.innerHTML = '<option value="">-- Choisir le sous-halaka --</option>' + dataCache.halakat.map(h => `<option value="${h.id}">${escapeHtml(h.nom)}</option>`).join(''); 
+          if (prevMh && dataCache.halakat.some(h => String(h.id) === prevMh)) mh.value = prevMh;
+          
           document.getElementById('list-mosquees').innerHTML = dataCache.mosquees.map(m => { const h = dataCache.halakat.find(x => String(x.id) === String(m.halaka_id)); return `<div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 border rounded px-3 py-2"><div><span class="font-medium">${escapeHtml(m.nom)}</span> <span class="text-xs text-gray-500">(${escapeHtml(h?.nom || '?')})</span></div><div class="flex items-center gap-2"><select onchange="updateOusboue(${m.id}, this.value)" class="border rounded px-2 py-1 text-sm">${[1,2,3,4].map(n => `<option value="${n}" ${m.ousboue === n ? 'selected' : ''}>Ousboue ${n}</option>`).join('')}</select><button onclick="deleteMosquee(${m.id})" class="text-red-600 text-sm">Supprimer</button></div></div>`; }).join('') || '<p class="text-gray-500 text-sm">Aucune mosquée.</p>';
         };
 
@@ -278,7 +297,7 @@
         window.addVille = async () => { const pays_id = document.getElementById('inp-ville-pays').value; const nom = document.getElementById('inp-ville').value.trim(); if (!pays_id || !nom) return; await supabase.from('villes').insert({ nom, pays_id }); document.getElementById('inp-ville').value = ''; await reloadDataAndRefresh(); };
         window.deleteVille = async (id) => { if (!confirm('Supprimer cette ville ?')) return; await supabase.from('villes').delete().eq('id', id); await reloadDataAndRefresh(); };
         window.addHalaka = async () => { const ville_id = document.getElementById('inp-halaka-ville').value; const nom = document.getElementById('inp-halaka').value.trim(); if (!ville_id || !nom) return; await supabase.from('halakat').insert({ nom, ville_id }); document.getElementById('inp-halaka').value = ''; await reloadDataAndRefresh(); };
-        window.deleteHalaka = async (id) => { if (!confirm('Supprimer cette halaka ?')) return; await supabase.from('halakat').delete().eq('id', id); await reloadDataAndRefresh(); };
+        window.deleteHalaka = async (id) => { if (!confirm('Supprimer ce sous-halaka ?')) return; await supabase.from('halakat').delete().eq('id', id); await reloadDataAndRefresh(); };
         window.addMosquee = async () => { const halaka_id = document.getElementById('inp-mos-halaka').value; const nom = document.getElementById('inp-mos-nom').value.trim(); const ousboue = +document.getElementById('inp-mos-ousboue').value; const responsable = document.getElementById('inp-mos-resp').value.trim(); const contact = document.getElementById('inp-mos-tel').value.trim(); if (!halaka_id || !nom) return; await supabase.from('mosquees').insert({ nom, halaka_id, ousboue, responsable, contact }); document.getElementById('inp-mos-nom').value = ''; document.getElementById('inp-mos-resp').value = ''; document.getElementById('inp-mos-tel').value = ''; await reloadDataAndRefresh(); };
         window.deleteMosquee = async (id) => { if (!confirm('Supprimer cette mosquée ?')) return; await supabase.from('mosquees').delete().eq('id', id); await reloadDataAndRefresh(); };
         window.updateOusboue = async (id, value) => { await supabase.from('mosquees').update({ ousboue: +value }).eq('id', id); await reloadDataAndRefresh(); };
@@ -308,7 +327,7 @@
             if (!halakaId) return;
             const year = +document.getElementById('sel-annee').value; const month = +document.getElementById('sel-mois').value;
             const halaka = dataCache.halakat.find(h => String(h.id) === halakaId); const ville = dataCache.villes.find(v => String(v.id) === String(halaka.ville_id)); const pays = dataCache.pays.find(p => String(p.id) === String(ville.pays_id));
-            let txt = `🕌 *Programme des sorties 3 jours*\n📍 ${pays.nom} — ${ville.nom}\n⭕ ${halaka.nom}\n🗓️ ${MONTHS[month - 1]} ${year}\n\n`;
+            let txt = `🕌 *Programme des sorties 3 jours*\n📍 ${pays.nom} — ${ville.nom} (Halaka)\n⭕ ${halaka.nom} (Sous-Halaka)\n🗓️ ${MONTHS[month - 1]} ${year}\n\n`;
             dataCache.mosquees.filter(m => String(m.halaka_id) === halakaId).sort((a, b) => a.ousboue - b.ousboue).forEach((m, i) => { const { friday, sunday } = getOusboueDates(year, month, m.ousboue); txt += `${i + 1}. *${m.nom}* — Ousboue ${m.ousboue}\n   📅 ${formatLongDate(friday)} → ${formatLongDate(sunday)}\n`; });
             txt += `\nبارك الله فيكم`;
             if (navigator.clipboard) { navigator.clipboard.writeText(txt).then(() => alert('✅ Texte copié !')).catch(() => prompt('Copiez ce texte :', txt)); } else { prompt('Copiez ce texte :', txt); }
