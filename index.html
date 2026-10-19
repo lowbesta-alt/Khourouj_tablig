@@ -13,6 +13,8 @@
     details[open] .icon-plus { display: none; }
     details[open] .icon-minus { display: inline; }
     .icon-minus { display: none; }
+    
+    .stats-form { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; margin-top: 10px; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen font-sans">
@@ -35,6 +37,7 @@
 
   <main class="max-w-6xl mx-auto px-4 py-6">
     
+    <!-- ================= CONSULTATION ================= -->
     <section id="view-consult">
       <div class="bg-white rounded-lg shadow p-4 md:p-6 mb-6 no-print">
         <h2 class="text-lg font-semibold mb-4">🔎 Filtrer les sorties</h2>
@@ -47,24 +50,45 @@
         </div>
       </div>
 
-      <!-- STATISTIQUES DE LA VILLE -->
+      <!-- STATISTIQUES CALCULÉES DE LA VILLE -->
       <div id="ville-stats-container" class="hidden mb-6">
         <div class="bg-white rounded-lg shadow p-4 md:p-6 border-l-4 border-emerald-600">
-          <h2 class="text-lg font-bold text-emerald-800 mb-3" id="stats-title">Informations sur la ville</h2>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div class="bg-blue-50 p-2 rounded"><div class="text-xs text-gray-600">Total Mosquées</div><div class="font-bold text-lg text-blue-700" id="st-mosquees">0</div></div>
-            <div class="bg-blue-100 p-2 rounded border border-blue-300"><div class="text-xs text-blue-800 font-semibold">Mosquées 5 Amal</div><div class="font-bold text-lg text-blue-900" id="st-mosquees-5amal">0</div></div>
-            <div class="bg-yellow-50 p-2 rounded"><div class="text-xs text-gray-600">Maisons Ta'lim</div><div class="font-bold text-lg text-yellow-700" id="st-maisons-talim">0</div></div>
-            <div class="bg-green-50 p-2 rounded"><div class="text-xs text-gray-600">Frères 4 mois</div><div class="font-bold text-lg text-green-700" id="st-fr-4m">0</div></div>
+          <h2 class="text-lg font-bold text-emerald-800 mb-4" id="stats-title">Données globales de la ville</h2>
+          
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center mb-4">
+            <div class="bg-blue-100 p-3 rounded-lg shadow-sm border border-blue-200">
+              <div class="text-xs text-blue-800 font-semibold">Total Mosquées</div>
+              <div class="font-bold text-2xl text-blue-900" id="st-mosquees-total">0</div>
+            </div>
+            <div class="bg-blue-50 p-3 rounded-lg shadow-sm">
+              <div class="text-xs text-gray-600">Mosquées 5 Amal</div>
+              <div class="font-bold text-xl text-blue-700" id="st-mosquees-5amal">0</div>
+            </div>
+            <div class="bg-amber-50 p-3 rounded-lg shadow-sm">
+              <div class="text-xs text-gray-600">Maisons autour</div>
+              <div class="font-bold text-xl text-amber-700" id="st-maisons-autour">0</div>
+            </div>
+            <div class="bg-amber-100 p-3 rounded-lg shadow-sm border border-amber-200">
+              <div class="text-xs text-amber-800 font-semibold">Maisons 5 Amal</div>
+              <div class="font-bold text-xl text-amber-900" id="st-maisons-5amal">0</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center text-sm">
+            <div class="bg-green-50 p-2 rounded"><div class="text-xs text-gray-600">Frères 4 mois (actuels)</div><div class="font-bold text-lg text-green-700" id="st-fr-4m">0</div></div>
+            <div class="bg-green-50 p-2 rounded"><div class="text-xs text-gray-600">Frères 4 mois (chaque année)</div><div class="font-bold text-lg text-green-700" id="st-fr-4ma">0</div></div>
             <div class="bg-green-50 p-2 rounded"><div class="text-xs text-gray-600">Frères 40 jours</div><div class="font-bold text-lg text-green-700" id="st-fr-40j">0</div></div>
-            <div class="bg-purple-50 p-2 rounded"><div class="text-xs text-gray-600">Sœurs 2 mois</div><div class="font-bold text-lg text-purple-700" id="st-so-2m">0</div></div>
-            <div class="bg-purple-50 p-2 rounded"><div class="text-xs text-gray-600">Sœurs 40 jours</div><div class="font-bold text-lg text-purple-700" id="st-so-40j">0</div></div>
-            <div class="bg-purple-50 p-2 rounded"><div class="text-xs text-gray-600">Sœurs 15 jours</div><div class="font-bold text-lg text-purple-700" id="st-so-15j">0</div></div>
-            <div class="bg-purple-50 p-2 rounded"><div class="text-xs text-gray-600">Sœurs 3 jours</div><div class="font-bold text-lg text-purple-700" id="st-so-3j">0</div></div>
+            <div class="bg-teal-50 p-2 rounded"><div class="text-xs text-gray-600">Jamaats 3 jours</div><div class="font-bold text-lg text-teal-700" id="st-jamaats-3j">0</div></div>
+            <div class="bg-purple-50 p-2 rounded"><div class="text-xs text-gray-600">Ziyara 2h30/j</div><div class="font-bold text-lg text-purple-700" id="st-ziara-2h30">0</div></div>
+            <div class="bg-purple-50 p-2 rounded"><div class="text-xs text-gray-600">Ziyara &lt; 2h30/j</div><div class="font-bold text-lg text-purple-700" id="st-ziara-moins">0</div></div>
+            <div class="bg-pink-50 p-2 rounded"><div class="text-xs text-gray-600">Sœurs 2 mois</div><div class="font-bold text-lg text-pink-700" id="st-so-2m">0</div></div>
+            <div class="bg-pink-50 p-2 rounded"><div class="text-xs text-gray-600">Sœurs 15 jours</div><div class="font-bold text-lg text-pink-700" id="st-so-15j">0</div></div>
+            <div class="bg-pink-50 p-2 rounded"><div class="text-xs text-gray-600">Sœurs 3 jours</div><div class="font-bold text-lg text-pink-700" id="st-so-3j">0</div></div>
           </div>
         </div>
       </div>
 
+      <!-- PLANNING -->
       <div class="bg-white rounded-lg shadow overflow-hidden">
         <div id="planning-empty" class="p-8 text-center text-gray-500">Sélectionnez une ville puis un sous-halaka pour afficher le planning.</div>
         <div id="planning-content" class="hidden">
@@ -93,6 +117,7 @@
       </div>
     </section>
 
+    <!-- ================= ADMIN ================= -->
     <section id="view-admin" class="hidden"></section>
 
   </main>
@@ -155,19 +180,34 @@
           document.getElementById('sel-halaka').innerHTML = '<option value="">-- Choisir un sous-halaka --</option>'; hidePlanning();
           if (!villeId) { document.getElementById('ville-stats-container').classList.add('hidden'); return; }
           
-          // Afficher les stats de la ville
           const ville = dataCache.villes.find(v => String(v.id) === villeId);
+          
+          // --- CALCUL AUTOMATIQUE DES STATISTIQUES ---
+          const halakasDeLaVille = dataCache.halakat.filter(h => String(h.ville_id) === villeId).map(h => String(h.id));
+          const mosqueesDeLaVille = dataCache.mosquees.filter(m => halakasDeLaVille.includes(String(m.halaka_id)));
+          
+          const sum = (field) => mosqueesDeLaVille.reduce((total, m) => total + (m[field] || 0), 0);
+          const count5Amal = mosqueesDeLaVille.filter(m => m.est_5amal === true).length;
+
           if(ville) {
             document.getElementById('stats-title').textContent = `Données globales : ${ville.nom}`;
-            document.getElementById('st-mosquees').textContent = ville.nb_mosquees || 0;
-            document.getElementById('st-mosquees-5amal').textContent = ville.nb_mosquees_5amal || 0;
-            document.getElementById('st-maisons-talim').textContent = ville.nb_maisons_talim || 0;
-            document.getElementById('st-fr-4m').textContent = ville.nb_freres_4mois || 0;
-            document.getElementById('st-fr-40j').textContent = ville.nb_freres_40jours || 0;
-            document.getElementById('st-so-2m').textContent = ville.nb_soeurs_2mois || 0;
-            document.getElementById('st-so-40j').textContent = ville.nb_soeurs_40jours || 0;
-            document.getElementById('st-so-15j').textContent = ville.nb_soeurs_15jours || 0;
-            document.getElementById('st-so-3j').textContent = ville.nb_soeurs_3jours || 0;
+            
+            // Total manuel
+            document.getElementById('st-mosquees-total').textContent = ville.nb_mosquees_total || 0;
+            // Calculés
+            document.getElementById('st-mosquees-5amal').textContent = count5Amal;
+            document.getElementById('st-maisons-autour').textContent = sum('nb_maisons_autour');
+            document.getElementById('st-maisons-5amal').textContent = sum('nb_maisons_5amal');
+            document.getElementById('st-fr-4m').textContent = sum('nb_freres_4mois');
+            document.getElementById('st-fr-4ma').textContent = sum('nb_freres_4mois_an');
+            document.getElementById('st-fr-40j').textContent = sum('nb_freres_40jours');
+            document.getElementById('st-jamaats-3j').textContent = sum('nb_jamaats_3jours');
+            document.getElementById('st-ziara-2h30').textContent = sum('nb_freres_ziara_2h30');
+            document.getElementById('st-ziara-moins').textContent = sum('nb_freres_ziara_moins');
+            document.getElementById('st-so-2m').textContent = sum('nb_soeurs_2mois');
+            document.getElementById('st-so-15j').textContent = sum('nb_soeurs_15jours');
+            document.getElementById('st-so-3j').textContent = sum('nb_soeurs_3jours');
+            
             document.getElementById('ville-stats-container').classList.remove('hidden');
           }
 
@@ -218,31 +258,16 @@
 
               <details class="bg-white rounded-lg shadow overflow-hidden group">
                 <summary class="p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors border-b border-transparent group-open:border-gray-200">
-                  <span class="font-bold text-lg text-gray-800">🏙️ 2. Gérer les Villes (Halakat) et Statistiques</span>
+                  <span class="font-bold text-lg text-gray-800">🏙️ 2. Gérer les Villes (Halakat)</span>
                   <span class="text-emerald-600 text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
                 </summary>
                 <div class="p-4">
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
+                  <div class="grid grid-cols-1 md:grid-cols-4 gap-2 mb-4">
                     <select id="inp-ville-pays" class="border rounded px-3 py-2"><option value="">-- Choisir le pays --</option></select>
                     <input id="inp-ville" class="border rounded px-3 py-2" placeholder="Ex: Douala (Halaka 16)">
+                    <input id="inp-ville-total-mosq" type="number" value="0" class="border rounded px-3 py-2" placeholder="Total mosquées (Manuel)">
                     <button onclick="addVille()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter la ville</button>
                   </div>
-                  
-                  <div class="bg-gray-100 p-3 rounded text-sm mb-4 border">
-                    <p class="font-semibold mb-2 text-gray-700">Statistiques de la ville (à remplir lors de l'ajout) :</p>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      <div><label class="text-xs">Total Mosquées</label><input id="inp-v-mosq" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
-                      <div><label class="text-xs font-semibold text-blue-700">Mosquées 5 Amal</label><input id="inp-v-mosq-5amal" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
-                      <div><label class="text-xs">Maisons Ta'lim</label><input id="inp-v-maisons-talim" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
-                      <div><label class="text-xs">Frères 4 mois</label><input id="inp-v-fr4m" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
-                      <div><label class="text-xs">Frères 40 jours</label><input id="inp-v-fr40j" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
-                      <div><label class="text-xs">Sœurs 2 mois</label><input id="inp-v-so2m" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
-                      <div><label class="text-xs">Sœurs 40 jours</label><input id="inp-v-so40j" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
-                      <div><label class="text-xs">Sœurs 15 jours</label><input id="inp-v-so15j" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
-                      <div><label class="text-xs">Sœurs 3 jours</label><input id="inp-v-so3j" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
-                    </div>
-                  </div>
-
                   <div id="list-villes" class="space-y-2"></div>
                 </div>
               </details>
@@ -268,14 +293,54 @@
                   <span class="text-emerald-600 text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
                 </summary>
                 <div class="p-4">
-                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-2 mb-4">
-                    <select id="inp-mos-halaka" class="border rounded px-3 py-2"><option value="">-- Choisir le sous-halaka --</option></select>
-                    <input id="inp-mos-nom" class="border rounded px-3 py-2" placeholder="Ex: Mosquée Centrale">
-                    <select id="inp-mos-ousboue" class="border rounded px-3 py-2"><option value="1">Ousboue 1</option><option value="2">Ousboue 2</option><option value="3">Ousboue 3</option><option value="4">Ousboue 4</option></select>
-                    <input id="inp-mos-resp" class="border rounded px-3 py-2" placeholder="Responsable">
-                    <input id="inp-mos-tel" class="border rounded px-3 py-2" placeholder="Téléphone">
-                    <button onclick="addMosquee()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Ajouter</button>
+                  
+                  <div class="border border-gray-300 p-4 rounded-lg mb-6 bg-gray-50 shadow-sm">
+                    <h3 class="font-bold text-emerald-800 mb-3">Ajouter une nouvelle mosquée</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                      <div><label class="text-xs font-semibold">Sous-Halaka</label><select id="inp-mos-halaka" class="w-full border rounded px-3 py-2"><option value="">-- Choisir --</option></select></div>
+                      <div><label class="text-xs font-semibold">Nom de la mosquée</label><input id="inp-mos-nom" class="w-full border rounded px-3 py-2" placeholder="Ex: Mosquée Centrale"></div>
+                      <div><label class="text-xs font-semibold">Ousboue de sortie</label><select id="inp-mos-ousboue" class="w-full border rounded px-3 py-2"><option value="1">Ousboue 1</option><option value="2">Ousboue 2</option><option value="3">Ousboue 3</option><option value="4">Ousboue 4</option></select></div>
+                      <div class="flex gap-2">
+                        <div class="flex-1"><label class="text-xs font-semibold">Responsable</label><input id="inp-mos-resp" class="w-full border rounded px-3 py-2" placeholder="Nom"></div>
+                        <div class="flex-1"><label class="text-xs font-semibold">Téléphone</label><input id="inp-mos-tel" class="w-full border rounded px-3 py-2" placeholder="Numéro"></div>
+                      </div>
+                    </div>
+
+                    <!-- STATS DE LA MOSQUÉE -->
+                    <details class="mt-2 bg-white border border-gray-200 rounded-lg">
+                      <summary class="p-3 bg-blue-50 text-blue-800 font-semibold cursor-pointer rounded-lg hover:bg-blue-100 flex justify-between items-center">
+                        <span>➕ Remplir les statistiques de cette mosquée</span>
+                        <span class="text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
+                      </summary>
+                      <div class="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        
+                        <div class="bg-blue-50 p-2 rounded border border-blue-100">
+                           <label class="flex items-center gap-2 text-sm font-bold text-blue-900 cursor-pointer">
+                             <input type="checkbox" id="st-m-5amal" class="w-5 h-5 text-emerald-600 rounded"> 
+                             Mosquée avec 5 Amal ?
+                           </label>
+                        </div>
+                        <div><label class="text-xs text-gray-600">Nb Maisons autour</label><input id="st-m-maisons" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Nb Maisons 5 Amal</label><input id="st-m-maisons-5amal" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+
+                        <div><label class="text-xs text-gray-600">Frères 4 mois (actuels)</label><input id="st-m-fr4m" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Frères 4 mois (chaque année)</label><input id="st-m-fr4ma" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Frères 40 jours</label><input id="st-m-fr40j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        
+                        <div><label class="text-xs text-gray-600">Jamaats 3 jours</label><input id="st-m-jamaats" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Frères Ziyara 2h30/j</label><input id="st-m-z2h30" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Frères Ziyara &lt; 2h30/j</label><input id="st-m-zmoins" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+
+                        <div><label class="text-xs text-gray-600">Sœurs 2 mois</label><input id="st-m-so2m" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Sœurs 15 jours</label><input id="st-m-so15j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Sœurs 3 jours</label><input id="st-m-so3j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+
+                      </div>
+                    </details>
+
+                    <button onclick="addMosquee()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded w-full mt-4 font-bold">Enregistrer la mosquée</button>
                   </div>
+
                   <div id="list-mosquees" class="space-y-2"></div>
                 </div>
               </details>
@@ -300,10 +365,10 @@
           document.getElementById('list-halakat').innerHTML = dataCache.halakat.map(h => { const v = dataCache.villes.find(x => String(x.id) === String(h.ville_id)); return `<div class="flex justify-between items-center border rounded px-3 py-2"><span>${escapeHtml(h.nom)} (${escapeHtml(v?.nom || '?')})</span><button onclick="deleteHalaka(${h.id})" class="text-red-600 text-sm">Supprimer</button></div>`; }).join('') || '<p class="text-gray-500 text-sm">Aucun sous-halaka.</p>';
           
           const mh = document.getElementById('inp-mos-halaka'); const prevMh = mh.value; 
-          mh.innerHTML = '<option value="">-- Choisir le sous-halaka --</option>' + dataCache.halakat.map(h => `<option value="${h.id}">${escapeHtml(h.nom)}</option>`).join(''); 
+          mh.innerHTML = '<option value="">-- Choisir --</option>' + dataCache.halakat.map(h => `<option value="${h.id}">${escapeHtml(h.nom)}</option>`).join(''); 
           if (prevMh && dataCache.halakat.some(h => String(h.id) === prevMh)) mh.value = prevMh;
           
-          document.getElementById('list-mosquees').innerHTML = dataCache.mosquees.map(m => { const h = dataCache.halakat.find(x => String(x.id) === String(m.halaka_id)); return `<div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 border rounded px-3 py-2"><div><span class="font-medium">${escapeHtml(m.nom)}</span> <span class="text-xs text-gray-500">(${escapeHtml(h?.nom || '?')})</span></div><div class="flex items-center gap-2"><select onchange="updateOusboue(${m.id}, this.value)" class="border rounded px-2 py-1 text-sm">${[1,2,3,4].map(n => `<option value="${n}" ${m.ousboue === n ? 'selected' : ''}>Ousboue ${n}</option>`).join('')}</select><button onclick="deleteMosquee(${m.id})" class="text-red-600 text-sm">Supprimer</button></div></div>`; }).join('') || '<p class="text-gray-500 text-sm">Aucune mosquée.</p>';
+          document.getElementById('list-mosquees').innerHTML = dataCache.mosquees.map(m => { const h = dataCache.halakat.find(x => String(x.id) === String(m.halaka_id)); return `<div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 border rounded px-3 py-2"><div><span class="font-medium">${escapeHtml(m.nom)}</span> <span class="text-xs text-gray-500">(${escapeHtml(h?.nom || '?')})</span> ${m.est_5amal ? '<span class="text-xs bg-blue-100 text-blue-800 px-1 rounded ml-1">5 Amal</span>' : ''}</div><div class="flex items-center gap-2"><select onchange="updateOusboue(${m.id}, this.value)" class="border rounded px-2 py-1 text-sm">${[1,2,3,4].map(n => `<option value="${n}" ${m.ousboue === n ? 'selected' : ''}>Ousboue ${n}</option>`).join('')}</select><button onclick="deleteMosquee(${m.id})" class="text-red-600 text-sm">Supprimer</button></div></div>`; }).join('') || '<p class="text-gray-500 text-sm">Aucune mosquée.</p>';
         };
 
         window.addPays = async () => { const nom = document.getElementById('inp-pays').value.trim(); if (!nom) return; await supabase.from('pays').insert({ nom }); document.getElementById('inp-pays').value = ''; await reloadDataAndRefresh(); };
@@ -312,27 +377,53 @@
         window.addVille = async () => { 
           const pays_id = document.getElementById('inp-ville-pays').value; 
           const nom = document.getElementById('inp-ville').value.trim(); 
+          const nb_mosquees_total = +document.getElementById('inp-ville-total-mosq').value || 0;
           if (!pays_id || !nom) return; 
-          const stats = {
-            nb_mosquees: +document.getElementById('inp-v-mosq').value || 0,
-            nb_mosquees_5amal: +document.getElementById('inp-v-mosq-5amal').value || 0,
-            nb_maisons_talim: +document.getElementById('inp-v-maisons-talim').value || 0,
-            nb_freres_4mois: +document.getElementById('inp-v-fr4m').value || 0,
-            nb_freres_40jours: +document.getElementById('inp-v-fr40j').value || 0,
-            nb_soeurs_2mois: +document.getElementById('inp-v-so2m').value || 0,
-            nb_soeurs_40jours: +document.getElementById('inp-v-so40j').value || 0,
-            nb_soeurs_15jours: +document.getElementById('inp-v-so15j').value || 0,
-            nb_soeurs_3jours: +document.getElementById('inp-v-so3j').value || 0
-          };
-          await supabase.from('villes').insert({ nom, pays_id, ...stats }); 
+          await supabase.from('villes').insert({ nom, pays_id, nb_mosquees_total }); 
           document.getElementById('inp-ville').value = ''; 
+          document.getElementById('inp-ville-total-mosq').value = '0'; 
           await reloadDataAndRefresh(); 
         };
         
         window.deleteVille = async (id) => { if (!confirm('Supprimer cette ville ?')) return; await supabase.from('villes').delete().eq('id', id); await reloadDataAndRefresh(); };
         window.addHalaka = async () => { const ville_id = document.getElementById('inp-halaka-ville').value; const nom = document.getElementById('inp-halaka').value.trim(); if (!ville_id || !nom) return; await supabase.from('halakat').insert({ nom, ville_id }); document.getElementById('inp-halaka').value = ''; await reloadDataAndRefresh(); };
         window.deleteHalaka = async (id) => { if (!confirm('Supprimer ce sous-halaka ?')) return; await supabase.from('halakat').delete().eq('id', id); await reloadDataAndRefresh(); };
-        window.addMosquee = async () => { const halaka_id = document.getElementById('inp-mos-halaka').value; const nom = document.getElementById('inp-mos-nom').value.trim(); const ousboue = +document.getElementById('inp-mos-ousboue').value; const responsable = document.getElementById('inp-mos-resp').value.trim(); const contact = document.getElementById('inp-mos-tel').value.trim(); if (!halaka_id || !nom) return; await supabase.from('mosquees').insert({ nom, halaka_id, ousboue, responsable, contact }); document.getElementById('inp-mos-nom').value = ''; document.getElementById('inp-mos-resp').value = ''; document.getElementById('inp-mos-tel').value = ''; await reloadDataAndRefresh(); };
+        
+        window.addMosquee = async () => { 
+          const halaka_id = document.getElementById('inp-mos-halaka').value; 
+          const nom = document.getElementById('inp-mos-nom').value.trim(); 
+          const ousboue = +document.getElementById('inp-mos-ousboue').value; 
+          const responsable = document.getElementById('inp-mos-resp').value.trim(); 
+          const contact = document.getElementById('inp-mos-tel').value.trim(); 
+          if (!halaka_id || !nom) return; 
+          
+          const stats = {
+            est_5amal: document.getElementById('st-m-5amal').checked,
+            nb_maisons_autour: +document.getElementById('st-m-maisons').value || 0,
+            nb_maisons_5amal: +document.getElementById('st-m-maisons-5amal').value || 0,
+            nb_freres_4mois: +document.getElementById('st-m-fr4m').value || 0,
+            nb_freres_4mois_an: +document.getElementById('st-m-fr4ma').value || 0,
+            nb_freres_40jours: +document.getElementById('st-m-fr40j').value || 0,
+            nb_jamaats_3jours: +document.getElementById('st-m-jamaats').value || 0,
+            nb_freres_ziara_2h30: +document.getElementById('st-m-z2h30').value || 0,
+            nb_freres_ziara_moins: +document.getElementById('st-m-zmoins').value || 0,
+            nb_soeurs_2mois: +document.getElementById('st-m-so2m').value || 0,
+            nb_soeurs_15jours: +document.getElementById('st-m-so15j').value || 0,
+            nb_soeurs_3jours: +document.getElementById('st-m-so3j').value || 0
+          };
+
+          await supabase.from('mosquees').insert({ nom, halaka_id, ousboue, responsable, contact, ...stats }); 
+          
+          // Reset fields
+          document.getElementById('inp-mos-nom').value = ''; 
+          document.getElementById('inp-mos-resp').value = ''; 
+          document.getElementById('inp-mos-tel').value = ''; 
+          document.getElementById('st-m-5amal').checked = false;
+          document.querySelectorAll('.stats-form input[type="number"]').forEach(inp => inp.value = '0');
+          
+          await reloadDataAndRefresh(); 
+        };
+        
         window.deleteMosquee = async (id) => { if (!confirm('Supprimer cette mosquée ?')) return; await supabase.from('mosquees').delete().eq('id', id); await reloadDataAndRefresh(); };
         window.updateOusboue = async (id, value) => { await supabase.from('mosquees').update({ ousboue: +value }).eq('id', id); await reloadDataAndRefresh(); };
 
