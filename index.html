@@ -36,7 +36,6 @@
   <main class="max-w-6xl mx-auto px-4 py-6">
     
     <section id="view-consult">
-      <!-- FILTRES -->
       <div class="bg-white rounded-lg shadow p-4 md:p-6 mb-6 no-print">
         <h2 class="text-lg font-semibold mb-4">🔎 Filtrer les sorties</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -53,8 +52,9 @@
         <div class="bg-white rounded-lg shadow p-4 md:p-6 border-l-4 border-emerald-600">
           <h2 class="text-lg font-bold text-emerald-800 mb-3" id="stats-title">Informations sur la ville</h2>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div class="bg-blue-50 p-2 rounded"><div class="text-xs text-gray-600">Mosquées</div><div class="font-bold text-lg text-blue-700" id="st-mosquees">0</div></div>
-            <div class="bg-blue-50 p-2 rounded"><div class="text-xs text-gray-600">Maisons Da'wa</div><div class="font-bold text-lg text-blue-700" id="st-maisons">0</div></div>
+            <div class="bg-blue-50 p-2 rounded"><div class="text-xs text-gray-600">Total Mosquées</div><div class="font-bold text-lg text-blue-700" id="st-mosquees">0</div></div>
+            <div class="bg-blue-100 p-2 rounded border border-blue-300"><div class="text-xs text-blue-800 font-semibold">Mosquées 5 Amal</div><div class="font-bold text-lg text-blue-900" id="st-mosquees-5amal">0</div></div>
+            <div class="bg-yellow-50 p-2 rounded"><div class="text-xs text-gray-600">Maisons Ta'lim</div><div class="font-bold text-lg text-yellow-700" id="st-maisons-talim">0</div></div>
             <div class="bg-green-50 p-2 rounded"><div class="text-xs text-gray-600">Frères 4 mois</div><div class="font-bold text-lg text-green-700" id="st-fr-4m">0</div></div>
             <div class="bg-green-50 p-2 rounded"><div class="text-xs text-gray-600">Frères 40 jours</div><div class="font-bold text-lg text-green-700" id="st-fr-40j">0</div></div>
             <div class="bg-purple-50 p-2 rounded"><div class="text-xs text-gray-600">Sœurs 2 mois</div><div class="font-bold text-lg text-purple-700" id="st-so-2m">0</div></div>
@@ -65,7 +65,6 @@
         </div>
       </div>
 
-      <!-- PLANNING -->
       <div class="bg-white rounded-lg shadow overflow-hidden">
         <div id="planning-empty" class="p-8 text-center text-gray-500">Sélectionnez une ville puis un sous-halaka pour afficher le planning.</div>
         <div id="planning-content" class="hidden">
@@ -161,7 +160,8 @@
           if(ville) {
             document.getElementById('stats-title').textContent = `Données globales : ${ville.nom}`;
             document.getElementById('st-mosquees').textContent = ville.nb_mosquees || 0;
-            document.getElementById('st-maisons').textContent = ville.nb_maisons_daawa || 0;
+            document.getElementById('st-mosquees-5amal').textContent = ville.nb_mosquees_5amal || 0;
+            document.getElementById('st-maisons-talim').textContent = ville.nb_maisons_talim || 0;
             document.getElementById('st-fr-4m').textContent = ville.nb_freres_4mois || 0;
             document.getElementById('st-fr-40j').textContent = ville.nb_freres_40jours || 0;
             document.getElementById('st-so-2m').textContent = ville.nb_soeurs_2mois || 0;
@@ -230,9 +230,10 @@
                   
                   <div class="bg-gray-100 p-3 rounded text-sm mb-4 border">
                     <p class="font-semibold mb-2 text-gray-700">Statistiques de la ville (à remplir lors de l'ajout) :</p>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                      <div><label class="text-xs">Nb Mosquées</label><input id="inp-v-mosq" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
-                      <div><label class="text-xs">Maisons Da'wa</label><input id="inp-v-maisons" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      <div><label class="text-xs">Total Mosquées</label><input id="inp-v-mosq" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
+                      <div><label class="text-xs font-semibold text-blue-700">Mosquées 5 Amal</label><input id="inp-v-mosq-5amal" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
+                      <div><label class="text-xs">Maisons Ta'lim</label><input id="inp-v-maisons-talim" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
                       <div><label class="text-xs">Frères 4 mois</label><input id="inp-v-fr4m" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
                       <div><label class="text-xs">Frères 40 jours</label><input id="inp-v-fr40j" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
                       <div><label class="text-xs">Sœurs 2 mois</label><input id="inp-v-so2m" type="number" value="0" class="w-full border rounded px-2 py-1 text-sm"></div>
@@ -314,7 +315,8 @@
           if (!pays_id || !nom) return; 
           const stats = {
             nb_mosquees: +document.getElementById('inp-v-mosq').value || 0,
-            nb_maisons_daawa: +document.getElementById('inp-v-maisons').value || 0,
+            nb_mosquees_5amal: +document.getElementById('inp-v-mosq-5amal').value || 0,
+            nb_maisons_talim: +document.getElementById('inp-v-maisons-talim').value || 0,
             nb_freres_4mois: +document.getElementById('inp-v-fr4m').value || 0,
             nb_freres_40jours: +document.getElementById('inp-v-fr40j').value || 0,
             nb_soeurs_2mois: +document.getElementById('inp-v-so2m').value || 0,
