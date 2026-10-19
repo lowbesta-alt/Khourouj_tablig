@@ -76,6 +76,7 @@
               <div class="font-bold text-xl text-amber-900" id="st-maisons-5amal">0</div>
             </div>
           </div>
+          
           <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center text-sm">
             <div class="bg-green-50 p-2 rounded"><div class="text-xs text-gray-600">Frères 4 mois</div><div class="font-bold text-lg text-green-700" id="st-fr-4m">0</div></div>
             <div class="bg-green-50 p-2 rounded"><div class="text-xs text-gray-600">Frères 4 mois/an</div><div class="font-bold text-lg text-green-700" id="st-fr-4ma">0</div></div>
@@ -84,6 +85,7 @@
             <div class="bg-purple-50 p-2 rounded"><div class="text-xs text-gray-600">Ziyara 2h30/j</div><div class="font-bold text-lg text-purple-700" id="st-ziara-2h30">0</div></div>
             <div class="bg-purple-50 p-2 rounded"><div class="text-xs text-gray-600">Ziyara &lt; 2h30/j</div><div class="font-bold text-lg text-purple-700" id="st-ziara-moins">0</div></div>
             <div class="bg-pink-50 p-2 rounded"><div class="text-xs text-gray-600">Sœurs 2 mois</div><div class="font-bold text-lg text-pink-700" id="st-so-2m">0</div></div>
+            <div class="bg-pink-50 p-2 rounded"><div class="text-xs text-gray-600">Sœurs 40 jours</div><div class="font-bold text-lg text-pink-700" id="st-so-40j">0</div></div>
             <div class="bg-pink-50 p-2 rounded"><div class="text-xs text-gray-600">Sœurs 15 jours</div><div class="font-bold text-lg text-pink-700" id="st-so-15j">0</div></div>
             <div class="bg-pink-50 p-2 rounded"><div class="text-xs text-gray-600">Sœurs 3 jours</div><div class="font-bold text-lg text-pink-700" id="st-so-3j">0</div></div>
           </div>
@@ -204,6 +206,7 @@
             document.getElementById('st-ziara-2h30').textContent = sum('nb_freres_ziara_2h30');
             document.getElementById('st-ziara-moins').textContent = sum('nb_freres_ziara_moins');
             document.getElementById('st-so-2m').textContent = sum('nb_soeurs_2mois');
+            document.getElementById('st-so-40j').textContent = sum('nb_soeurs_40jours'); /* <--- AJOUTÉ ICI */
             document.getElementById('st-so-15j').textContent = sum('nb_soeurs_15jours');
             document.getElementById('st-so-3j').textContent = sum('nb_soeurs_3jours');
             document.getElementById('ville-stats-container').classList.remove('hidden');
@@ -322,7 +325,9 @@
                         <div><label class="text-xs text-gray-600">Jamaats 3 jours</label><input id="st-m-jamaats" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
                         <div><label class="text-xs text-gray-600">Frères Ziyara 2h30/j</label><input id="st-m-z2h30" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
                         <div><label class="text-xs text-gray-600">Frères Ziyara &lt; 2h30/j</label><input id="st-m-zmoins" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        
                         <div><label class="text-xs text-gray-600">Sœurs 2 mois</label><input id="st-m-so2m" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                        <div><label class="text-xs text-gray-600">Sœurs 40 jours</label><input id="st-m-so40j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
                         <div><label class="text-xs text-gray-600">Sœurs 15 jours</label><input id="st-m-so15j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
                         <div><label class="text-xs text-gray-600">Sœurs 3 jours</label><input id="st-m-so3j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
                       </div>
@@ -425,14 +430,13 @@
 
         window.doUpdateOusboue = async function(id, newOusboue) {
             const p = document.getElementById('m-pass').value;
-            // On utilise update_mosquee_rpc mais on récupère l'ancienne mosquée pour ne changer que l'ousboue
             const m = dataCache.mosquees.find(x => x.id === id);
             const { data, error } = await supabase.rpc('update_mosquee_rpc', { 
                 p_id: id, p_password: p, p_nom: m.nom, p_ousboue: newOusboue, p_responsable: m.responsable, p_contact: m.contact,
                 p_est_5amal: m.est_5amal, p_nb_maisons_autour: m.nb_maisons_autour, p_nb_maisons_5amal: m.nb_maisons_5amal,
                 p_nb_freres_4mois: m.nb_freres_4mois, p_nb_freres_4mois_an: m.nb_freres_4mois_an, p_nb_freres_40jours: m.nb_freres_40jours,
                 p_nb_jamaats_3jours: m.nb_jamaats_3jours, p_nb_freres_ziara_2h30: m.nb_freres_ziara_2h30, p_nb_freres_ziara_moins: m.nb_freres_ziara_moins,
-                p_nb_soeurs_2mois: m.nb_soeurs_2mois, p_nb_soeurs_15jours: m.nb_soeurs_15jours, p_nb_soeurs_3jours: m.nb_soeurs_3jours
+                p_nb_soeurs_2mois: m.nb_soeurs_2mois, p_nb_soeurs_40jours: m.nb_soeurs_40jours, p_nb_soeurs_15jours: m.nb_soeurs_15jours, p_nb_soeurs_3jours: m.nb_soeurs_3jours
             });
             if (error) { alert("Erreur: " + error.message); return; }
             if (data === true) { closeModal(); await reloadDataAndRefresh(); }
@@ -461,7 +465,7 @@
             else { alert("Echec. Les 2 mots de passe sont incorrects, identiques, ou n'appartiennent pas à des mosquées de cette ville."); }
         }
 
-        // --- CRUD BASIQUE (PAYS, VILLES, HALAKAT) ---
+        // --- CRUD BASIQUE ---
         window.addPays = async () => { const nom = document.getElementById('inp-pays').value.trim(); if (!nom) return; await supabase.from('pays').insert({ nom }); document.getElementById('inp-pays').value = ''; await reloadDataAndRefresh(); };
         window.deletePays = async (id) => { if (!confirm('Supprimer ce pays et tout son contenu ?')) return; await supabase.from('pays').delete().eq('id', id); await reloadDataAndRefresh(); };
         
@@ -500,6 +504,7 @@
             p_nb_freres_ziara_2h30: +document.getElementById('st-m-z2h30').value || 0,
             p_nb_freres_ziara_moins: +document.getElementById('st-m-zmoins').value || 0,
             p_nb_soeurs_2mois: +document.getElementById('st-m-so2m').value || 0,
+            p_nb_soeurs_40jours: +document.getElementById('st-m-so40j').value || 0,
             p_nb_soeurs_15jours: +document.getElementById('st-m-so15j').value || 0,
             p_nb_soeurs_3jours: +document.getElementById('st-m-so3j').value || 0
           });
