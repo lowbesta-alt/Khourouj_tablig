@@ -4,13 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Khourouj Tabligh</title>
-  
-  <!-- Configuration de Tailwind pour le Mode Sombre -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { darkMode: 'class' }
-  </script>
-  
+  <script> tailwind.config = { darkMode: 'class' } </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIwIiBmaWxsPSIjMDQ3ODU3Ii8+PHRleHQgeD0iNTAiIHk9IjY1IiBmb250LXNpemU9IjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+8J+VsTwvdGV4dD48L3N2Zz4=">
@@ -31,17 +26,14 @@
     .chart-container { position: relative; height: 300px; width: 100%; }
   </style>
 </head>
-<!-- Les classes dark: du body s'appliquent automatiquement -->
 <body class="bg-slate-200 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen font-sans transition-colors duration-300">
 
   <div id="debug-box" class="debug-box"></div>
 
-  <!-- BANDEAU HORS-LIGNE -->
   <div id="offline-banner" class="hidden bg-orange-500 text-white text-center py-2 px-4 text-sm font-bold shadow-md no-print">
     <span data-i18n="offline_mode">📶 Mode hors-ligne : Vous consultez les dernières données enregistrées.</span>
   </div>
 
-  <!-- BARRE SUPÉRIEURE (LANGUES & DARK MODE) -->
   <div class="bg-slate-800 dark:bg-black text-white p-2 flex justify-between items-center px-4 text-sm no-print shadow-md transition-colors">
     <div class="flex gap-2">
       <button onclick="setLanguage('fr')" id="btn-lang-fr" class="px-3 py-1 rounded bg-emerald-600 font-bold transition">🇫🇷 FR</button>
@@ -49,10 +41,7 @@
       <button onclick="setLanguage('ar')" id="btn-lang-ar" class="px-3 py-1 rounded hover:bg-slate-600 transition">🇸🇦 AR</button>
       <button onclick="setLanguage('ur')" id="btn-lang-ur" class="px-3 py-1 rounded hover:bg-slate-600 transition">🇵🇰 UR</button>
     </div>
-    <!-- Bouton Mode Sombre -->
-    <button onclick="toggleDarkMode()" id="dark-mode-btn" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded transition text-lg">
-      🌙
-    </button>
+    <button onclick="toggleDarkMode()" id="dark-mode-btn" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded transition text-lg">🌙</button>
   </div>
 
   <header class="bg-emerald-800 dark:bg-emerald-950 text-white shadow-lg no-print transition-colors">
@@ -75,8 +64,6 @@
   <main class="max-w-6xl mx-auto px-4 py-6">
     
     <section id="view-consult">
-      
-      <!-- BARRE DE RECHERCHE GLOBALE -->
       <div class="bg-emerald-50 dark:bg-emerald-900/30 rounded-lg shadow p-4 mb-6 border border-emerald-200 dark:border-emerald-800 transition-colors">
         <label class="block text-sm font-bold text-emerald-800 dark:text-emerald-300 mb-2" data-i18n="search_title">🔍 Recherche rapide (Ville ou Secteur)</label>
         <div class="relative">
@@ -85,7 +72,6 @@
         </div>
       </div>
 
-      <!-- FILTRES MANUELS -->
       <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4 md:p-6 mb-6 no-print border border-slate-300 dark:border-slate-700 transition-colors">
         <h2 class="text-lg font-semibold mb-4" data-i18n="filter_title">🔎 Filtrer les sorties</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -97,18 +83,15 @@
         </div>
       </div>
 
-      <!-- STATS VILLE & GRAPHIQUE -->
       <div id="ville-stats-container" class="hidden mb-6">
         <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4 md:p-6 border-l-4 border-emerald-600 dark:border-emerald-500 transition-colors">
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
             <h2 class="text-lg font-bold text-emerald-800 dark:text-emerald-400" id="stats-title" data-i18n="global_stats">Données globales de la ville</h2>
-            <!-- BOUTON PARTAGE VILLE -->
             <button onclick="shareCityStats()" class="mt-2 md:mt-0 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium flex items-center gap-1 shadow transition">
               📱 <span data-i18n="btn_share_city">Partager le bilan (WhatsApp)</span>
             </button>
           </div>
           
-          <!-- GRAPHIQUE -->
           <div class="mb-8 bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg border border-slate-200 dark:border-slate-600 transition-colors">
             <h3 class="text-sm font-bold text-slate-600 dark:text-slate-300 mb-2 text-center" data-i18n="chart_title">Aperçu visuel des sorties</h3>
             <div class="chart-container">
@@ -116,7 +99,6 @@
             </div>
           </div>
 
-          <!-- CHIFFRES -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center mb-4">
             <div class="bg-blue-100 dark:bg-blue-900/50 p-3 rounded-lg shadow-sm border border-blue-200 dark:border-blue-700">
               <div class="text-xs text-blue-800 dark:text-blue-300 font-semibold" data-i18n="total_mosques">Total Mosquées (Manuel)</div>
@@ -151,7 +133,6 @@
         </div>
       </div>
 
-      <!-- PLANNING -->
       <div class="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden border border-slate-300 dark:border-slate-700 transition-colors">
         <div id="planning-empty" class="p-8 text-center text-slate-500 dark:text-slate-400" data-i18n="select_hint">Sélectionnez une ville puis un sous-halaka pour afficher le planning.</div>
         <div id="planning-content" class="hidden">
@@ -181,12 +162,19 @@
     </section>
 
     <section id="view-admin" class="hidden"></section>
-
   </main>
+
+  <!-- MODAL POUR LA JAMAAAT -->
+  <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[100] flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-lg p-6 relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeModal()" class="absolute top-2 right-4 text-3xl text-gray-400 hover:text-gray-800 dark:hover:text-white">&times;</button>
+      <div id="modal-content"></div>
+    </div>
+  </div>
 
   <script>
     // ==========================================
-    // 0. GESTION DU MODE SOMBRE
+    // MODE SOMBRE & TRADUCTION
     // ==========================================
     function toggleDarkMode() {
       const html = document.documentElement;
@@ -201,7 +189,6 @@
       }
     }
 
-    // Initialisation du thème
     if (localStorage.getItem('khourouj_theme') === 'dark' || (!('khourouj_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
       document.getElementById('dark-mode-btn').textContent = '☀️';
@@ -210,9 +197,6 @@
       document.getElementById('dark-mode-btn').textContent = '🌙';
     }
 
-    // ==========================================
-    // 1. SYSTÈME DE TRADUCTION (i18n)
-    // ==========================================
     const translations = {
       fr: {
         app_title: "Khourouj Tabligh", app_subtitle: "Gestion des sorties de 3 jours",
@@ -226,69 +210,93 @@
         select_hint: "Sélectionnez une ville puis un sous-halaka pour afficher le planning.",
         btn_whatsapp: "📱 Copier pour WhatsApp", btn_print: "🖨️ Imprimer / PDF", th_mosque: "Mosquée", th_ousboue: "Ousboue", th_dates: "Vendredi → Dimanche", th_status: "Statut",
         offline_mode: "📶 Mode hors-ligne : Vous consultez les dernières données enregistrées.",
-        sec_note: "Sécurité : Chaque mosquée a son mot de passe. La modification du total de la ville nécessite 2 mots de passe.",
+        sec_note: "Sécurité : Chaque mosquée a son mot de passe.",
         manage_countries: "🌍 1. Gérer les Pays", manage_cities: "🏙️ 2. Gérer les Villes (Halakat)", manage_halakat: "⭕ 3. Gérer les Sous-Halakat (Secteurs)", manage_mosques: "🕌 4. Gérer les Mosquées",
         add_btn: "Ajouter", add_city_btn: "Ajouter la ville", add_mosque_title: "Ajouter une nouvelle mosquée", choose_halaka: "-- Choisir --",
         mosque_name: "Nom de la mosquée", ousboue: "Ousboue de sortie", password: "Mot de passe (Sécurité)", resp: "Responsable", phone: "Téléphone",
-        fill_stats: "➕ Remplir les statistiques de cette mosquée", is_5amal: "Mosquée avec 5 Amal ?", save_mosque: "Enregistrer la mosquée",
-        modify_total: "Modifier Total", delete: "Supprimer", reset_pass: "Reset MDP"
+        fill_stats: "➕ Remplir les statistiques", is_5amal: "Mosquée avec 5 Amal ?", save_mosque: "Enregistrer",
+        modify_total: "Modifier Total", delete: "Supprimer", reset_pass: "Reset MDP",
+        jamaat_info: "🕌 Informations Jamaat & Hidayat", jamaat_status: "Statut Jamaat", status_none: "Aucune", status_mosque: "Frères à la mosquée", status_out: "Jamaat en sortie",
+        heure_sortie: "Heure de sortie", dest: "Destination (Ville & Mosquée)", nb_freres_jamaat: "Nb Frères", emir_nom: "Nom de l'Émir", emir_tel: "Téléphone Émir (Caché public)",
+        liste_freres: "Noms des frères", hidayat_aller: "Hidayat Aller (Départ)", hidayat_retour: "Hidayat Retour (Arrivée)",
+        nom_hidayat: "Nom du frère", tel_hidayat: "Téléphone (Caché public)", info_hidayat: "Lieu & Heure (ex: Mosquée à 8h)",
+        btn_jamaat_details: "👁️ Détails Jamaat", contacter_emir: "📞 Contacter l'Émir", contacter_ha: "📞 Contacter Hidayat Aller", contacter_hr: "📞 Contacter Hidayat Retour",
+        modal_title: "Détails de la Jamaat", modal_dest: "Destination", modal_heure: "Heure de sortie", modal_freres: "Frères", modal_emir: "Émir", modal_ha: "Hidayat Aller", modal_hr: "Hidayat Retour"
       },
       en: {
         app_title: "Khourouj Tabligh", app_subtitle: "3-day Khourouj Management",
         tab_consult: "Consultation", tab_admin: "Manager",
-        search_title: "🔍 Quick Search (City or Sector)", search_placeholder: "Type Douala, Yaounde, Bassa...",
-        chart_title: "Visual overview of departures", btn_share_city: "Share Report (WhatsApp)",
-        filter_title: "🔎 Filter departures", year: "Year", month: "Month", country: "Country", city: "City (Halaka)", sub_halaka: "Sub-Halaka (Sector)",
+        search_title: "🔍 Quick Search", search_placeholder: "Type Douala, Yaounde...",
+        chart_title: "Visual overview", btn_share_city: "Share Report (WhatsApp)",
+        filter_title: "🔎 Filter departures", year: "Year", month: "Month", country: "Country", city: "City (Halaka)", sub_halaka: "Sub-Halaka",
         global_stats: "Global City Data", total_mosques: "Total Mosques (Manual)", mosques_5amal: "Mosques 5 Amal", houses_around: "Houses around", houses_5amal: "Houses 5 Amal",
         bros_4m: "Brothers 4 months", bros_4m_year: "Brothers 4m/year", bros_40d: "Brothers 40 days", jamaats_3d: "Jamaats 3 days", ziara_2h30: "Ziyara 2h30/d", ziara_less: "Ziyara < 2h30/d",
         sisters_2m: "Sisters 2 months", sisters_40d: "Sisters 40 days", sisters_15d: "Sisters 15 days", sisters_3d: "Sisters 3 days",
         select_hint: "Select a city and a sub-halaka to display the schedule.",
         btn_whatsapp: "📱 Copy for WhatsApp", btn_print: "🖨️ Print / PDF", th_mosque: "Mosque", th_ousboue: "Ousboue", th_dates: "Friday → Sunday", th_status: "Status",
-        offline_mode: "📶 Offline mode: You are viewing the last saved data.",
-        sec_note: "Security: Each mosque has its password. Changing the city total requires 2 passwords.",
-        manage_countries: "🌍 1. Manage Countries", manage_cities: "🏙️ 2. Manage Cities (Halakat)", manage_halakat: "⭕ 3. Manage Sub-Halakat", manage_mosques: "🕌 4. Manage Mosques",
+        offline_mode: "📶 Offline mode.",
+        sec_note: "Security: Each mosque has its password.",
+        manage_countries: "🌍 1. Manage Countries", manage_cities: "🏙️ 2. Manage Cities", manage_halakat: "⭕ 3. Manage Sub-Halakat", manage_mosques: "🕌 4. Manage Mosques",
         add_btn: "Add", add_city_btn: "Add City", add_mosque_title: "Add a new mosque", choose_halaka: "-- Choose --",
-        mosque_name: "Mosque Name", ousboue: "Ousboue", password: "Password (Security)", resp: "Responsible", phone: "Phone",
-        fill_stats: "➕ Fill statistics for this mosque", is_5amal: "Mosque with 5 Amal?", save_mosque: "Save Mosque",
-        modify_total: "Modify Total", delete: "Delete", reset_pass: "Reset PWD"
+        mosque_name: "Mosque Name", ousboue: "Ousboue", password: "Password", resp: "Responsible", phone: "Phone",
+        fill_stats: "➕ Fill statistics", is_5amal: "Mosque with 5 Amal?", save_mosque: "Save Mosque",
+        modify_total: "Modify Total", delete: "Delete", reset_pass: "Reset PWD",
+        jamaat_info: "🕌 Jamaat & Hidayat Info", jamaat_status: "Jamaat Status", status_none: "None", status_mosque: "Brothers at mosque", status_out: "Jamaat on travel",
+        heure_sortie: "Departure time", dest: "Destination", nb_freres_jamaat: "Nb Brothers", emir_nom: "Emir Name", emir_tel: "Emir Phone (Hidden)",
+        liste_freres: "Brothers names", hidayat_aller: "Hidayat Out (Departure)", hidayat_retour: "Hidayat Return (Arrival)",
+        nom_hidayat: "Brother Name", tel_hidayat: "Phone (Hidden)", info_hidayat: "Location & Time",
+        btn_jamaat_details: "👁️ Jamaat Details", contacter_emir: "📞 Contact Emir", contacter_ha: "📞 Contact Hidayat Out", contacter_hr: "📞 Contact Hidayat Return",
+        modal_title: "Jamaat Details", modal_dest: "Destination", modal_heure: "Departure time", modal_freres: "Brothers", modal_emir: "Emir", modal_ha: "Hidayat Out", modal_hr: "Hidayat Return"
       },
       ar: {
-        app_title: "خروج تبليغ", app_subtitle: "إدارة الخروج في سبيل الله لمدة 3 أيام",
+        app_title: "خروج تبليغ", app_subtitle: "إدارة الخروج",
         tab_consult: "استشارة", tab_admin: "إدارة",
-        search_title: "🔍 بحث سريع (مدينة أو قطاع)", search_placeholder: "اكتب دوالا، ياوندي...",
-        chart_title: "نظرة عامة مرئية على الخروج", btn_share_city: "مشاركة التقرير (واتساب)",
-        filter_title: "🔎 تصفية الخروج", year: "السنة", month: "الشهر", country: "البلد", city: "المدينة (حلقة)", sub_halaka: "الحلقة الفرعية (القطاع)",
-        global_stats: "البيانات العالمية للمدينة", total_mosques: "إجمالي المساجد (يدوي)", mosques_5amal: "مساجد 5 أعمال", houses_around: "البيوت المحيطة", houses_5amal: "بيوت 5 أعمال",
-        bros_4m: "إخوة 4 أشهر", bros_4m_year: "إخوة 4 أشهر/سنة", bros_40d: "إخوة 40 يوماً", jamaats_3d: "جماعات 3 أيام", ziara_2h30: "زيارة 2.30/يوم", ziara_less: "زيارة < 2.30/يوم",
+        search_title: "🔍 بحث سريع", search_placeholder: "اكتب المدينة...",
+        chart_title: "نظرة عامة", btn_share_city: "مشاركة (واتساب)",
+        filter_title: "🔎 تصفية", year: "السنة", month: "الشهر", country: "البلد", city: "المدينة (حلقة)", sub_halaka: "الحلقة الفرعية",
+        global_stats: "البيانات العالمية", total_mosques: "إجمالي المساجد (يدوي)", mosques_5amal: "مساجد 5 أعمال", houses_around: "البيوت المحيطة", houses_5amal: "بيوت 5 أعمال",
+        bros_4m: "إخوة 4 أشهر", bros_4m_year: "إخوة 4 أشهر/سنة", bros_40d: "إخوة 40 يوماً", jamaats_3d: "جماعات 3 أيام", ziara_2h30: "زيارة 2.30", ziara_less: "زيارة < 2.30",
         sisters_2m: "أخوات شهرين", sisters_40d: "أخوات 40 يوماً", sisters_15d: "أخوات 15 يوماً", sisters_3d: "أخوات 3 أيام",
-        select_hint: "اختر مدينة ثم حلقة فرعية لعرض الجدول.",
-        btn_whatsapp: "📱 نسخ للواتساب", btn_print: "🖨️ طباعة / PDF", th_mosque: "المسجد", th_ousboue: "الأسبوع", th_dates: "الجمعة → الأحد", th_status: "الحالة",
-        offline_mode: "📶 وضع عدم الاتصال: أنت تشاهد آخر البيانات المحفوظة.",
-        sec_note: "الأمان: لكل مسجد كلمة مرور. لتعديل إجمالي المدينة يلزم كلمتا مرور.",
-        manage_countries: "🌍 1. إدارة البلدان", manage_cities: "🏙️ 2. إدارة المدن (الحلقات)", manage_halakat: "⭕ 3. إدارة الحلقات الفرعية", manage_mosques: "🕌 4. إدارة المساجد",
-        add_btn: "إضافة", add_city_btn: "إضافة مدينة", add_mosque_title: "إضافة مسجد جديد", choose_halaka: "-- اختر --",
-        mosque_name: "اسم المسجد", ousboue: "أسبوع الخروج", password: "كلمة المرور (أمان)", resp: "المسؤول", phone: "الهاتف",
-        fill_stats: "➕ ملء إحصائيات هذا المسجد", is_5amal: "مسجد بـ 5 أعمال؟", save_mosque: "حفظ المسجد",
-        modify_total: "تعديل الإجمالي", delete: "حذف", reset_pass: "إعادة تعيين"
+        select_hint: "اختر مدينة ثم حلقة فرعية.",
+        btn_whatsapp: "📱 نسخ", btn_print: "🖨️ طباعة", th_mosque: "المسجد", th_ousboue: "الأسبوع", th_dates: "الجمعة → الأحد", th_status: "الحالة",
+        offline_mode: "📶 وضع عدم الاتصال.",
+        sec_note: "الأمان: لكل مسجد كلمة مرور.",
+        manage_countries: "🌍 1. البلدان", manage_cities: "🏙️ 2. المدن", manage_halakat: "⭕ 3. الحلقات الفرعية", manage_mosques: "🕌 4. المساجد",
+        add_btn: "إضافة", add_city_btn: "إضافة مدينة", add_mosque_title: "إضافة مسجد", choose_halaka: "-- اختر --",
+        mosque_name: "اسم المسجد", ousboue: "أسبوع", password: "كلمة المرور", resp: "المسؤول", phone: "الهاتف",
+        fill_stats: "➕ إحصائيات", is_5amal: "مسجد 5 أعمال؟", save_mosque: "حفظ",
+        modify_total: "تعديل الإجمالي", delete: "حذف", reset_pass: "إعادة تعيين",
+        jamaat_info: "🕌 معلومات الجماعة والهداية", jamaat_status: "حالة الجماعة", status_none: "لا يوجد", status_mosque: "إخوة في المسجد", status_out: "جماعة في الخروج",
+        heure_sortie: "وقت الخروج", dest: "الوجهة", nb_freres_jamaat: "عدد الإخوة", emir_nom: "اسم الأمير", emir_tel: "هاتف الأمير (مخفي)",
+        liste_freres: "أسماء الإخوة", hidayat_aller: "هداية الذهاب", hidayat_retour: "هداية العودة",
+        nom_hidayat: "اسم الأخ", tel_hidayat: "الهاتف (مخفي)", info_hidayat: "المكان والوقت",
+        btn_jamaat_details: "👁️ تفاصيل الجماعة", contacter_emir: "📞 اتصل بالأمير", contacter_ha: "📞 اتصل بهداء الذهاب", contacter_hr: "📞 اتصل بهداء العودة",
+        modal_title: "تفاصيل الجماعة", modal_dest: "الوجهة", modal_heure: "وقت الخروج", modal_freres: "الإخوة", modal_emir: "الأمير", modal_ha: "هداية الذهاب", modal_hr: "هداية العودة"
       },
       ur: {
-        app_title: "خروج تبلیغ", app_subtitle: "3 دن کے خروج کا انتظام",
+        app_title: "خروج تبلیغ", app_subtitle: "خروج کا انتظام",
         tab_consult: "مشورہ", tab_admin: "منتظم",
-        search_title: "🔍 فوری تلاش (شہر یا سیکٹر)", search_placeholder: "دوالا، یاؤنڈے لکھیں...",
-        chart_title: "خروج کا بصری جائزہ", btn_share_city: "رپورٹ شیئر کریں (واٹس ایپ)",
-        filter_title: "🔎 خروج کی چھانٹی", year: "سال", month: "مہینہ", country: "ملک", city: "شہر (حلقہ)", sub_halaka: "ذیلی حلقہ (سیکٹر)",
-        global_stats: "شہر کا عالمی ڈیٹا", total_mosques: "کل مساجد (دستی)", mosques_5amal: "5 اعمال والی مساجد", houses_around: "ارد گرد کے گھر", houses_5amal: "5 اعمال والے گھر",
-        bros_4m: "بھائی 4 ماہ", bros_4m_year: "بھائی 4 ماہ/سال", bros_40d: "بھائی 40 دن", jamaats_3d: "جماعتیں 3 دن", ziara_2h30: "زیارت 2.30/دن", ziara_less: "زیارت < 2.30/دن",
+        search_title: "🔍 تلاش", search_placeholder: "شہر لکھیں...",
+        chart_title: "جائزہ", btn_share_city: "شیئر کریں",
+        filter_title: "🔎 چھانٹی", year: "سال", month: "مہینہ", country: "ملک", city: "شہر", sub_halaka: "ذیلی حلقہ",
+        global_stats: "ڈیٹا", total_mosques: "کل مساجد", mosques_5amal: "5 اعمال والی", houses_around: "گھر", houses_5amal: "5 اعمال والے گھر",
+        bros_4m: "بھائی 4 ماہ", bros_4m_year: "4 ماہ/سال", bros_40d: "بھائی 40 دن", jamaats_3d: "جماعتیں 3 دن", ziara_2h30: "زیارت", ziara_less: "زیارت <",
         sisters_2m: "بہنیں 2 ماہ", sisters_40d: "بہنیں 40 دن", sisters_15d: "بہنیں 15 دن", sisters_3d: "بہنیں 3 دن",
-        select_hint: "شیڈول دیکھنے کے لیے شہر اور ذیلی حلقہ منتخب کریں۔",
-        btn_whatsapp: "📱 واٹس ایپ کے لیے کاپی کریں", btn_print: "🖨️ پرنٹ / PDF", th_mosque: "مسجد", th_ousboue: "ہفتہ", th_dates: "جمعہ → اتوار", th_status: "حالت",
-        offline_mode: "📶 آف لائن موڈ: آپ آخری محفوظ شدہ ڈیٹا دیکھ رہے ہیں۔",
-        sec_note: "سیکیورٹی: ہر مسجد کا اپنا پاس ورڈ ہے۔ شہر کا کل تبدیل کرنے کے لیے 2 پاس ورڈ درکار ہیں۔",
-        manage_countries: "🌍 1. ممالک کا انتظام", manage_cities: "🏙️ 2. شہروں کا انتظام", manage_halakat: "⭕ 3. ذیلی حلقوں کا انتظام", manage_mosques: "🕌 4. مساجد کا انتظام",
-        add_btn: "شامل کریں", add_city_btn: "شہر شامل کریں", add_mosque_title: "نئی مسجد شامل کریں", choose_halaka: "-- منتخب کریں --",
-        mosque_name: "مسجد کا نام", ousboue: "خروج کا ہفتہ", password: "پاس ورڈ (سکیورٹی)", resp: "ذمہ دار", phone: "فون",
-        fill_stats: "➕ اس مسجد کے اعداد و شمار بھریں", is_5amal: "5 اعمال والی مسجد؟", save_mosque: "مسجد محفوظ کریں",
-        modify_total: "کل تبدیل کریں", delete: "حذف کریں", reset_pass: "پاس ورڈ ری سیٹ"
+        select_hint: "شہر منتخب کریں۔",
+        btn_whatsapp: "📱 کاپی", btn_print: "🖨️ پرنٹ", th_mosque: "مسجد", th_ousboue: "ہفتہ", th_dates: "جمعہ → اتوار", th_status: "حالت",
+        offline_mode: "📶 آف لائن۔",
+        sec_note: "سیکیورٹی: پاس ورڈ۔",
+        manage_countries: "🌍 1. ممالک", manage_cities: "🏙️ 2. شہر", manage_halakat: "⭕ 3. حلقے", manage_mosques: "🕌 4. مساجد",
+        add_btn: "شامل کریں", add_city_btn: "شہر شامل کریں", add_mosque_title: "مسجد شامل کریں", choose_halaka: "-- منتخب --",
+        mosque_name: "مسجد کا نام", ousboue: "ہفتہ", password: "پاس ورڈ", resp: "ذمہ دار", phone: "فون",
+        fill_stats: "➕ اعداد و شمار", is_5amal: "5 اعمال؟", save_mosque: "محفوظ کریں",
+        modify_total: "کل تبدیل کریں", delete: "حذف", reset_pass: "ری سیٹ",
+        jamaat_info: "🕌 جماعت کی معلومات", jamaat_status: "حالت", status_none: "کوئی نہیں", status_mosque: "مسجد میں", status_out: "خروج میں",
+        heure_sortie: "وقت", dest: "منزل", nb_freres_jamaat: "بھائی", emir_nom: "امیر", emir_tel: "فون (پوشیدہ)",
+        liste_freres: "نام", hidayat_aller: "ہدایت (روانگی)", hidayat_retour: "ہدایت (واپسی)",
+        nom_hidayat: "نام", tel_hidayat: "فون (پوشیدہ)", info_hidayat: "جگہ اور وقت",
+        btn_jamaat_details: "👁️ تفصیلات", contacter_emir: "📞 امیر", contacter_ha: "📞 ہدایت (روانگی)", contacter_hr: "📞 ہدایت (واپسی)",
+        modal_title: "تفصیلات", modal_dest: "منزل", modal_heure: "وقت", modal_freres: "بھائی", modal_emir: "امیر", modal_ha: "ہدایت (روانگی)", modal_hr: "ہدایت (واپسی)"
       }
     };
 
@@ -321,48 +329,28 @@
 
       ['fr', 'en', 'ar', 'ur'].forEach(l => {
         const btn = document.getElementById('btn-lang-' + l);
-        if (l === currentLang) {
-          btn.className = "px-3 py-1 rounded bg-emerald-600 font-bold transition";
-        } else {
-          btn.className = "px-3 py-1 rounded hover:bg-slate-600 transition";
-        }
+        if (l === currentLang) btn.className = "px-3 py-1 rounded bg-emerald-600 font-bold transition";
+        else btn.className = "px-3 py-1 rounded hover:bg-slate-600 transition";
       });
 
-      if (!document.getElementById('view-admin').classList.contains('hidden')) {
-         window.initAdmin();
-      }
+      if (!document.getElementById('view-admin').classList.contains('hidden')) window.initAdmin();
     }
 
     // ==========================================
-    // 2. LOGIQUE PWA & SERVICE WORKER
+    // PWA & SUPABASE INIT
     // ==========================================
     const manifestData = {
       name: 'Khourouj Tabligh', short_name: 'Khourouj', start_url: '.', display: 'standalone',
       background_color: '#0f172a', theme_color: '#047857',
       icons: [{ src: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIwIiBmaWxsPSIjMDQ3ODU3Ii8+PHRleHQgeD0iNTAiIHk9IjY1IiBmb250LXNpemU9IjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+8J+VsTwvdGV4dD48L3N2Zz4=', sizes: '192x192 512x512', type: 'image/svg+xml' }]
     };
-    const blob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
-    document.querySelector('#manifest-placeholder').setAttribute('href', URL.createObjectURL(blob));
+    document.querySelector('#manifest-placeholder').setAttribute('href', URL.createObjectURL(new Blob([JSON.stringify(manifestData)], { type: 'application/json' })));
 
     if ('serviceWorker' in navigator) {
-      const swCode = `
-        const CACHE_NAME = 'khourouj-cache-v2';
-        self.addEventListener('install', (e) => {
-          e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
-          self.skipWaiting();
-        });
-        self.addEventListener('fetch', (e) => {
-          e.respondWith(
-            caches.match(e.request).then(response => response || fetch(e.request))
-          );
-        });
-      `;
+      const swCode = `const CACHE_NAME = 'khourouj-cache-v3'; self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./']))); self.skipWaiting(); }); self.addEventListener('fetch', (e) => { e.respondWith(caches.match(e.request).then(response => response || fetch(e.request))); });`;
       navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], { type: 'application/javascript' }))).catch(err => console.log('SW error:', err));
     }
 
-    // ==========================================
-    // 3. LOGIQUE MÉTIER ET SUPABASE
-    // ==========================================
     function showError(msg) { const box = document.getElementById('debug-box'); box.style.display = 'block'; box.innerHTML = "⚠️ " + msg; }
     window.showModal = function(content) { document.getElementById('modal-content').innerHTML = content; document.getElementById('modal').classList.remove('hidden'); }
     window.closeModal = function() { document.getElementById('modal').classList.add('hidden'); }
@@ -370,11 +358,7 @@
     const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
     const MONTHS_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     
-    function getMonthName(index) {
-        if(currentLang === 'en') return MONTHS_EN[index];
-        return MONTHS_FR[index];
-    }
-
+    function getMonthName(index) { return currentLang === 'en' ? MONTHS_EN[index] : MONTHS_FR[index]; }
     function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
     function getNthFriday(year, month, n) { const first = new Date(year, month - 1, 1); const firstDow = first.getDay(); const daysUntilFri = (5 - firstDow + 7) % 7; const day = 1 + daysUntilFri + (n - 1) * 7; return new Date(year, month - 1, day); }
     function getOusboueDates(year, month, ousboue) { const friday = getNthFriday(year, month, ousboue); const sunday = new Date(friday); sunday.setDate(friday.getDate() + 2); return { friday, sunday }; }
@@ -392,7 +376,6 @@
     MONTHS_FR.forEach((m, i) => { const o = document.createElement('option'); o.value = i + 1; o.textContent = m; if (i === new Date().getMonth()) o.selected = true; monthSel.appendChild(o); });
 
     let myChart = null;
-
     const script = document.createElement('script');
     script.src = "https://unpkg.com/@supabase/supabase-js@2";
     
@@ -410,8 +393,7 @@
           const tabAdmin = document.getElementById('tab-admin');
           
           if (!navigator.onLine) {
-             offlineBanner.classList.remove('hidden');
-             tabAdmin.classList.add('opacity-50', 'pointer-events-none');
+             offlineBanner.classList.remove('hidden'); tabAdmin.classList.add('opacity-50', 'pointer-events-none');
              const saved = localStorage.getItem('khourouj_offline_data');
              if (saved) { dataCache = JSON.parse(saved); buildSearchIndex(); return true; }
              return false;
@@ -429,13 +411,10 @@
             localStorage.setItem('khourouj_offline_data', JSON.stringify(dataCache));
             buildSearchIndex();
             
-            offlineBanner.classList.add('hidden');
-            tabAdmin.classList.remove('opacity-50', 'pointer-events-none');
+            offlineBanner.classList.add('hidden'); tabAdmin.classList.remove('opacity-50', 'pointer-events-none');
             return true;
-
           } catch (err) {
-            offlineBanner.classList.remove('hidden');
-            tabAdmin.classList.add('opacity-50', 'pointer-events-none');
+            offlineBanner.classList.remove('hidden'); tabAdmin.classList.add('opacity-50', 'pointer-events-none');
             const saved = localStorage.getItem('khourouj_offline_data');
             if (saved) { dataCache = JSON.parse(saved); buildSearchIndex(); return true; }
             showError("Erreur de base de données et aucune sauvegarde trouvée.");
@@ -456,43 +435,26 @@
 
         const searchInput = document.getElementById('global-search');
         const searchResults = document.getElementById('search-results');
-
         searchInput.addEventListener('input', function() {
-            const query = this.value.toLowerCase().trim();
-            searchResults.innerHTML = '';
+            const query = this.value.toLowerCase().trim(); searchResults.innerHTML = '';
             if (query.length < 2) { searchResults.classList.add('hidden'); return; }
-
             const matches = searchIndex.filter(item => item.nom.toLowerCase().includes(query)).slice(0, 10);
-            
             if (matches.length === 0) { searchResults.classList.add('hidden'); return; }
-
             searchResults.classList.remove('hidden');
             matches.forEach(match => {
                 const div = document.createElement('div');
                 div.className = "p-3 hover:bg-emerald-50 dark:hover:bg-slate-700 cursor-pointer border-b dark:border-slate-600 last:border-0 text-sm transition";
                 div.innerHTML = `<strong>${escapeHtml(match.ville.nom)}</strong> ${match.halaka ? ' ➔ ' + escapeHtml(match.halaka.nom) : ''} <span class="text-xs text-gray-500 dark:text-gray-400">(${escapeHtml(match.pays.nom)})</span>`;
                 div.onclick = () => {
-                    searchInput.value = '';
-                    searchResults.classList.add('hidden');
-                    document.getElementById('sel-pays').value = match.pays.id;
-                    onPaysChange();
-                    document.getElementById('sel-ville').value = match.ville.id;
-                    onVilleChange();
-                    if (match.halaka) {
-                        document.getElementById('sel-halaka').value = match.halaka.id;
-                        renderPlanning();
-                    }
+                    searchInput.value = ''; searchResults.classList.add('hidden');
+                    document.getElementById('sel-pays').value = match.pays.id; onPaysChange();
+                    document.getElementById('sel-ville').value = match.ville.id; onVilleChange();
+                    if (match.halaka) { document.getElementById('sel-halaka').value = match.halaka.id; renderPlanning(); }
                 };
                 searchResults.appendChild(div);
             });
         });
-
-        document.addEventListener('click', (e) => {
-            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                searchResults.classList.add('hidden');
-            }
-        });
-
+        document.addEventListener('click', (e) => { if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) searchResults.classList.add('hidden'); });
 
         window.addEventListener('online', () => { loadData().then(() => { refreshConsultationSelects(); }); });
         window.addEventListener('offline', () => { document.getElementById('offline-banner').classList.remove('hidden'); });
@@ -516,7 +478,6 @@
           dataCache.villes.filter(v => String(v.pays_id) === paysId).forEach(v => { document.getElementById('sel-ville').insertAdjacentHTML('beforeend', `<option value="${v.id}">${escapeHtml(v.nom)}</option>`); });
         };
 
-        // --- FONCTION PARTAGE VILLE ---
         window.shareCityStats = function() {
           const villeId = document.getElementById('sel-ville').value; if (!villeId) return;
           const ville = dataCache.villes.find(v => String(v.id) === villeId);
@@ -524,26 +485,9 @@
           const mosqueesDeLaVille = dataCache.mosquees.filter(m => halakasDeLaVille.includes(String(m.halaka_id)));
           const sum = (field) => mosqueesDeLaVille.reduce((total, m) => total + (m[field] || 0), 0);
 
-          let txt = `🕌 *BILAN GLOBAL DE LA VILLE* 🕌\n`;
-          txt += `📍 *${ville.nom}*\n\n`;
-          txt += `🕌 Total Mosquées : *${ville.nb_mosquees_total || 0}*\n`;
-          txt += `⭐ Mosquées 5 Amal : *${mosqueesDeLaVille.filter(m => m.est_5amal).length}*\n`;
-          txt += `🏠 Maisons autour : *${sum('nb_maisons_autour')}*\n`;
-          txt += `🏠 Maisons 5 Amal : *${sum('nb_maisons_5amal')}*\n\n`;
-          txt += `👨‍🦱 *FRÈRES :*\n`;
-          txt += `  • 4 mois : ${sum('nb_freres_4mois')} (dont ${sum('nb_freres_4mois_an')} chaque année)\n`;
-          txt += `  • 40 jours : ${sum('nb_freres_40jours')}\n`;
-          txt += `  • Jamaats 3 jours : ${sum('nb_jamaats_3jours')}\n`;
-          txt += `  • Ziyara 2h30/j : ${sum('nb_freres_ziara_2h30')}\n`;
-          txt += `  • Ziyara < 2h30/j : ${sum('nb_freres_ziara_moins')}\n\n`;
-          txt += `👩‍🦱 *SŒURS :*\n`;
-          txt += `  • 2 mois : ${sum('nb_soeurs_2mois')}\n`;
-          txt += `  • 40 jours : ${sum('nb_soeurs_40jours')}\n`;
-          txt += `  • 15 jours : ${sum('nb_soeurs_15jours')}\n`;
-          txt += `  • 3 jours : ${sum('nb_soeurs_3jours')}\n\n`;
-          txt += `بارك الله فيكم`;
+          let txt = `🕌 *BILAN GLOBAL DE LA VILLE* 🕌\n📍 *${ville.nom}*\n\n🕌 Total Mosquées : *${ville.nb_mosquees_total || 0}*\n⭐ Mosquées 5 Amal : *${mosqueesDeLaVille.filter(m => m.est_5amal).length}*\n🏠 Maisons autour : *${sum('nb_maisons_autour')}*\n🏠 Maisons 5 Amal : *${sum('nb_maisons_5amal')}*\n\n👨‍🦱 *FRÈRES :*\n  • 4 mois : ${sum('nb_freres_4mois')} (dont ${sum('nb_freres_4mois_an')} chaque année)\n  • 40 jours : ${sum('nb_freres_40jours')}\n  • Jamaats 3 jours : ${sum('nb_jamaats_3jours')}\n  • Ziyara 2h30/j : ${sum('nb_freres_ziara_2h30')}\n  • Ziyara < 2h30/j : ${sum('nb_freres_ziara_moins')}\n\n👩‍🦱 *SŒURS :*\n  • 2 mois : ${sum('nb_soeurs_2mois')}\n  • 40 jours : ${sum('nb_soeurs_40jours')}\n  • 15 jours : ${sum('nb_soeurs_15jours')}\n  • 3 jours : ${sum('nb_soeurs_3jours')}\n\nبارك الله فيكم`;
 
-          if (navigator.clipboard) { navigator.clipboard.writeText(txt).then(() => alert('✅ Bilan de la ville copié !')).catch(() => prompt('Copiez :', txt)); } else { prompt('Copiez :', txt); }
+          if (navigator.clipboard) { navigator.clipboard.writeText(txt).then(() => alert('✅ Bilan copié !')).catch(() => prompt('Copiez :', txt)); } else { prompt('Copiez :', txt); }
         }
 
         window.onVilleChange = function() {
@@ -554,21 +498,12 @@
           const ville = dataCache.villes.find(v => String(v.id) === villeId);
           const halakasDeLaVille = dataCache.halakat.filter(h => String(h.ville_id) === villeId).map(h => String(h.id));
           const mosqueesDeLaVille = dataCache.mosquees.filter(m => halakasDeLaVille.includes(String(m.halaka_id)));
-          
           const sum = (field) => mosqueesDeLaVille.reduce((total, m) => total + (m[field] || 0), 0);
           const count5Amal = mosqueesDeLaVille.filter(m => m.est_5amal === true).length;
 
           if(ville) {
             document.getElementById('stats-title').textContent = `${translations[currentLang].global_stats} : ${ville.nom}`;
-            
-            const stFr4m = sum('nb_freres_4mois');
-            const stFr4ma = sum('nb_freres_4mois_an');
-            const stFr40j = sum('nb_freres_40jours');
-            const stJamaats = sum('nb_jamaats_3jours');
-            const stSo2m = sum('nb_soeurs_2mois');
-            const stSo40j = sum('nb_soeurs_40jours');
-            const stSo15j = sum('nb_soeurs_15jours');
-            const stSo3j = sum('nb_soeurs_3jours');
+            const stFr4m = sum('nb_freres_4mois'); const stFr4ma = sum('nb_freres_4mois_an'); const stFr40j = sum('nb_freres_40jours'); const stJamaats = sum('nb_jamaats_3jours'); const stSo2m = sum('nb_soeurs_2mois'); const stSo40j = sum('nb_soeurs_40jours'); const stSo15j = sum('nb_soeurs_15jours'); const stSo3j = sum('nb_soeurs_3jours');
 
             document.getElementById('st-mosquees-total').textContent = ville.nb_mosquees_total || 0;
             document.getElementById('st-mosquees-5amal').textContent = count5Amal;
@@ -587,50 +522,20 @@
             
             document.getElementById('ville-stats-container').classList.remove('hidden');
 
-            // CHART JS avec support mode sombre
             const isDark = document.documentElement.classList.contains('dark');
-            const textColor = isDark ? '#e2e8f0' : '#334155';
-            const gridColor = isDark ? '#334155' : '#e2e8f0';
-
-            const chartData = {
-                labels: [
-                    translations[currentLang].bros_4m, 
-                    translations[currentLang].bros_40d, 
-                    translations[currentLang].jamaats_3d, 
-                    translations[currentLang].sisters_2m, 
-                    translations[currentLang].sisters_40d
-                ],
-                datasets: [{
-                    label: translations[currentLang].global_stats,
-                    data: [stFr4m, stFr40j, stJamaats, stSo2m, stSo40j],
-                    backgroundColor: [
-                        'rgba(34, 197, 94, 0.7)', 'rgba(20, 184, 166, 0.7)',
-                        'rgba(168, 85, 247, 0.7)', 'rgba(236, 72, 153, 0.7)', 'rgba(244, 63, 94, 0.7)'
-                    ],
-                    borderColor: [
-                        'rgb(34, 197, 94)', 'rgb(20, 184, 166)', 'rgb(168, 85, 247)', 'rgb(236, 72, 153)', 'rgb(244, 63, 94)'
-                    ],
-                    borderWidth: 1
-                }]
-            };
+            const textColor = isDark ? '#e2e8f0' : '#334155'; const gridColor = isDark ? '#334155' : '#e2e8f0';
 
             if (myChart) { myChart.destroy(); }
             const ctx = document.getElementById('statsChart').getContext('2d');
             myChart = new Chart(ctx, {
                 type: 'bar',
-                data: chartData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { precision: 0, color: textColor }, grid: { color: gridColor } },
-                        x: { ticks: { color: textColor }, grid: { color: gridColor } }
-                    }
-                }
+                data: {
+                    labels: [translations[currentLang].bros_4m, translations[currentLang].bros_40d, translations[currentLang].jamaats_3d, translations[currentLang].sisters_2m, translations[currentLang].sisters_40d],
+                    datasets: [{ label: translations[currentLang].global_stats, data: [stFr4m, stFr40j, stJamaats, stSo2m, stSo40j], backgroundColor: ['rgba(34, 197, 94, 0.7)','rgba(20, 184, 166, 0.7)','rgba(168, 85, 247, 0.7)','rgba(236, 72, 153, 0.7)','rgba(244, 63, 94, 0.7)'], borderColor: ['rgb(34, 197, 94)','rgb(20, 184, 166)','rgb(168, 85, 247)','rgb(236, 72, 153)','rgb(244, 63, 94)'], borderWidth: 1 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { color: gridColor } } } }
             });
           }
-
           dataCache.halakat.filter(h => String(h.ville_id) === villeId).forEach(h => { document.getElementById('sel-halaka').insertAdjacentHTML('beforeend', `<option value="${h.id}">${escapeHtml(h.nom)}</option>`); });
         };
 
@@ -651,8 +556,74 @@
           
           mosquees.forEach(m => {
             const { friday, sunday } = getOusboueDates(year, month, m.ousboue); const st = getStatus(friday, sunday);
-            tbody.insertAdjacentHTML('beforeend', `<tr class="border-t dark:border-slate-700"><td class="p-3"><div class="font-medium">${escapeHtml(m.nom)}</div>${m.responsable ? `<div class="text-xs text-gray-500 dark:text-gray-400">${escapeHtml(m.responsable)}${m.contact ? ' · ' + escapeHtml(m.contact) : ''}</div>` : ''}</td><td class="p-3 text-center">Ousboue ${m.ousboue}</td><td class="p-3 text-center">${formatLongDate(friday)} → ${formatLongDate(sunday)}</td><td class="p-3 text-center"><span class="inline-block px-2 py-1 rounded text-xs font-medium ${st.cls}">${st.label}</span></td></tr>`);
+            tbody.insertAdjacentHTML('beforeend', `<tr class="border-t dark:border-slate-700">
+              <td class="p-3">
+                <div class="font-medium">${escapeHtml(m.nom)}</div>
+                ${m.responsable ? `<div class="text-xs text-gray-500 dark:text-gray-400">${escapeHtml(m.responsable)}</div>` : ''}
+                <button onclick="openJamaatModal(${m.id})" class="mt-1 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 text-xs px-2 py-1 rounded shadow-sm hover:bg-emerald-200 dark:hover:bg-emerald-900 transition font-medium no-print">
+                  ${translations[currentLang].btn_jamaat_details}
+                </button>
+              </td>
+              <td class="p-3 text-center">Ousboue ${m.ousboue}</td>
+              <td class="p-3 text-center">${formatLongDate(friday)} → ${formatLongDate(sunday)}</td>
+              <td class="p-3 text-center"><span class="inline-block px-2 py-1 rounded text-xs font-medium ${st.cls}">${st.label}</span></td>
+            </tr>`);
           });
+        };
+
+        // --- MODAL JAMAAAT ---
+        window.openJamaatModal = function(id) {
+          const m = dataCache.mosquees.find(x => x.id === id);
+          const dict = translations[currentLang];
+          
+          let statutColor = m.jamaat_statut === 'Jamaat en sortie' ? 'text-orange-600 bg-orange-100' : (m.jamaat_statut === 'Frères à la mosquée' ? 'text-green-600 bg-green-100' : 'text-gray-600 bg-gray-100');
+          
+          let html = `
+            <h3 class="text-xl font-bold text-emerald-800 dark:text-emerald-400 mb-1">${dict.modal_title}</h3>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-300 mb-4">${escapeHtml(m.nom)}</p>
+            
+            <div class="mb-4">
+               <span class="inline-block px-3 py-1 rounded-full text-sm font-bold ${statutColor}">${escapeHtml(m.jamaat_statut || dict.status_none)}</span>
+            </div>
+
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span class="text-gray-500 dark:text-gray-400">${dict.modal_dest} :</span> <span class="font-semibold text-right">${escapeHtml(m.jamaat_destination || '-')}</span></div>
+              <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span class="text-gray-500 dark:text-gray-400">${dict.modal_heure} :</span> <span class="font-semibold text-right">${escapeHtml(m.jamaat_heure || '-')}</span></div>
+              <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span class="text-gray-500 dark:text-gray-400">${dict.modal_freres} :</span> <span class="font-semibold text-right">${m.jamaat_nb_freres || 0} (${escapeHtml(m.jamaat_freres_liste || '-')})</span></div>
+              <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span class="text-gray-500 dark:text-gray-400">${dict.modal_emir} :</span> <span class="font-semibold text-right">${escapeHtml(m.jamaat_emir_nom || '-')}</span></div>
+            </div>
+          `;
+
+          // Boutons de contact WhatsApp
+          html += `<div class="mt-6 space-y-2">`;
+          
+          const cleanTel = (tel) => tel ? tel.replace(/[^0-9]/g, '') : '';
+          const msgEmir = encodeURIComponent(`Assalamou alaykoum. Vous allez bien ? Je vous contacte au sujet de la Jamaat de la mosquée ${m.nom}.`);
+          const msgAller = encodeURIComponent(`Assalamou alaykoum. Vous allez bien ? Vous êtes attendu(e) à la mosquée ${m.nom} (Lieu : ${m.hidayat_aller_info || '-'}) pour donner l'Hidayat de la Jamaat qui se rend à ${m.jamaat_destination || '-'}. L'heure de départ est prévue à ${m.jamaat_heure || '-'}.`);
+          const msgRetour = encodeURIComponent(`Assalamou alaykoum. Vous allez bien ? Vous êtes attendu(e) pour l'Hidayat de retour de la Jamaat de la mosquée ${m.nom}. (Lieu/Heure : ${m.hidayat_retour_info || '-'}).`);
+
+          if (m.jamaat_emir_tel) {
+            html += `<a href="https://wa.me/${cleanTel(m.jamaat_emir_tel)}?text=${msgEmir}" target="_blank" class="block text-center w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-bold shadow transition">${dict.contacter_emir}</a>`;
+          }
+
+          if (m.hidayat_aller_tel) {
+            html += `<div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-200 dark:border-slate-600 mt-4">
+              <p class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase">${dict.modal_ha} (${escapeHtml(m.hidayat_aller_nom || '-')})</p>
+              <p class="text-sm mb-2">${escapeHtml(m.hidayat_aller_info || '-')}</p>
+              <a href="https://wa.me/${cleanTel(m.hidayat_aller_tel)}?text=${msgAller}" target="_blank" class="block text-center w-full bg-teal-600 hover:bg-teal-700 text-white px-3 py-2 rounded font-medium shadow transition">${dict.contacter_ha}</a>
+            </div>`;
+          }
+
+          if (m.hidayat_retour_tel) {
+            html += `<div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-200 dark:border-slate-600 mt-2">
+              <p class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase">${dict.modal_hr} (${escapeHtml(m.hidayat_retour_nom || '-')})</p>
+              <p class="text-sm mb-2">${escapeHtml(m.hidayat_retour_info || '-')}</p>
+              <a href="https://wa.me/${cleanTel(m.hidayat_retour_tel)}?text=${msgRetour}" target="_blank" class="block text-center w-full bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded font-medium shadow transition">${dict.contacter_hr}</a>
+            </div>`;
+          }
+
+          html += `</div>`;
+          showModal(html);
         };
 
         window.initAdmin = function() {
@@ -721,6 +692,7 @@
                       <div><label class="text-xs font-semibold">${dict.phone}</label><input id="inp-mos-tel" class="w-full border rounded px-3 py-2 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600" placeholder="Numéro"></div>
                     </div>
 
+                    <!-- ACCORDION STATS -->
                     <details class="mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg">
                       <summary class="p-3 bg-blue-50 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 font-semibold cursor-pointer rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/60 flex justify-between items-center">
                         <span>${dict.fill_stats}</span>
@@ -745,6 +717,51 @@
                         <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.sisters_40d}</label><input id="st-m-so40j" type="number" value="0" class="w-full border rounded px-2 py-1 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600"></div>
                         <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.sisters_15d}</label><input id="st-m-so15j" type="number" value="0" class="w-full border rounded px-2 py-1 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600"></div>
                         <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.sisters_3d}</label><input id="st-m-so3j" type="number" value="0" class="w-full border rounded px-2 py-1 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600"></div>
+                      </div>
+                    </details>
+
+                    <!-- ACCORDION JAMAAAT -->
+                    <details class="mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg">
+                      <summary class="p-3 bg-emerald-50 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-200 font-semibold cursor-pointer rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/60 flex justify-between items-center">
+                        <span>${dict.jamaat_info}</span>
+                        <span class="text-xl font-bold"><span class="icon-plus">+</span><span class="icon-minus">−</span></span>
+                      </summary>
+                      <div class="p-4 space-y-4">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                           <div><label class="text-xs font-semibold text-gray-600 dark:text-gray-300">${dict.jamaat_status}</label>
+                             <select id="st-j-statut" class="w-full border rounded px-2 py-1 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600">
+                               <option value="Aucune">${dict.status_none}</option>
+                               <option value="Frères à la mosquée">${dict.status_mosque}</option>
+                               <option value="Jamaat en sortie">${dict.status_out}</option>
+                             </select>
+                           </div>
+                           <div><label class="text-xs font-semibold text-gray-600 dark:text-gray-300">${dict.heure_sortie}</label><input id="st-j-heure" type="text" class="w-full border rounded px-2 py-1 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600" placeholder="Ex: Vendredi 15h"></div>
+                           <div><label class="text-xs font-semibold text-gray-600 dark:text-gray-300">${dict.dest}</label><input id="st-j-dest" type="text" class="w-full border rounded px-2 py-1 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600" placeholder="Ex: Yaoundé - Msq Tinga"></div>
+                           <div><label class="text-xs font-semibold text-gray-600 dark:text-gray-300">${dict.nb_freres_jamaat}</label><input id="st-j-nb" type="number" value="0" class="w-full border rounded px-2 py-1 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600"></div>
+                           <div><label class="text-xs font-semibold text-gray-600 dark:text-gray-300">${dict.emir_nom}</label><input id="st-j-emir" type="text" class="w-full border rounded px-2 py-1 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600"></div>
+                           <div><label class="text-xs font-semibold text-gray-600 dark:text-gray-300">${dict.emir_tel}</label><input id="st-j-emir-tel" type="text" class="w-full border rounded px-2 py-1 bg-yellow-50 dark:bg-yellow-900/30 border-slate-300 dark:border-slate-600"></div>
+                           <div class="md:col-span-3"><label class="text-xs font-semibold text-gray-600 dark:text-gray-300">${dict.liste_freres}</label><input id="st-j-liste" type="text" class="w-full border rounded px-2 py-1 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600" placeholder="Ex: Ibrahim, Moussa, Ali..."></div>
+                        </div>
+
+                        <div class="bg-slate-100 dark:bg-slate-700/50 p-3 rounded border border-slate-200 dark:border-slate-600">
+                          <h4 class="font-bold text-sm mb-2 text-slate-700 dark:text-slate-200">${dict.hidayat_aller}</h4>
+                          <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                             <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.nom_hidayat}</label><input id="st-h-aller-nom" type="text" class="w-full border rounded px-2 py-1 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600"></div>
+                             <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.tel_hidayat}</label><input id="st-h-aller-tel" type="text" class="w-full border rounded px-2 py-1 bg-yellow-50 dark:bg-yellow-900/30 border-slate-300 dark:border-slate-600"></div>
+                             <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.info_hidayat}</label><input id="st-h-aller-info" type="text" class="w-full border rounded px-2 py-1 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600"></div>
+                          </div>
+                        </div>
+
+                        <div class="bg-slate-100 dark:bg-slate-700/50 p-3 rounded border border-slate-200 dark:border-slate-600">
+                          <h4 class="font-bold text-sm mb-2 text-slate-700 dark:text-slate-200">${dict.hidayat_retour}</h4>
+                          <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                             <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.nom_hidayat}</label><input id="st-h-retour-nom" type="text" class="w-full border rounded px-2 py-1 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600"></div>
+                             <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.tel_hidayat}</label><input id="st-h-retour-tel" type="text" class="w-full border rounded px-2 py-1 bg-yellow-50 dark:bg-yellow-900/30 border-slate-300 dark:border-slate-600"></div>
+                             <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.info_hidayat}</label><input id="st-h-retour-info" type="text" class="w-full border rounded px-2 py-1 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600"></div>
+                          </div>
+                        </div>
+
                       </div>
                     </details>
 
@@ -797,7 +814,7 @@
         window.promptUpdateVilleTotal = function(villeId, currentTotal) {
             showModal(`
                 <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">Modifier le total (Ville)</h3>
-                <p class="text-sm mb-3">Pour modifier ce chiffre, vous avez besoin des mots de passe de <b>2 mosquées différentes</b> de cette ville.</p>
+                <p class="text-sm mb-3">Besoin des mots de passe de <b>2 mosquées différentes</b>.</p>
                 <input id="m-total" type="number" value="${currentTotal}" class="w-full border rounded px-3 py-2 mb-3 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600">
                 <input id="m-pass1" type="password" class="w-full border rounded px-3 py-2 mb-2 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600" placeholder="Mot de passe 1">
                 <input id="m-pass2" type="password" class="w-full border rounded px-3 py-2 mb-3 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600" placeholder="Mot de passe 2">
@@ -841,7 +858,11 @@
                 p_est_5amal: m.est_5amal, p_nb_maisons_autour: m.nb_maisons_autour, p_nb_maisons_5amal: m.nb_maisons_5amal,
                 p_nb_freres_4mois: m.nb_freres_4mois, p_nb_freres_4mois_an: m.nb_freres_4mois_an, p_nb_freres_40jours: m.nb_freres_40jours,
                 p_nb_jamaats_3jours: m.nb_jamaats_3jours, p_nb_freres_ziara_2h30: m.nb_freres_ziara_2h30, p_nb_freres_ziara_moins: m.nb_freres_ziara_moins,
-                p_nb_soeurs_2mois: m.nb_soeurs_2mois, p_nb_soeurs_40jours: m.nb_soeurs_40jours, p_nb_soeurs_15jours: m.nb_soeurs_15jours, p_nb_soeurs_3jours: m.nb_soeurs_3jours
+                p_nb_soeurs_2mois: m.nb_soeurs_2mois, p_nb_soeurs_40jours: m.nb_soeurs_40jours, p_nb_soeurs_15jours: m.nb_soeurs_15jours, p_nb_soeurs_3jours: m.nb_soeurs_3jours,
+                p_jamaat_statut: m.jamaat_statut, p_jamaat_heure: m.jamaat_heure, p_jamaat_destination: m.jamaat_destination, p_jamaat_nb_freres: m.jamaat_nb_freres,
+                p_jamaat_emir_nom: m.jamaat_emir_nom, p_jamaat_emir_tel: m.jamaat_emir_tel, p_jamaat_freres_liste: m.jamaat_freres_liste,
+                p_hidayat_aller_nom: m.hidayat_aller_nom, p_hidayat_aller_tel: m.hidayat_aller_tel, p_hidayat_aller_info: m.hidayat_aller_info,
+                p_hidayat_retour_nom: m.hidayat_retour_nom, p_hidayat_retour_tel: m.hidayat_retour_tel, p_hidayat_retour_info: m.hidayat_retour_info
             });
             if (error) { alert("Erreur: " + error.message); return; }
             if (data === true) { closeModal(); await reloadDataAndRefresh(); } else { alert("Mot de passe incorrect."); renderAdminLists(); }
@@ -897,13 +918,27 @@
             p_nb_soeurs_2mois: +document.getElementById('st-m-so2m').value || 0,
             p_nb_soeurs_40jours: +document.getElementById('st-m-so40j').value || 0,
             p_nb_soeurs_15jours: +document.getElementById('st-m-so15j').value || 0,
-            p_nb_soeurs_3jours: +document.getElementById('st-m-so3j').value || 0
+            p_nb_soeurs_3jours: +document.getElementById('st-m-so3j').value || 0,
+            p_jamaat_statut: document.getElementById('st-j-statut').value,
+            p_jamaat_heure: document.getElementById('st-j-heure').value.trim(),
+            p_jamaat_destination: document.getElementById('st-j-dest').value.trim(),
+            p_jamaat_nb_freres: +document.getElementById('st-j-nb').value || 0,
+            p_jamaat_emir_nom: document.getElementById('st-j-emir').value.trim(),
+            p_jamaat_emir_tel: document.getElementById('st-j-emir-tel').value.trim(),
+            p_jamaat_freres_liste: document.getElementById('st-j-liste').value.trim(),
+            p_hidayat_aller_nom: document.getElementById('st-h-aller-nom').value.trim(),
+            p_hidayat_aller_tel: document.getElementById('st-h-aller-tel').value.trim(),
+            p_hidayat_aller_info: document.getElementById('st-h-aller-info').value.trim(),
+            p_hidayat_retour_nom: document.getElementById('st-h-retour-nom').value.trim(),
+            p_hidayat_retour_tel: document.getElementById('st-h-retour-tel').value.trim(),
+            p_hidayat_retour_info: document.getElementById('st-h-retour-info').value.trim()
           });
 
           if (error) { alert("Erreur: " + error.message); return; }
 
           document.getElementById('inp-mos-nom').value = ''; document.getElementById('inp-mos-pass').value = ''; document.getElementById('inp-mos-resp').value = ''; document.getElementById('inp-mos-tel').value = ''; document.getElementById('st-m-5amal').checked = false;
           document.querySelectorAll('input[type="number"]').forEach(inp => inp.value = '0');
+          document.querySelectorAll('.p-4 input[type="text"]').forEach(inp => inp.value = '');
           
           await reloadDataAndRefresh(); 
           alert("Enregistré !");
