@@ -758,6 +758,8 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
                 <div><label class="text-xs font-bold text-gray-600 dark:text-gray-300">${dict.form_nom}</label><input id="m-m-nom" type="text" class="w-full border rounded px-2 py-1" value="${isEdit ? escapeHtml(m.nom) : ''}"></div>
                 <div><label class="text-xs font-bold text-gray-600 dark:text-gray-300">${dict.form_ousboue}</label><select id="m-m-ousboue" class="w-full border rounded px-2 py-1">${[1,2,3,4].map(n => `<option value="${n}" ${isEdit && m.ousboue === n ? 'selected' : ''}>Ousboue ${n}</option>`).join('')}</select></div>
+                <div><label class="text-xs font-bold text-gray-600 dark:text-gray-300">Responsable (Optionnel)</label><input id="m-m-resp" type="text" class="w-full border rounded px-2 py-1" value="${isEdit ? escapeHtml(m.responsable || '') : ''}"></div>
+                <div><label class="text-xs font-bold text-gray-600 dark:text-gray-300">Téléphone (Optionnel)</label><input id="m-m-tel" type="text" class="w-full border rounded px-2 py-1" value="${isEdit ? escapeHtml(m.contact || '') : ''}"></div>
             </div>
             <div class="mb-3">
                 <label class="text-xs font-bold text-yellow-600">${dict.form_pass} ${isEdit ? '(Laisser vide)' : ''}</label>
@@ -823,32 +825,96 @@
     }
 
     window.doSaveMosquee = async (halakaId, id) => {
-        const nom = document.getElementById('m-m-nom').value.trim(); const pass = document.getElementById('m-m-pass').value.trim();
-        if(!nom) { alert("Nom obligatoire."); return; } if(!id && !pass) { alert("Mot de passe obligatoire."); return; }
-        if(!id && dataCache.mosquees.some(m => String(m.halaka_id) === String(halakaId) && m.nom.toLowerCase() === nom.toLowerCase())) { alert("Cette mosquée existe déjà."); return; }
+        const nom = document.getElementById('m-m-nom').value.trim();
+        const passInput = document.getElementById('m-m-pass').value.trim();
+        
+        if(!nom) { alert("Nom obligatoire."); return; }
+        if(!id && !passInput) { alert("Mot de passe obligatoire pour la création."); return; }
+        
+        if(!id && dataCache.mosquees.some(m => String(m.halaka_id) === String(halakaId) && m.nom.toLowerCase() === nom.toLowerCase())) { alert("Cette mosquée existe déjà dans ce secteur."); return; }
         
         const data = {
-            nom: nom, ousboue: +document.getElementById('m-m-ousboue').value, est_5amal: document.getElementById('m-m-5amal').checked,
-            nb_maisons_autour: +document.getElementById('m-m-maisons').value || 0, nb_maisons_5amal: +document.getElementById('m-m-maisons5a').value || 0,
-            nb_freres_4mois: +document.getElementById('m-m-fr4m').value || 0, nb_freres_4mois_an: +document.getElementById('m-m-fr4ma').value || 0,
-            nb_freres_40jours: +document.getElementById('m-m-fr40j').value || 0, nb_jamaats_3jours: +document.getElementById('m-m-jamaats').value || 0,
-            nb_freres_ziara_2h30: +document.getElementById('m-m-z2h30').value || 0, nb_freres_ziara_moins: +document.getElementById('m-m-zmoins').value || 0,
-            nb_soeurs_2mois: +document.getElementById('m-m-so2m').value || 0, nb_soeurs_40jours: +document.getElementById('m-m-so40j').value || 0,
-            nb_soeurs_15jours: +document.getElementById('m-m-so15j').value || 0, nb_soeurs_3jours: +document.getElementById('m-m-so3j').value || 0,
-            jamaat_statut: document.getElementById('m-m-jstatut').value, jamaat_heure: document.getElementById('m-m-heure').value.trim(),
-            jamaat_destination: document.getElementById('m-m-dest').value.trim(), jamaat_nb_freres: +document.getElementById('m-m-nbfreres').value || 0,
-            jamaat_freres_liste: document.getElementById('m-m-liste').value.trim(), jamaat_emir_nom: document.getElementById('m-m-emir').value.trim(),
-            jamaat_emir_tel: document.getElementById('m-m-emirtel').value.trim(), hidayat_aller_nom: document.getElementById('m-m-hanom').value.trim(),
-            hidayat_aller_tel: document.getElementById('m-m-hatel').value.trim(), hidayat_aller_info: document.getElementById('m-m-hainfo').value.trim(),
-            hidayat_retour_nom: document.getElementById('m-m-hrnom').value.trim(), hidayat_retour_tel: document.getElementById('m-m-hrtel').value.trim(),
+            nom: document.getElementById('m-m-nom').value.trim(),
+            ousboue: +document.getElementById('m-m-ousboue').value,
+            responsable: document.getElementById('m-m-resp').value.trim(),
+            contact: document.getElementById('m-m-tel').value.trim(),
+            est_5amal: document.getElementById('m-m-5amal').checked,
+            nb_maisons_autour: +document.getElementById('m-m-maisons').value || 0,
+            nb_maisons_5amal: +document.getElementById('m-m-maisons5a').value || 0,
+            nb_freres_4mois: +document.getElementById('m-m-fr4m').value || 0,
+            nb_freres_4mois_an: +document.getElementById('m-m-fr4ma').value || 0,
+            nb_freres_40jours: +document.getElementById('m-m-fr40j').value || 0,
+            nb_jamaats_3jours: +document.getElementById('m-m-jamaats').value || 0,
+            nb_freres_ziara_2h30: +document.getElementById('m-m-z2h30').value || 0,
+            nb_freres_ziara_moins: +document.getElementById('m-m-zmoins').value || 0,
+            nb_soeurs_2mois: +document.getElementById('m-m-so2m').value || 0,
+            nb_soeurs_40jours: +document.getElementById('m-m-so40j').value || 0,
+            nb_soeurs_15jours: +document.getElementById('m-m-so15j').value || 0,
+            nb_soeurs_3jours: +document.getElementById('m-m-so3j').value || 0,
+            jamaat_statut: document.getElementById('m-m-jstatut').value,
+            jamaat_heure: document.getElementById('m-m-heure').value.trim(),
+            jamaat_destination: document.getElementById('m-m-dest').value.trim(),
+            jamaat_nb_freres: +document.getElementById('m-m-nbfreres').value || 0,
+            jamaat_freres_liste: document.getElementById('m-m-liste').value.trim(),
+            jamaat_emir_nom: document.getElementById('m-m-emir').value.trim(),
+            jamaat_emir_tel: document.getElementById('m-m-emirtel').value.trim(),
+            hidayat_aller_nom: document.getElementById('m-m-hanom').value.trim(),
+            hidayat_aller_tel: document.getElementById('m-m-hatel').value.trim(),
+            hidayat_aller_info: document.getElementById('m-m-hainfo').value.trim(),
+            hidayat_retour_nom: document.getElementById('m-m-hrnom').value.trim(),
+            hidayat_retour_tel: document.getElementById('m-m-hrtel').value.trim(),
             hidayat_retour_info: document.getElementById('m-m-hrinfo').value.trim()
         };
 
-        if(id) await supabase.from('mosquees').update(data).eq('id', id); 
-        else await supabase.from('mosquees').insert({ ...data, halaka_id: halakaId, password: pass });
-        
-        closeModal(); await syncData(); 
-        openManageModal('mosquees');
+        const existingMosque = id ? dataCache.mosquees.find(m => m.id === id) : null;
+        const finalPass = passInput || (existingMosque ? existingMosque.password : '');
+
+        try {
+            if (id) {
+                const { data: res, error } = await supabase.rpc('update_mosquee_rpc', {
+                    p_id: id, p_password: finalPass, p_nom: data.nom, p_ousboue: data.ousboue,
+                    p_responsable: data.responsable, p_contact: data.contact,
+                    p_est_5amal: data.est_5amal, p_nb_maisons_autour: data.nb_maisons_autour, p_nb_maisons_5amal: data.nb_maisons_5amal,
+                    p_nb_freres_4mois: data.nb_freres_4mois, p_nb_freres_4mois_an: data.nb_freres_4mois_an, p_nb_freres_40jours: data.nb_freres_40jours,
+                    p_nb_jamaats_3jours: data.nb_jamaats_3jours, p_nb_freres_ziara_2h30: data.nb_freres_ziara_2h30, p_nb_freres_ziara_moins: data.nb_freres_ziara_moins,
+                    p_nb_soeurs_2mois: data.nb_soeurs_2mois, p_nb_soeurs_40jours: data.nb_soeurs_40jours, p_nb_soeurs_15jours: data.nb_soeurs_15jours, p_nb_soeurs_3jours: data.nb_soeurs_3jours,
+                    p_jamaat_statut: data.jamaat_statut, p_jamaat_heure: data.jamaat_heure, p_jamaat_destination: data.jamaat_destination, p_jamaat_nb_freres: data.jamaat_nb_freres,
+                    p_jamaat_emir_nom: data.jamaat_emir_nom, p_jamaat_emir_tel: data.jamaat_emir_tel, p_jamaat_freres_liste: data.jamaat_freres_liste,
+                    p_hidayat_aller_nom: data.hidayat_aller_nom, p_hidayat_aller_tel: data.hidayat_aller_tel, p_hidayat_aller_info: data.hidayat_aller_info,
+                    p_hidayat_retour_nom: data.hidayat_retour_nom, p_hidayat_retour_tel: data.hidayat_retour_tel, p_hidayat_retour_info: data.hidayat_retour_info
+                });
+                if (error) throw error;
+                if (res === false) throw new Error("Mot de passe incorrect pour cette mosquée.");
+            } else {
+                const { error } = await supabase.rpc('add_mosquee_rpc', {
+                    p_nom: data.nom, p_halaka_id: halakaId, p_ousboue: data.ousboue, p_responsable: data.responsable, p_contact: data.contact, p_password: finalPass,
+                    p_est_5amal: data.est_5amal, p_nb_maisons_autour: data.nb_maisons_autour, p_nb_maisons_5amal: data.nb_maisons_5amal,
+                    p_nb_freres_4mois: data.nb_freres_4mois, p_nb_freres_4mois_an: data.nb_freres_4mois_an, p_nb_freres_40jours: data.nb_freres_40jours,
+                    p_nb_jamaats_3jours: data.nb_jamaats_3jours, p_nb_freres_ziara_2h30: data.nb_freres_ziara_2h30, p_nb_freres_ziara_moins: data.nb_freres_ziara_moins,
+                    p_nb_soeurs_2mois: data.nb_soeurs_2mois, p_nb_soeurs_40jours: data.nb_soeurs_40jours, p_nb_soeurs_15jours: data.nb_soeurs_15jours, p_nb_soeurs_3jours: data.nb_soeurs_3jours,
+                    p_jamaat_statut: data.jamaat_statut, p_jamaat_heure: data.jamaat_heure, p_jamaat_destination: data.jamaat_destination, p_jamaat_nb_freres: data.jamaat_nb_freres,
+                    p_jamaat_emir_nom: data.jamaat_emir_nom, p_jamaat_emir_tel: data.jamaat_emir_tel, p_jamaat_freres_liste: data.jamaat_freres_liste,
+                    p_hidayat_aller_nom: data.hidayat_aller_nom, p_hidayat_aller_tel: data.hidayat_aller_tel, p_hidayat_aller_info: data.hidayat_aller_info,
+                    p_hidayat_retour_nom: data.hidayat_retour_nom, p_hidayat_retour_tel: data.hidayat_retour_tel, p_hidayat_retour_info: data.hidayat_retour_info
+                });
+                if (error) throw error;
+            }
+
+            await syncData(); 
+            openManageModal('mosquees');
+            
+            // Reste bloqué sur la bonne Halaka
+            setTimeout(() => {
+                const newFilter = document.getElementById('m-filter-halaka');
+                if (newFilter) {
+                    newFilter.value = halakaId;
+                    renderAdminMosqueesInModal(halakaId);
+                }
+            }, 100);
+
+        } catch (err) {
+            alert("Erreur lors de l'enregistrement : " + err.message);
+        }
     }
 
     window.promptDeleteMosquee = function(id) {
@@ -865,7 +931,8 @@
     }
     window.doDeleteMosquee = async (id) => {
         const p = document.getElementById('m-del-pass').value;
-        const { data } = await supabase.rpc('delete_mosquee_rpc', { p_id: id, p_password: p });
+        const { data, error } = await supabase.rpc('delete_mosquee_rpc', { p_id: id, p_password: p });
+        if(error) { alert("Erreur : " + error.message); return; }
         if(data === true) { closeModal(); await syncData(); openManageModal('mosquees'); }
         else alert("Mot de passe incorrect !");
     }
