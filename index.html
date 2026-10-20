@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Khourouj Tabligh</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Librairie pour les graphiques -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIwIiBmaWxsPSIjMDQ3ODU3Ii8+PHRleHQgeD0iNTAiIHk9IjY1IiBmb250LXNpemU9IjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+8J+VsTwvdGV4dD48L3N2Zz4=">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -21,6 +23,9 @@
     .icon-minus { display: none; }
     [dir="rtl"] .rtl-flip { transform: scaleX(-1); }
     [dir="rtl"] th, [dir="rtl"] td { text-align: right; }
+    
+    /* Conteneur du graphique pour qu'il ne soit pas géant */
+    .chart-container { position: relative; height: 300px; width: 100%; }
   </style>
 </head>
 <body class="bg-slate-200 text-slate-800 min-h-screen font-sans">
@@ -38,14 +43,6 @@
     <button onclick="setLanguage('en')" id="btn-lang-en" class="px-3 py-1 rounded hover:bg-slate-600 transition">🇬🇧 EN</button>
     <button onclick="setLanguage('ar')" id="btn-lang-ar" class="px-3 py-1 rounded hover:bg-slate-600 transition">🇸🇦 AR</button>
     <button onclick="setLanguage('ur')" id="btn-lang-ur" class="px-3 py-1 rounded hover:bg-slate-600 transition">🇵🇰 UR</button>
-  </div>
-
-  <!-- FENÊTRE MODALE POUR LA SÉCURITÉ -->
-  <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[100] flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-2xl w-full max-w-md p-6 relative">
-      <button onclick="closeModal()" class="absolute top-2 right-4 text-3xl text-gray-400 hover:text-gray-800">&times;</button>
-      <div id="modal-content"></div>
-    </div>
   </div>
 
   <header class="bg-emerald-800 text-white shadow-lg no-print">
@@ -68,6 +65,17 @@
   <main class="max-w-6xl mx-auto px-4 py-6">
     
     <section id="view-consult">
+      
+      <!-- BARRE DE RECHERCHE GLOBALE -->
+      <div class="bg-emerald-50 rounded-lg shadow p-4 mb-6 border border-emerald-200">
+        <label class="block text-sm font-bold text-emerald-800 mb-2" data-i18n="search_title">🔍 Recherche rapide (Ville ou Secteur)</label>
+        <div class="relative">
+          <input type="text" id="global-search" class="w-full border-2 border-emerald-300 rounded-lg px-4 py-3 focus:outline-none focus:border-emerald-600 transition" placeholder="Tapez Douala, Yaoundé, Bassa..." data-i18n-placeholder="search_placeholder">
+          <div id="search-results" class="absolute w-full bg-white shadow-xl rounded-lg mt-1 z-50 hidden max-h-60 overflow-y-auto border border-gray-200"></div>
+        </div>
+      </div>
+
+      <!-- FILTRES MANUELS -->
       <div class="bg-white rounded-lg shadow p-4 md:p-6 mb-6 no-print border border-slate-300">
         <h2 class="text-lg font-semibold mb-4" data-i18n="filter_title">🔎 Filtrer les sorties</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -79,10 +87,20 @@
         </div>
       </div>
 
-      <!-- STATS VILLE -->
+      <!-- STATS VILLE & GRAPHIQUE -->
       <div id="ville-stats-container" class="hidden mb-6">
         <div class="bg-white rounded-lg shadow p-4 md:p-6 border-l-4 border-emerald-600">
           <h2 class="text-lg font-bold text-emerald-800 mb-4" id="stats-title" data-i18n="global_stats">Données globales de la ville</h2>
+          
+          <!-- GRAPHIQUE -->
+          <div class="mb-8 bg-slate-50 p-4 rounded-lg border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-600 mb-2 text-center" data-i18n="chart_title">Aperçu visuel des sorties</h3>
+            <div class="chart-container">
+              <canvas id="statsChart"></canvas>
+            </div>
+          </div>
+
+          <!-- CHIFFRES -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center mb-4">
             <div class="bg-blue-100 p-3 rounded-lg shadow-sm border border-blue-200">
               <div class="text-xs text-blue-800 font-semibold" data-i18n="total_mosques">Total Mosquées (Manuel)</div>
@@ -158,6 +176,8 @@
       fr: {
         app_title: "Khourouj Tabligh", app_subtitle: "Gestion des sorties de 3 jours",
         tab_consult: "Consultation", tab_admin: "Gestionnaire",
+        search_title: "🔍 Recherche rapide (Ville ou Secteur)", search_placeholder: "Tapez Douala, Yaoundé, Bassa...",
+        chart_title: "Aperçu visuel des sorties",
         filter_title: "🔎 Filtrer les sorties", year: "Année", month: "Mois", country: "Pays", city: "Ville (Halaka)", sub_halaka: "Sous-Halaka (Secteur)",
         global_stats: "Données globales de la ville", total_mosques: "Total Mosquées (Manuel)", mosques_5amal: "Mosquées 5 Amal", houses_around: "Maisons autour", houses_5amal: "Maisons 5 Amal",
         bros_4m: "Frères 4 mois", bros_4m_year: "Frères 4 mois/an", bros_40d: "Frères 40 jours", jamaats_3d: "Jamaats 3 jours", ziara_2h30: "Ziyara 2h30/j", ziara_less: "Ziyara < 2h30/j",
@@ -175,6 +195,8 @@
       en: {
         app_title: "Khourouj Tabligh", app_subtitle: "3-day Khourouj Management",
         tab_consult: "Consultation", tab_admin: "Manager",
+        search_title: "🔍 Quick Search (City or Sector)", search_placeholder: "Type Douala, Yaounde, Bassa...",
+        chart_title: "Visual overview of departures",
         filter_title: "🔎 Filter departures", year: "Year", month: "Month", country: "Country", city: "City (Halaka)", sub_halaka: "Sub-Halaka (Sector)",
         global_stats: "Global City Data", total_mosques: "Total Mosques (Manual)", mosques_5amal: "Mosques 5 Amal", houses_around: "Houses around", houses_5amal: "Houses 5 Amal",
         bros_4m: "Brothers 4 months", bros_4m_year: "Brothers 4m/year", bros_40d: "Brothers 40 days", jamaats_3d: "Jamaats 3 days", ziara_2h30: "Ziyara 2h30/d", ziara_less: "Ziyara < 2h30/d",
@@ -192,6 +214,8 @@
       ar: {
         app_title: "خروج تبليغ", app_subtitle: "إدارة الخروج في سبيل الله لمدة 3 أيام",
         tab_consult: "استشارة", tab_admin: "إدارة",
+        search_title: "🔍 بحث سريع (مدينة أو قطاع)", search_placeholder: "اكتب دوالا، ياوندي...",
+        chart_title: "نظرة عامة مرئية على الخروج",
         filter_title: "🔎 تصفية الخروج", year: "السنة", month: "الشهر", country: "البلد", city: "المدينة (حلقة)", sub_halaka: "الحلقة الفرعية (القطاع)",
         global_stats: "البيانات العالمية للمدينة", total_mosques: "إجمالي المساجد (يدوي)", mosques_5amal: "مساجد 5 أعمال", houses_around: "البيوت المحيطة", houses_5amal: "بيوت 5 أعمال",
         bros_4m: "إخوة 4 أشهر", bros_4m_year: "إخوة 4 أشهر/سنة", bros_40d: "إخوة 40 يوماً", jamaats_3d: "جماعات 3 أيام", ziara_2h30: "زيارة 2.30/يوم", ziara_less: "زيارة < 2.30/يوم",
@@ -209,6 +233,8 @@
       ur: {
         app_title: "خروج تبلیغ", app_subtitle: "3 دن کے خروج کا انتظام",
         tab_consult: "مشورہ", tab_admin: "منتظم",
+        search_title: "🔍 فوری تلاش (شہر یا سیکٹر)", search_placeholder: "دوالا، یاؤنڈے لکھیں...",
+        chart_title: "خروج کا بصری جائزہ",
         filter_title: "🔎 خروج کی چھانٹی", year: "سال", month: "مہینہ", country: "ملک", city: "شہر (حلقہ)", sub_halaka: "ذیلی حلقہ (سیکٹر)",
         global_stats: "شہر کا عالمی ڈیٹا", total_mosques: "کل مساجد (دستی)", mosques_5amal: "5 اعمال والی مساجد", houses_around: "ارد گرد کے گھر", houses_5amal: "5 اعمال والے گھر",
         bros_4m: "بھائی 4 ماہ", bros_4m_year: "بھائی 4 ماہ/سال", bros_40d: "بھائی 40 دن", jamaats_3d: "جماعتیں 3 دن", ziara_2h30: "زیارت 2.30/دن", ziara_less: "زیارت < 2.30/دن",
@@ -247,6 +273,10 @@
         const key = el.getAttribute('data-i18n');
         if (dict[key]) el.textContent = dict[key];
       });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (dict[key]) el.setAttribute('placeholder', dict[key]);
+      });
 
       ['fr', 'en', 'ar', 'ur'].forEach(l => {
         const btn = document.getElementById('btn-lang-' + l);
@@ -274,7 +304,6 @@
     document.querySelector('#manifest-placeholder').setAttribute('href', URL.createObjectURL(blob));
 
     if ('serviceWorker' in navigator) {
-      // Service Worker qui met en cache le site lui-même (HTML/JS) pour qu'il s'ouvre sans internet
       const swCode = `
         const CACHE_NAME = 'khourouj-cache-v1';
         self.addEventListener('install', (e) => {
@@ -321,6 +350,8 @@
     const monthSel = document.getElementById('sel-mois'); monthSel.innerHTML = '';
     MONTHS_FR.forEach((m, i) => { const o = document.createElement('option'); o.value = i + 1; o.textContent = m; if (i === new Date().getMonth()) o.selected = true; monthSel.appendChild(o); });
 
+    let myChart = null; // Variable globale pour le graphique
+
     const script = document.createElement('script');
     script.src = "https://unpkg.com/@supabase/supabase-js@2";
     
@@ -331,23 +362,21 @@
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         let dataCache = { pays: [], villes: [], halakat: [], mosquees: [] };
+        let searchIndex = []; // Index pour la recherche
 
-        // --- FONCTION DE CHARGEMENT AVEC GESTION HORS-LIGNE ---
         async function loadData() {
           const offlineBanner = document.getElementById('offline-banner');
           const tabAdmin = document.getElementById('tab-admin');
           
           if (!navigator.onLine) {
-             // Pas de réseau du tout
              offlineBanner.classList.remove('hidden');
              tabAdmin.classList.add('opacity-50', 'pointer-events-none');
              const saved = localStorage.getItem('khourouj_offline_data');
-             if (saved) { dataCache = JSON.parse(saved); return true; }
+             if (saved) { dataCache = JSON.parse(saved); buildSearchIndex(); return true; }
              return false;
           }
 
           try {
-            // On tente de charger depuis internet
             const { data: pays, error: e1 } = await supabase.from('pays').select('*');
             const { data: villes, error: e2 } = await supabase.from('villes').select('*');
             const { data: halakat, error: e3 } = await supabase.from('halakat').select('*');
@@ -357,25 +386,79 @@
 
             dataCache = { pays: pays || [], villes: villes || [], halakat: halakat || [], mosquees: mosquees || [] };
             
-            // On sauvegarde pour le hors-ligne !
             localStorage.setItem('khourouj_offline_data', JSON.stringify(dataCache));
+            buildSearchIndex();
             
             offlineBanner.classList.add('hidden');
             tabAdmin.classList.remove('opacity-50', 'pointer-events-none');
             return true;
 
           } catch (err) {
-            // Le réseau est là mais Supabase ne répond pas (ou erreur)
             offlineBanner.classList.remove('hidden');
             tabAdmin.classList.add('opacity-50', 'pointer-events-none');
             const saved = localStorage.getItem('khourouj_offline_data');
-            if (saved) { dataCache = JSON.parse(saved); return true; }
+            if (saved) { dataCache = JSON.parse(saved); buildSearchIndex(); return true; }
             showError("Erreur de base de données et aucune sauvegarde trouvée.");
             return false;
           }
         }
 
-        // Écouter le retour du réseau
+        // --- LOGIQUE DE RECHERCHE ---
+        function buildSearchIndex() {
+            searchIndex = [];
+            dataCache.villes.forEach(v => {
+                const p = dataCache.pays.find(x => x.id === v.pays_id);
+                // Ajouter la ville elle-même
+                searchIndex.push({ type: 'ville', nom: v.nom, ville: v, pays: p, halaka: null });
+                // Ajouter ses halakats
+                dataCache.halakat.filter(h => h.ville_id === v.id).forEach(h => {
+                    searchIndex.push({ type: 'halaka', nom: `${h.nom} (${v.nom})`, ville: v, pays: p, halaka: h });
+                });
+            });
+        }
+
+        const searchInput = document.getElementById('global-search');
+        const searchResults = document.getElementById('search-results');
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            searchResults.innerHTML = '';
+            if (query.length < 2) { searchResults.classList.add('hidden'); return; }
+
+            const matches = searchIndex.filter(item => item.nom.toLowerCase().includes(query)).slice(0, 10);
+            
+            if (matches.length === 0) { searchResults.classList.add('hidden'); return; }
+
+            searchResults.classList.remove('hidden');
+            matches.forEach(match => {
+                const div = document.createElement('div');
+                div.className = "p-3 hover:bg-emerald-50 cursor-pointer border-b last:border-0 text-sm";
+                div.innerHTML = `<strong>${escapeHtml(match.ville.nom)}</strong> ${match.halaka ? ' ➔ ' + escapeHtml(match.halaka.nom) : ''} <span class="text-xs text-gray-500">(${escapeHtml(match.pays.nom)})</span>`;
+                div.onclick = () => {
+                    searchInput.value = '';
+                    searchResults.classList.add('hidden');
+                    // Remplir les menus
+                    document.getElementById('sel-pays').value = match.pays.id;
+                    onPaysChange();
+                    document.getElementById('sel-ville').value = match.ville.id;
+                    onVilleChange();
+                    if (match.halaka) {
+                        document.getElementById('sel-halaka').value = match.halaka.id;
+                        renderPlanning();
+                    }
+                };
+                searchResults.appendChild(div);
+            });
+        });
+
+        // Cacher la recherche si on clique ailleurs
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.classList.add('hidden');
+            }
+        });
+
+
         window.addEventListener('online', () => { loadData().then(() => { refreshConsultationSelects(); }); });
         window.addEventListener('offline', () => { document.getElementById('offline-banner').classList.remove('hidden'); });
 
@@ -412,21 +495,79 @@
 
           if(ville) {
             document.getElementById('stats-title').textContent = `${translations[currentLang].global_stats} : ${ville.nom}`;
+            
+            const stFr4m = sum('nb_freres_4mois');
+            const stFr4ma = sum('nb_freres_4mois_an');
+            const stFr40j = sum('nb_freres_40jours');
+            const stJamaats = sum('nb_jamaats_3jours');
+            const stSo2m = sum('nb_soeurs_2mois');
+            const stSo40j = sum('nb_soeurs_40jours');
+            const stSo15j = sum('nb_soeurs_15jours');
+            const stSo3j = sum('nb_soeurs_3jours');
+
             document.getElementById('st-mosquees-total').textContent = ville.nb_mosquees_total || 0;
             document.getElementById('st-mosquees-5amal').textContent = count5Amal;
             document.getElementById('st-maisons-autour').textContent = sum('nb_maisons_autour');
             document.getElementById('st-maisons-5amal').textContent = sum('nb_maisons_5amal');
-            document.getElementById('st-fr-4m').textContent = sum('nb_freres_4mois');
-            document.getElementById('st-fr-4ma').textContent = sum('nb_freres_4mois_an');
-            document.getElementById('st-fr-40j').textContent = sum('nb_freres_40jours');
-            document.getElementById('st-jamaats-3j').textContent = sum('nb_jamaats_3jours');
+            document.getElementById('st-fr-4m').textContent = stFr4m;
+            document.getElementById('st-fr-4ma').textContent = stFr4ma;
+            document.getElementById('st-fr-40j').textContent = stFr40j;
+            document.getElementById('st-jamaats-3j').textContent = stJamaats;
             document.getElementById('st-ziara-2h30').textContent = sum('nb_freres_ziara_2h30');
             document.getElementById('st-ziara-moins').textContent = sum('nb_freres_ziara_moins');
-            document.getElementById('st-so-2m').textContent = sum('nb_soeurs_2mois');
-            document.getElementById('st-so-40j').textContent = sum('nb_soeurs_40jours');
-            document.getElementById('st-so-15j').textContent = sum('nb_soeurs_15jours');
-            document.getElementById('st-so-3j').textContent = sum('nb_soeurs_3jours');
+            document.getElementById('st-so-2m').textContent = stSo2m;
+            document.getElementById('st-so-40j').textContent = stSo40j;
+            document.getElementById('st-so-15j').textContent = stSo15j;
+            document.getElementById('st-so-3j').textContent = stSo3j;
+            
             document.getElementById('ville-stats-container').classList.remove('hidden');
+
+            // --- DESSIN DU GRAPHIQUE (CHART.JS) ---
+            const chartData = {
+                labels: [
+                    translations[currentLang].bros_4m, 
+                    translations[currentLang].bros_40d, 
+                    translations[currentLang].jamaats_3d, 
+                    translations[currentLang].sisters_2m, 
+                    translations[currentLang].sisters_40d
+                ],
+                datasets: [{
+                    label: translations[currentLang].global_stats,
+                    data: [stFr4m, stFr40j, stJamaats, stSo2m, stSo40j],
+                    backgroundColor: [
+                        'rgba(34, 197, 94, 0.7)',  // Vert
+                        'rgba(20, 184, 166, 0.7)', // Teal
+                        'rgba(168, 85, 247, 0.7)', // Violet
+                        'rgba(236, 72, 153, 0.7)', // Rose
+                        'rgba(244, 63, 94, 0.7)'   // Rose foncé
+                    ],
+                    borderColor: [
+                        'rgb(34, 197, 94)',
+                        'rgb(20, 184, 166)',
+                        'rgb(168, 85, 247)',
+                        'rgb(236, 72, 153)',
+                        'rgb(244, 63, 94)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            if (myChart) { myChart.destroy(); } // Détruire l'ancien graphique
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 } }
+                    }
+                }
+            });
           }
 
           dataCache.halakat.filter(h => String(h.ville_id) === villeId).forEach(h => { document.getElementById('sel-halaka').insertAdjacentHTML('beforeend', `<option value="${h.id}">${escapeHtml(h.nom)}</option>`); });
@@ -453,10 +594,6 @@
           });
         };
 
-        // Le reste du code Admin (initAdmin, renderAdminLists, CRUD) reste strictement identique.
-        // Je le raccourcis ici pour la lisibilité, mais il est bien présent dans le fichier complet.
-        // ... (Voir ci-dessous dans le code complet)
-        
         window.initAdmin = function() {
           const dict = translations[currentLang];
           document.getElementById('view-admin').innerHTML = `
