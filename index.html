@@ -218,7 +218,7 @@
         modify_total: "Modifier Total", delete: "Supprimer", reset_pass: "Reset MDP",
         jamaat_info: "🕌 Informations Jamaat & Hidayat", jamaat_status: "Statut Jamaat", status_none: "Aucune", status_mosque: "Frères à la mosquée", status_out: "Jamaat en sortie",
         heure_sortie: "Heure de sortie", dest: "Destination (Ville & Mosquée)", nb_freres_jamaat: "Nb Frères", emir_nom: "Nom de l'Émir", emir_tel: "Téléphone Émir (Caché public)",
-        liste_freres: "Noms des frères", hidayat_aller: "Hidayat Aller (Départ)", hidayat_retour: "Hidayat Retour (Arrivée)",
+        liste_freres: "Noms des frères", hidayat_aller: "Hidayat Aller", hidayat_retour: "Hidayat Retour",
         nom_hidayat: "Nom du frère", tel_hidayat: "Téléphone (Caché public)", info_hidayat: "Lieu & Heure (ex: Mosquée à 8h)",
         btn_jamaat_details: "👁️ Détails Jamaat", contacter_emir: "📞 Contacter l'Émir", contacter_ha: "📞 Contacter Hidayat Aller", contacter_hr: "📞 Contacter Hidayat Retour",
         modal_title: "Détails de la Jamaat", modal_dest: "Destination", modal_heure: "Heure de sortie", modal_freres: "Frères", modal_emir: "Émir", modal_ha: "Hidayat Aller", modal_hr: "Hidayat Retour"
@@ -243,10 +243,10 @@
         modify_total: "Modify Total", delete: "Delete", reset_pass: "Reset PWD",
         jamaat_info: "🕌 Jamaat & Hidayat Info", jamaat_status: "Jamaat Status", status_none: "None", status_mosque: "Brothers at mosque", status_out: "Jamaat on travel",
         heure_sortie: "Departure time", dest: "Destination", nb_freres_jamaat: "Nb Brothers", emir_nom: "Emir Name", emir_tel: "Emir Phone (Hidden)",
-        liste_freres: "Brothers names", hidayat_aller: "Hidayat Out (Departure)", hidayat_retour: "Hidayat Return (Arrival)",
+        liste_freres: "Brothers names", hidayat_aller: "Hidayat Aller", hidayat_retour: "Hidayat Retour",
         nom_hidayat: "Brother Name", tel_hidayat: "Phone (Hidden)", info_hidayat: "Location & Time",
-        btn_jamaat_details: "👁️ Jamaat Details", contacter_emir: "📞 Contact Emir", contacter_ha: "📞 Contact Hidayat Out", contacter_hr: "📞 Contact Hidayat Return",
-        modal_title: "Jamaat Details", modal_dest: "Destination", modal_heure: "Departure time", modal_freres: "Brothers", modal_emir: "Emir", modal_ha: "Hidayat Out", modal_hr: "Hidayat Return"
+        btn_jamaat_details: "👁️ Jamaat Details", contacter_emir: "📞 Contact Emir", contacter_ha: "📞 Contact Hidayat Aller", contacter_hr: "📞 Contact Hidayat Retour",
+        modal_title: "Jamaat Details", modal_dest: "Destination", modal_heure: "Departure time", modal_freres: "Brothers", modal_emir: "Emir", modal_ha: "Hidayat Aller", modal_hr: "Hidayat Retour"
       },
       ar: {
         app_title: "خروج تبليغ", app_subtitle: "إدارة الخروج",
@@ -576,7 +576,7 @@
           const m = dataCache.mosquees.find(x => x.id === id);
           const dict = translations[currentLang];
           
-          let statutColor = m.jamaat_statut === 'Jamaat en sortie' ? 'text-orange-600 bg-orange-100' : (m.jamaat_statut === 'Frères à la mosquée' ? 'text-green-600 bg-green-100' : 'text-gray-600 bg-gray-100');
+          let statutColor = m.jamaat_statut === 'Jamaat en sortie' ? 'text-orange-600 bg-orange-100 dark:bg-orange-900/50 dark:text-orange-300' : (m.jamaat_statut === 'Frères à la mosquée' ? 'text-green-600 bg-green-100 dark:bg-green-900/50 dark:text-green-300' : 'text-gray-600 bg-gray-100 dark:bg-slate-700 dark:text-gray-300');
           
           let html = `
             <h3 class="text-xl font-bold text-emerald-800 dark:text-emerald-400 mb-1">${dict.modal_title}</h3>
@@ -594,13 +594,12 @@
             </div>
           `;
 
-          // Boutons de contact WhatsApp
           html += `<div class="mt-6 space-y-2">`;
           
           const cleanTel = (tel) => tel ? tel.replace(/[^0-9]/g, '') : '';
           const msgEmir = encodeURIComponent(`Assalamou alaykoum. Vous allez bien ? Je vous contacte au sujet de la Jamaat de la mosquée ${m.nom}.`);
-          const msgAller = encodeURIComponent(`Assalamou alaykoum. Vous allez bien ? Vous êtes attendu(e) à la mosquée ${m.nom} (Lieu : ${m.hidayat_aller_info || '-'}) pour donner l'Hidayat de la Jamaat qui se rend à ${m.jamaat_destination || '-'}. L'heure de départ est prévue à ${m.jamaat_heure || '-'}.`);
-          const msgRetour = encodeURIComponent(`Assalamou alaykoum. Vous allez bien ? Vous êtes attendu(e) pour l'Hidayat de retour de la Jamaat de la mosquée ${m.nom}. (Lieu/Heure : ${m.hidayat_retour_info || '-'}).`);
+          const msgAller = encodeURIComponent(`Assalamou alaykoum. Vous allez bien ? Vous êtes attendu(e) à la mosquée ${m.nom} (Lieu : ${m.hidayat_aller_info || '-'}) pour donner l'Hidayat Aller de la Jamaat qui se rend à ${m.jamaat_destination || '-'}. L'heure de départ est prévue à ${m.jamaat_heure || '-'}.`);
+          const msgRetour = encodeURIComponent(`Assalamou alaykoum. Vous allez bien ? Vous êtes attendu(e) pour l'Hidayat Retour de la Jamaat de la mosquée ${m.nom}. (Lieu/Heure : ${m.hidayat_retour_info || '-'}).`);
 
           if (m.jamaat_emir_tel) {
             html += `<a href="https://wa.me/${cleanTel(m.jamaat_emir_tel)}?text=${msgEmir}" target="_blank" class="block text-center w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-bold shadow transition">${dict.contacter_emir}</a>`;
