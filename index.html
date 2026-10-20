@@ -19,8 +19,6 @@
     details[open] .icon-plus { display: none; }
     details[open] .icon-minus { display: inline; }
     .icon-minus { display: none; }
-    
-    /* Correction pour l'affichage Arabe/Ourdou (RTL) */
     [dir="rtl"] .rtl-flip { transform: scaleX(-1); }
     [dir="rtl"] th, [dir="rtl"] td { text-align: right; }
   </style>
@@ -28,6 +26,11 @@
 <body class="bg-slate-200 text-slate-800 min-h-screen font-sans">
 
   <div id="debug-box" class="debug-box"></div>
+
+  <!-- BANDEAU HORS-LIGNE -->
+  <div id="offline-banner" class="hidden bg-orange-500 text-white text-center py-2 px-4 text-sm font-bold shadow-md no-print">
+    <span data-i18n="offline_mode">📶 Mode hors-ligne : Vous consultez les dernières données enregistrées.</span>
+  </div>
 
   <!-- BARRE DE LANGUE -->
   <div class="bg-slate-800 text-white p-2 flex justify-center gap-2 text-sm no-print shadow-md">
@@ -161,7 +164,7 @@
         sisters_2m: "Sœurs 2 mois", sisters_40d: "Sœurs 40 jours", sisters_15d: "Sœurs 15 jours", sisters_3d: "Sœurs 3 jours",
         select_hint: "Sélectionnez une ville puis un sous-halaka pour afficher le planning.",
         btn_whatsapp: "📱 Copier pour WhatsApp", btn_print: "🖨️ Imprimer / PDF", th_mosque: "Mosquée", th_ousboue: "Ousboue", th_dates: "Vendredi → Dimanche", th_status: "Statut",
-        // Admin
+        offline_mode: "📶 Mode hors-ligne : Vous consultez les dernières données enregistrées.",
         sec_note: "Sécurité : Chaque mosquée a son mot de passe. La modification du total de la ville nécessite 2 mots de passe.",
         manage_countries: "🌍 1. Gérer les Pays", manage_cities: "🏙️ 2. Gérer les Villes (Halakat)", manage_halakat: "⭕ 3. Gérer les Sous-Halakat (Secteurs)", manage_mosques: "🕌 4. Gérer les Mosquées",
         add_btn: "Ajouter", add_city_btn: "Ajouter la ville", add_mosque_title: "Ajouter une nouvelle mosquée", choose_halaka: "-- Choisir --",
@@ -178,7 +181,7 @@
         sisters_2m: "Sisters 2 months", sisters_40d: "Sisters 40 days", sisters_15d: "Sisters 15 days", sisters_3d: "Sisters 3 days",
         select_hint: "Select a city and a sub-halaka to display the schedule.",
         btn_whatsapp: "📱 Copy for WhatsApp", btn_print: "🖨️ Print / PDF", th_mosque: "Mosque", th_ousboue: "Ousboue", th_dates: "Friday → Sunday", th_status: "Status",
-        // Admin
+        offline_mode: "📶 Offline mode: You are viewing the last saved data.",
         sec_note: "Security: Each mosque has its password. Changing the city total requires 2 passwords.",
         manage_countries: "🌍 1. Manage Countries", manage_cities: "🏙️ 2. Manage Cities (Halakat)", manage_halakat: "⭕ 3. Manage Sub-Halakat", manage_mosques: "🕌 4. Manage Mosques",
         add_btn: "Add", add_city_btn: "Add City", add_mosque_title: "Add a new mosque", choose_halaka: "-- Choose --",
@@ -195,7 +198,7 @@
         sisters_2m: "أخوات شهرين", sisters_40d: "أخوات 40 يوماً", sisters_15d: "أخوات 15 يوماً", sisters_3d: "أخوات 3 أيام",
         select_hint: "اختر مدينة ثم حلقة فرعية لعرض الجدول.",
         btn_whatsapp: "📱 نسخ للواتساب", btn_print: "🖨️ طباعة / PDF", th_mosque: "المسجد", th_ousboue: "الأسبوع", th_dates: "الجمعة → الأحد", th_status: "الحالة",
-        // Admin
+        offline_mode: "📶 وضع عدم الاتصال: أنت تشاهد آخر البيانات المحفوظة.",
         sec_note: "الأمان: لكل مسجد كلمة مرور. لتعديل إجمالي المدينة يلزم كلمتا مرور.",
         manage_countries: "🌍 1. إدارة البلدان", manage_cities: "🏙️ 2. إدارة المدن (الحلقات)", manage_halakat: "⭕ 3. إدارة الحلقات الفرعية", manage_mosques: "🕌 4. إدارة المساجد",
         add_btn: "إضافة", add_city_btn: "إضافة مدينة", add_mosque_title: "إضافة مسجد جديد", choose_halaka: "-- اختر --",
@@ -212,7 +215,7 @@
         sisters_2m: "بہنیں 2 ماہ", sisters_40d: "بہنیں 40 دن", sisters_15d: "بہنیں 15 دن", sisters_3d: "بہنیں 3 دن",
         select_hint: "شیڈول دیکھنے کے لیے شہر اور ذیلی حلقہ منتخب کریں۔",
         btn_whatsapp: "📱 واٹس ایپ کے لیے کاپی کریں", btn_print: "🖨️ پرنٹ / PDF", th_mosque: "مسجد", th_ousboue: "ہفتہ", th_dates: "جمعہ → اتوار", th_status: "حالت",
-        // Admin
+        offline_mode: "📶 آف لائن موڈ: آپ آخری محفوظ شدہ ڈیٹا دیکھ رہے ہیں۔",
         sec_note: "سیکیورٹی: ہر مسجد کا اپنا پاس ورڈ ہے۔ شہر کا کل تبدیل کرنے کے لیے 2 پاس ورڈ درکار ہیں۔",
         manage_countries: "🌍 1. ممالک کا انتظام", manage_cities: "🏙️ 2. شہروں کا انتظام", manage_halakat: "⭕ 3. ذیلی حلقوں کا انتظام", manage_mosques: "🕌 4. مساجد کا انتظام",
         add_btn: "شامل کریں", add_city_btn: "شہر شامل کریں", add_mosque_title: "نئی مسجد شامل کریں", choose_halaka: "-- منتخب کریں --",
@@ -232,8 +235,6 @@
 
     function applyTranslations() {
       const dict = translations[currentLang];
-      
-      // Changer la direction du texte
       if (currentLang === 'ar' || currentLang === 'ur') {
         document.documentElement.setAttribute('dir', 'rtl');
         document.documentElement.setAttribute('lang', currentLang);
@@ -242,13 +243,11 @@
         document.documentElement.setAttribute('lang', currentLang);
       }
 
-      // Mettre à jour tous les éléments avec data-i18n
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (dict[key]) el.textContent = dict[key];
       });
 
-      // Mettre à jour les boutons de langue
       ['fr', 'en', 'ar', 'ur'].forEach(l => {
         const btn = document.getElementById('btn-lang-' + l);
         if (l === currentLang) {
@@ -258,14 +257,13 @@
         }
       });
 
-      // Si l'admin est ouvert, on le rafraîchit pour traduire les éléments générés
       if (!document.getElementById('view-admin').classList.contains('hidden')) {
          window.initAdmin();
       }
     }
 
     // ==========================================
-    // 2. LOGIQUE PWA (INSTALLATION)
+    // 2. LOGIQUE PWA & SERVICE WORKER (HORS-LIGNE)
     // ==========================================
     const manifestData = {
       name: 'Khourouj Tabligh', short_name: 'Khourouj', start_url: '.', display: 'standalone',
@@ -274,8 +272,21 @@
     };
     const blob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
     document.querySelector('#manifest-placeholder').setAttribute('href', URL.createObjectURL(blob));
+
     if ('serviceWorker' in navigator) {
-      const swCode = `self.addEventListener('install', (e) => { self.skipWaiting(); }); self.addEventListener('fetch', (e) => {});`;
+      // Service Worker qui met en cache le site lui-même (HTML/JS) pour qu'il s'ouvre sans internet
+      const swCode = `
+        const CACHE_NAME = 'khourouj-cache-v1';
+        self.addEventListener('install', (e) => {
+          e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
+          self.skipWaiting();
+        });
+        self.addEventListener('fetch', (e) => {
+          e.respondWith(
+            caches.match(e.request).then(response => response || fetch(e.request))
+          );
+        });
+      `;
       navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], { type: 'application/javascript' }))).catch(err => console.log('SW error:', err));
     }
 
@@ -291,7 +302,7 @@
     
     function getMonthName(index) {
         if(currentLang === 'en') return MONTHS_EN[index];
-        return MONTHS_FR[index]; // Fallback pour AR/UR (on pourra traduire plus tard si besoin)
+        return MONTHS_FR[index];
     }
 
     function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
@@ -321,18 +332,56 @@
         
         let dataCache = { pays: [], villes: [], halakat: [], mosquees: [] };
 
+        // --- FONCTION DE CHARGEMENT AVEC GESTION HORS-LIGNE ---
         async function loadData() {
-          const { data: pays, error: e1 } = await supabase.from('pays').select('*');
-          const { data: villes, error: e2 } = await supabase.from('villes').select('*');
-          const { data: halakat, error: e3 } = await supabase.from('halakat').select('*');
-          const { data: mosquees, error: e4 } = await supabase.from('mosquees').select('*');
+          const offlineBanner = document.getElementById('offline-banner');
+          const tabAdmin = document.getElementById('tab-admin');
           
-          if (e1 || e2 || e3 || e4) { showError("Erreur de base de données. Avez-vous exécuté le dernier code SQL ?"); return; }
-          dataCache = { pays: pays || [], villes: villes || [], halakat: halakat || [], mosquees: mosquees || [] };
+          if (!navigator.onLine) {
+             // Pas de réseau du tout
+             offlineBanner.classList.remove('hidden');
+             tabAdmin.classList.add('opacity-50', 'pointer-events-none');
+             const saved = localStorage.getItem('khourouj_offline_data');
+             if (saved) { dataCache = JSON.parse(saved); return true; }
+             return false;
+          }
+
+          try {
+            // On tente de charger depuis internet
+            const { data: pays, error: e1 } = await supabase.from('pays').select('*');
+            const { data: villes, error: e2 } = await supabase.from('villes').select('*');
+            const { data: halakat, error: e3 } = await supabase.from('halakat').select('*');
+            const { data: mosquees, error: e4 } = await supabase.from('mosquees').select('*');
+            
+            if (e1 || e2 || e3 || e4) throw new Error("Erreur DB");
+
+            dataCache = { pays: pays || [], villes: villes || [], halakat: halakat || [], mosquees: mosquees || [] };
+            
+            // On sauvegarde pour le hors-ligne !
+            localStorage.setItem('khourouj_offline_data', JSON.stringify(dataCache));
+            
+            offlineBanner.classList.add('hidden');
+            tabAdmin.classList.remove('opacity-50', 'pointer-events-none');
+            return true;
+
+          } catch (err) {
+            // Le réseau est là mais Supabase ne répond pas (ou erreur)
+            offlineBanner.classList.remove('hidden');
+            tabAdmin.classList.add('opacity-50', 'pointer-events-none');
+            const saved = localStorage.getItem('khourouj_offline_data');
+            if (saved) { dataCache = JSON.parse(saved); return true; }
+            showError("Erreur de base de données et aucune sauvegarde trouvée.");
+            return false;
+          }
         }
 
+        // Écouter le retour du réseau
+        window.addEventListener('online', () => { loadData().then(() => { refreshConsultationSelects(); }); });
+        window.addEventListener('offline', () => { document.getElementById('offline-banner').classList.remove('hidden'); });
+
         async function reloadDataAndRefresh() {
-          await loadData(); refreshConsultationSelects(); renderAdminLists(); renderPlanning();
+          const success = await loadData();
+          if(success) { refreshConsultationSelects(); renderAdminLists(); renderPlanning(); }
         }
 
         function refreshConsultationSelects() {
@@ -355,7 +404,6 @@
           if (!villeId) { document.getElementById('ville-stats-container').classList.add('hidden'); return; }
           
           const ville = dataCache.villes.find(v => String(v.id) === villeId);
-          
           const halakasDeLaVille = dataCache.halakat.filter(h => String(h.ville_id) === villeId).map(h => String(h.id));
           const mosqueesDeLaVille = dataCache.mosquees.filter(m => halakasDeLaVille.includes(String(m.halaka_id)));
           
@@ -405,6 +453,10 @@
           });
         };
 
+        // Le reste du code Admin (initAdmin, renderAdminLists, CRUD) reste strictement identique.
+        // Je le raccourcis ici pour la lisibilité, mais il est bien présent dans le fichier complet.
+        // ... (Voir ci-dessous dans le code complet)
+        
         window.initAdmin = function() {
           const dict = translations[currentLang];
           document.getElementById('view-admin').innerHTML = `
@@ -491,7 +543,6 @@
                         <div><label class="text-xs text-gray-600">${dict.jamaats_3d}</label><input id="st-m-jamaats" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
                         <div><label class="text-xs text-gray-600">${dict.ziara_2h30}</label><input id="st-m-z2h30" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
                         <div><label class="text-xs text-gray-600">${dict.ziara_less}</label><input id="st-m-zmoins" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
-                        
                         <div><label class="text-xs text-gray-600">${dict.sisters_2m}</label><input id="st-m-so2m" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
                         <div><label class="text-xs text-gray-600">${dict.sisters_40d}</label><input id="st-m-so40j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
                         <div><label class="text-xs text-gray-600">${dict.sisters_15d}</label><input id="st-m-so15j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
@@ -545,7 +596,6 @@
         };
 
         // --- FONCTIONS DE SÉCURITÉ (MODALES) ---
-        // ... (Les fonctions modales restent les mêmes, vous pouvez ajouter les traductions si besoin)
         window.promptUpdateVilleTotal = function(villeId, currentTotal) {
             showModal(`
                 <h3 class="text-xl font-bold mb-4 text-emerald-800">Modifier le total (Ville)</h3>
@@ -671,10 +721,12 @@
         };
 
         // LANCEMENT
-        loadData().then(() => {
-          applyTranslations(); // Applique la langue sauvegardée
-          refreshConsultationSelects(); 
-          initAdmin();
+        loadData().then((success) => {
+          if(success) {
+            applyTranslations();
+            refreshConsultationSelects(); 
+            initAdmin();
+          }
           
           document.getElementById('sel-pays').addEventListener('change', onPaysChange);
           document.getElementById('sel-ville').addEventListener('change', onVilleChange);
