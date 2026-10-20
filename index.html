@@ -26,7 +26,6 @@
 </head>
 <body class="bg-slate-200 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen font-sans transition-colors duration-300">
 
-  <!-- ÉCRAN DE CHARGEMENT AVEC SECOURS -->
   <div id="loading-screen" class="fixed inset-0 bg-slate-900 z-[999] flex flex-col items-center justify-center text-white">
     <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-500 mb-4"></div>
     <h2 class="text-xl font-bold">Chargement des données...</h2>
@@ -39,16 +38,17 @@
 
   <div id="debug-box" class="debug-box"></div>
 
-  <div class="bg-slate-800 dark:bg-black text-white p-2 flex justify-between items-center px-4 text-sm no-print shadow-md transition-colors">
-    <div class="flex gap-2">
-      <button onclick="setLanguage('fr')" id="btn-lang-fr" class="px-3 py-1 rounded bg-emerald-600 font-bold transition">🇫🇷 FR</button>
-      <button onclick="setLanguage('en')" id="btn-lang-en" class="px-3 py-1 rounded hover:bg-slate-600 transition">🇬🇧 EN</button>
-      <button onclick="setLanguage('ar')" id="btn-lang-ar" class="px-3 py-1 rounded hover:bg-slate-600 transition">🇸🇦 AR</button>
-      <button onclick="setLanguage('ur')" id="btn-lang-ur" class="px-3 py-1 rounded hover:bg-slate-600 transition">🇵🇰 UR</button>
-    </div>
-    <div class="flex gap-2">
-      <button onclick="clearCache()" class="px-3 py-1 bg-red-600 hover:bg-red-500 rounded transition text-sm font-bold" title="Vider le cache et recharger">🗑️</button>
-      <button onclick="toggleDarkMode()" id="dark-mode-btn" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded transition text-lg">🌙</button>
+  <!-- NOUVELLE BARRE DE LANGUE (Style Capture d'écran) -->
+  <div class="bg-slate-900 dark:bg-black text-white py-3 px-4 flex justify-center items-center gap-2 no-print shadow-md transition-colors">
+    <button onclick="setLanguage('ur')" id="btn-lang-ur" class="px-4 py-1.5 rounded-full border text-sm font-bold transition">🇵🇰 UR</button>
+    <button onclick="setLanguage('ar')" id="btn-lang-ar" class="px-4 py-1.5 rounded-full border text-sm font-bold transition">🇸🇦 AR</button>
+    <button onclick="setLanguage('en')" id="btn-lang-en" class="px-4 py-1.5 rounded-full border text-sm font-bold transition">🇬🇧 EN</button>
+    <button onclick="setLanguage('fr')" id="btn-lang-fr" class="px-4 py-1.5 rounded-full border text-sm font-bold transition">🇫🇷 FR</button>
+    
+    <!-- Boutons d'outils à droite -->
+    <div class="absolute right-2 flex gap-1">
+      <button onclick="clearCache()" class="px-2 py-1 text-red-500 hover:text-red-400 rounded transition text-sm font-bold" title="Vider le cache">🗑️</button>
+      <button onclick="toggleDarkMode()" id="dark-mode-btn" class="px-2 py-1 text-gray-400 hover:text-white rounded transition text-lg">🌙</button>
     </div>
   </div>
 
@@ -222,6 +222,22 @@
     if (localStorage.getItem('khourouj_theme') === 'dark') { document.documentElement.classList.add('dark'); document.getElementById('dark-mode-btn').textContent = '☀️'; }
 
     // ==========================================
+    // GESTION DES LANGUES
+    // ==========================================
+    function updateLanguageButtons() {
+        ['fr', 'en', 'ar', 'ur'].forEach(l => {
+            const btn = document.getElementById('btn-lang-' + l);
+            if (l === currentLang) {
+                // Style actif (Jaune/Or comme la capture)
+                btn.className = "px-4 py-1.5 rounded-full border border-amber-500 bg-amber-500 text-black text-sm font-bold transition shadow-md";
+            } else {
+                // Style inactif
+                btn.className = "px-4 py-1.5 rounded-full border border-slate-600 text-slate-300 bg-transparent text-sm font-bold hover:bg-slate-700 transition";
+            }
+        });
+    }
+
+    // ==========================================
     // UTILS & CALENDRIER
     // ==========================================
     const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
@@ -258,6 +274,14 @@
     // ==========================================
     let dataCache = { pays: [], villes: [], halakat: [], mosquees: [] };
     let myChart = null;
+    let currentLang = localStorage.getItem('khourouj_lang') || 'fr';
+    
+    window.setLanguage = function(lang) { 
+        currentLang = lang; 
+        localStorage.setItem('khourouj_lang', lang); 
+        updateLanguageButtons();
+        if (!document.getElementById('view-admin').classList.contains('hidden')) window.initAdmin();
+    }
 
     const script = document.createElement('script');
     script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
@@ -266,6 +290,8 @@
             const SUPABASE_URL = 'https://rhtaqusrkgqawtbqysgw.supabase.co';
             const SUPABASE_ANON_KEY = 'sb_publishable_JIjs3oxZszYHTaON8iH06g_-mnoCVfl';
             window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            
+            updateLanguageButtons(); // Initialise les boutons avec le bon style
             
             await loadData();
             clearTimeout(loadTimeout);
@@ -507,7 +533,7 @@
     };
 
     // ==========================================
-    // 3. GESTIONNAIRE (ANTI-DOUBLONS)
+    // 3. GESTIONNAIRE
     // ==========================================
     function initAdminSelects() {
         const ap = document.getElementById('adm-sel-pays');
@@ -576,10 +602,7 @@
     }
     window.doAddPays = async () => {
         const nom = document.getElementById('m-p-nom').value.trim(); if(!nom) return;
-        
-        // Anti-doublon
         if (dataCache.pays.some(p => p.nom.toLowerCase() === nom.toLowerCase())) { alert("Ce pays existe déjà !"); return; }
-        
         await supabase.from('pays').insert({ nom });
         closeModal(); await syncData();
     }
@@ -594,10 +617,7 @@
     }
     window.doAddVille = async () => {
         const pays_id = document.getElementById('m-v-pays').value; const nom = document.getElementById('m-v-nom').value.trim(); if(!nom) return;
-        
-        // Anti-doublon (Vérifie si la ville existe déjà dans ce pays)
         if (dataCache.villes.some(v => String(v.pays_id) === pays_id && v.nom.toLowerCase() === nom.toLowerCase())) { alert("Cette ville existe déjà dans ce pays !"); return; }
-        
         await supabase.from('villes').insert({ nom, pays_id, nb_mosquees_total: 0 });
         closeModal(); await syncData();
     }
@@ -612,10 +632,7 @@
     }
     window.doAddHalaka = async () => {
         const ville_id = document.getElementById('m-h-ville').value; const nom = document.getElementById('m-h-nom').value.trim(); if(!nom) return;
-        
-        // Anti-doublon
         if (dataCache.halakat.some(h => String(h.ville_id) === ville_id && h.nom.toLowerCase() === nom.toLowerCase())) { alert("Ce sous-halaka existe déjà dans cette ville !"); return; }
-        
         await supabase.from('halakat').insert({ nom, ville_id });
         closeModal(); await syncData();
     }
@@ -632,7 +649,6 @@
         openMosqueeForm(m, m.halaka_id);
     }
 
-    // Formulaire mosquée unifié (Ajout et Modif)
     function openMosqueeForm(m, halakaId) {
         const isEdit = m !== null;
         
@@ -731,7 +747,6 @@
         if(!nom) { alert("Le nom de la mosquée est obligatoire."); return; }
         if(!id && !pass) { alert("Le mot de passe est obligatoire pour créer une mosquée."); return; }
 
-        // Anti-doublon pour les mosquées
         if(!id && dataCache.mosquees.some(m => String(m.halaka_id) === String(halakaId) && m.nom.toLowerCase() === nom.toLowerCase())) {
             alert("Une mosquée avec ce nom existe déjà dans ce sous-halaka !"); return;
         }
