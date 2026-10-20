@@ -20,14 +20,8 @@
     .chart-container { position: relative; height: 300px; width: 100%; }
     
     /* Correction forcée pour les champs de saisie */
-    input, select, textarea {
-        color: #1e293b; /* text-slate-800 par défaut */
-    }
-    .dark input, .dark select, .dark textarea {
-        color: #f8fafc; /* text-slate-50 en mode sombre */
-        background-color: #334155; /* bg-slate-700 en mode sombre */
-        border-color: #475569; /* border-slate-600 */
-    }
+    input, select, textarea { color: #1e293b; }
+    .dark input, .dark select, .dark textarea { color: #f8fafc; background-color: #334155; border-color: #475569; }
   </style>
 </head>
 <body class="bg-slate-200 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen font-sans transition-colors duration-300">
@@ -162,16 +156,17 @@
     <!-- ================= 3. GESTIONNAIRE ================= -->
     <section id="view-admin" class="hidden">
       
-      <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow mb-6 border border-slate-300 dark:border-slate-700">
-        <h2 class="text-lg font-bold mb-3 text-emerald-800 dark:text-emerald-400" data-i18n="manage_title">Gestion des structures</h2>
-        <div class="flex flex-wrap gap-2 mb-4">
-          <button onclick="openAddPaysModal()" class="bg-emerald-600 text-white px-3 py-1 rounded text-sm shadow hover:bg-emerald-700">+ <span data-i18n="add_pays">Pays</span></button>
-          <button onclick="openAddVilleModal()" class="bg-emerald-600 text-white px-3 py-1 rounded text-sm shadow hover:bg-emerald-700">+ <span data-i18n="add_ville">Ville</span></button>
-          <button onclick="openAddHalakaModal()" class="bg-emerald-600 text-white px-3 py-1 rounded text-sm shadow hover:bg-emerald-700">+ <span data-i18n="add_halaka">Sous-Halaka</span></button>
-          <button onclick="openAddMosqueeModal()" class="bg-blue-600 text-white px-3 py-1 rounded text-sm shadow hover:bg-blue-700 font-bold">+ <span data-i18n="add_mosquee">Mosquée</span></button>
+      <!-- Barre d'outils simplifiée -->
+      <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow mb-6 border border-slate-300 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <h2 class="text-lg font-bold text-emerald-800 dark:text-emerald-400" data-i18n="manage_title">Gestion</h2>
+        <div class="flex gap-2">
+          <button onclick="openStructureModal()" class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 px-3 py-1 rounded text-sm font-bold shadow hover:bg-slate-300 dark:hover:bg-slate-600 transition">⚙️ Structure</button>
+          <button onclick="openAddMosqueeModal()" class="bg-blue-600 text-white px-4 py-1 rounded text-sm font-bold shadow hover:bg-blue-700">+ <span data-i18n="add_mosquee">Mosquée</span></button>
         </div>
+      </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-700/50 p-3 rounded border border-slate-200 dark:border-slate-600">
+      <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow mb-6 border border-slate-300 dark:border-slate-700">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <div><label class="block text-xs font-semibold mb-1">Pays</label><select id="adm-sel-pays" onchange="onAdmPaysChange()" class="w-full border rounded px-2 py-1 text-sm"></select></div>
           <div><label class="block text-xs font-semibold mb-1">Ville</label><select id="adm-sel-ville" onchange="onAdmVilleChange()" class="w-full border rounded px-2 py-1 text-sm"></select></div>
           <div><label class="block text-xs font-semibold mb-1">Halaka</label><select id="adm-sel-halaka" onchange="renderAdminMosquees()" class="w-full border rounded px-2 py-1 text-sm"></select></div>
@@ -199,7 +194,10 @@
       const html = document.documentElement;
       if (html.classList.contains('dark')) { html.classList.remove('dark'); localStorage.setItem('khourouj_theme', 'light'); document.getElementById('dark-mode-btn').textContent = '🌙'; }
       else { html.classList.add('dark'); localStorage.setItem('khourouj_theme', 'dark'); document.getElementById('dark-mode-btn').textContent = '☀️'; }
-      if(document.getElementById('view-stats').classList.contains('hidden') === false) renderChart();
+      
+      // Correction du bug : on récupère la ville active pour redessiner le graphique
+      const activeVille = document.getElementById('sel-stats-ville').value;
+      if(activeVille) { renderStats(activeVille); }
     }
 
     if (localStorage.getItem('khourouj_theme') === 'dark') { document.documentElement.classList.add('dark'); document.getElementById('dark-mode-btn').textContent = '☀️'; }
@@ -211,12 +209,13 @@
         filter_stats: "Choisir une ville :", btn_share_city: "Partager (WhatsApp)", global_stats: "Bilan",
         total_mosques: "Total Mosquées", mosques_5amal: "Mosquées 5 Amal", houses_around: "Maisons", houses_5amal: "Maisons 5A",
         bros_4m: "F. 4 mois", bros_4m_year: "F. 4M/an", bros_40d: "F. 40j", jamaats_3d: "Jamaats", ziara_2h30: "Ziyara 2h30", ziara_less: "Ziyara -", sisters_2m: "S. 2m", sisters_40d: "S. 40j", sisters_15d: "S. 15j", sisters_3d: "S. 3j",
-        manage_title: "Gestion des structures", add_pays: "Pays", add_ville: "Ville", add_halaka: "Halaka", add_mosquee: "Mosquée",
+        manage_title: "Gestion", add_pays: "Pays", add_ville: "Ville", add_halaka: "Halaka", add_mosquee: "Mosquée",
         btn_jamaat: "👁️ Jamaat", save: "Enregistrer", delete: "Suppr", edit: "Édit", total: "Total",
         modal_jamaat: "Infos Jamaat & Hidayat", emir: "Émir", phone: "Tél (caché)", hidayat_aller: "Hidayat Aller", hidayat_retour: "Hidayat Retour", statut: "Statut",
         stat_none: "Aucune", stat_mosque: "À la mosquée", stat_out: "En sortie", details_jamaat: "Détails", contact: "Contacter",
         stats_title: "Statistiques", pass_req: "Mot de passe (Sécurité)", pwd_wrong: "Mot de passe incorrect !", saved: "Enregistré avec succès !",
-        dest: "Destination", heure: "Heure", nb_freres: "Nb Frères", info: "Lieu/Heure", ajouter: "Ajouter", modifier: "Modifier" 
+        dest: "Destination", heure: "Heure", nb_freres: "Nb Frères", info: "Lieu/Heure", ajouter: "Ajouter", modifier: "Modifier",
+        structure_title: "Gérer la structure"
       },
       en: { app_title: "Khourouj Tabligh", app_subtitle: "Sorties Management", tab_consult: "📖 Consult", tab_stats: "📊 Stats", tab_admin: "⚙️ Admin",
         search_title: "🔍 Quick Search", search_placeholder: "Type city...", country: "Country", city: "City (Halaka)", sub_halaka: "Sub-Halaka",
@@ -224,12 +223,13 @@
         filter_stats: "Select a city:", btn_share_city: "Share (WhatsApp)", global_stats: "Report",
         total_mosques: "Total Mosques", mosques_5amal: "Mosques 5A", houses_around: "Houses", houses_5amal: "Houses 5A",
         bros_4m: "B. 4m", bros_4m_year: "B. 4m/y", bros_40d: "B. 40d", jamaats_3d: "Jamaats", ziara_2h30: "Ziyara 2h30", ziara_less: "Ziyara -", sisters_2m: "S. 2m", sisters_40d: "S. 40d", sisters_15d: "S. 15d", sisters_3d: "S. 3d",
-        manage_title: "Structure Management", add_pays: "Country", add_ville: "City", add_halaka: "Halaka", add_mosquee: "Mosque",
+        manage_title: "Management", add_pays: "Country", add_ville: "City", add_halaka: "Halaka", add_mosquee: "Mosque",
         btn_jamaat: "👁️ Jamaat", save: "Save", delete: "Del", edit: "Edit", total: "Total",
         modal_jamaat: "Jamaat & Hidayat Info", emir: "Emir", phone: "Phone (hidden)", hidayat_aller: "Hidayat Aller", hidayat_retour: "Hidayat Retour", statut: "Status",
         stat_none: "None", stat_mosque: "At mosque", stat_out: "Out", details_jamaat: "Details", contact: "Contact",
         stats_title: "Statistics", pass_req: "Password (Security)", pwd_wrong: "Wrong password!", saved: "Saved successfully!",
-        dest: "Destination", heure: "Time", nb_freres: "Nb Bros", info: "Place/Time", ajouter: "Add", modifier: "Edit"
+        dest: "Destination", heure: "Time", nb_freres: "Nb Bros", info: "Place/Time", ajouter: "Add", modifier: "Edit",
+        structure_title: "Manage structure"
       },
       ar: { app_title: "خروج تبليغ", app_subtitle: "إدارة الخروج", tab_consult: "📖 استشارة", tab_stats: "📊 إحصائيات", tab_admin: "⚙️ إدارة",
         search_title: "🔍 بحث", search_placeholder: "اكتب المدينة...", country: "البلد", city: "المدينة", sub_halaka: "الحلقة",
@@ -237,12 +237,13 @@
         filter_stats: "اختر مدينة:", btn_share_city: "مشاركة (واتساب)", global_stats: "تقرير",
         total_mosques: "إجمالي المساجد", mosques_5amal: "مساجد 5أ", houses_around: "بيوت", houses_5amal: "بيوت 5أ",
         bros_4m: "إخوة 4أشهر", bros_4m_year: "4أشهر/سنة", bros_40d: "إخوة 40ي", jamaats_3d: "جماعات", ziara_2h30: "زيارة 2.30", ziara_less: "زيارة -", sisters_2m: "أخوات 2أ", sisters_40d: "أخوات 40ي", sisters_15d: "أخوات 15ي", sisters_3d: "أخوات 3أ",
-        manage_title: "إدارة الهيكل", add_pays: "بلد", add_ville: "مدينة", add_halaka: "حلقة", add_mosquee: "مسجد",
+        manage_title: "إدارة", add_pays: "بلد", add_ville: "مدينة", add_halaka: "حلقة", add_mosquee: "مسجد",
         btn_jamaat: "👁️ جماعة", save: "حفظ", delete: "حذف", edit: "تعديل", total: "إجمالي",
         modal_jamaat: "معلومات الجماعة", emir: "أمير", phone: "هاتف (مخفي)", hidayat_aller: "هداية الذهاب", hidayat_retour: "هداية العودة", statut: "الحالة",
         stat_none: "لا يوجد", stat_mosque: "في المسجد", stat_out: "في الخروج", details_jamaat: "تفاصيل", contact: "اتصل",
         stats_title: "إحصائيات", pass_req: "كلمة المرور", pwd_wrong: "كلمة مرور خاطئة!", saved: "تم الحفظ!",
-        dest: "الوجهة", heure: "الوقت", nb_freres: "عدد الإخوة", info: "المكان/الوقت", ajouter: "إضافة", modifier: "تعديل"
+        dest: "الوجهة", heure: "الوقت", nb_freres: "عدد الإخوة", info: "المكان/الوقت", ajouter: "إضافة", modifier: "تعديل",
+        structure_title: "إدارة الهيكل"
       },
       ur: { app_title: "خروج تبلیغ", app_subtitle: "انتظام", tab_consult: "📖 مشورہ", tab_stats: "📊 اعداد", tab_admin: "⚙️ منتظم",
         search_title: "🔍 تلاش", search_placeholder: "شہر لکھیں...", country: "ملک", city: "شہر", sub_halaka: "حلقہ",
@@ -255,7 +256,8 @@
         modal_jamaat: "معلومات", emir: "امیر", phone: "فون", hidayat_aller: "ہدایت (روانگی)", hidayat_retour: "ہدایت (واپسی)", statut: "حالت",
         stat_none: "کوئی نہیں", stat_mosque: "مسجد میں", stat_out: "خروج میں", details_jamaat: "تفصیلات", contact: "رابطہ",
         stats_title: "اعداد و شمار", pass_req: "پاس ورڈ", pwd_wrong: "غلط پاس ورڈ!", saved: "محفوظ ہو گیا!",
-        dest: "منزل", heure: "وقت", nb_freres: "بھائی", info: "جگہ/وقت", ajouter: "شامل", modifier: "تبدیل"
+        dest: "منزل", heure: "وقت", nb_freres: "بھائی", info: "جگہ/وقت", ajouter: "شامل", modifier: "تبدیل",
+        structure_title: "ڈھانچہ"
       }
     };
 
@@ -572,7 +574,7 @@
         if(!hid) { list.innerHTML = '<p class="text-center text-gray-500 mt-4">Sélectionnez une halaka.</p>'; return; }
         
         const mosquees = dataCache.mosquees.filter(m => String(m.halaka_id) === hid);
-        if(mosquees.length === 0) { list.innerHTML = '<p class="text-center text-gray-500 mt-4">Aucune mosquée. Cliquez sur "+ Mosquée" ci-dessus.</p>'; return; }
+        if(mosquees.length === 0) { list.innerHTML = '<p class="text-center text-gray-500 mt-4">Aucune mosquée.</p>'; return; }
 
         list.innerHTML = mosquees.map(m => `
             <div class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded p-3 flex justify-between items-center shadow-sm">
@@ -586,6 +588,19 @@
                 </div>
             </div>
         `).join('');
+    }
+
+    // --- POPUP STRUCTURE ---
+    window.openStructureModal = function() {
+        document.getElementById('modal-content').innerHTML = `
+            <h3 class="text-lg font-bold mb-4">${translations[currentLang].structure_title}</h3>
+            <div class="space-y-2">
+                <button onclick="openAddPaysModal()" class="w-full text-left bg-slate-100 dark:bg-slate-700 p-3 rounded font-bold hover:bg-slate-200 dark:hover:bg-slate-600">+ ${translations[currentLang].add_pays}</button>
+                <button onclick="openAddVilleModal()" class="w-full text-left bg-slate-100 dark:bg-slate-700 p-3 rounded font-bold hover:bg-slate-200 dark:hover:bg-slate-600">+ ${translations[currentLang].add_ville}</button>
+                <button onclick="openAddHalakaModal()" class="w-full text-left bg-slate-100 dark:bg-slate-700 p-3 rounded font-bold hover:bg-slate-200 dark:hover:bg-slate-600">+ ${translations[currentLang].add_halaka}</button>
+            </div>
+        `;
+        document.getElementById('modal').classList.remove('hidden');
     }
 
     // --- POPUPS DE CRÉATION ---
@@ -713,7 +728,6 @@
         };
 
         if(id) {
-            // Update simplifié (en production on utiliserait la RPC avec mot de passe)
             await supabase.from('mosquees').update(data).eq('id', id); 
         } else {
             await supabase.from('mosquees').insert({ ...data, halaka_id: halakaId, password: pass });
