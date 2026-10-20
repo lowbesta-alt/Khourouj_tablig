@@ -154,32 +154,46 @@
       </div>
     </section>
 
-    <!-- ================= 3. GESTIONNAIRE ================= -->
+    <!-- ================= 3. GESTIONNAIRE (TABLEAU DE BORD) ================= -->
     <section id="view-admin" class="hidden">
-      <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow mb-6 border border-slate-300 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-3">
-        <h2 class="text-lg font-bold text-emerald-800 dark:text-emerald-400" data-i18n="manage_title">Gestion</h2>
-        <div class="flex gap-2">
-          <button onclick="openStructureModal()" class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 px-3 py-1 rounded text-sm font-bold shadow hover:bg-slate-300 dark:hover:bg-slate-600 transition" data-i18n="btn_structure">⚙️ Structure</button>
-          <button onclick="openAddMosqueeModal()" class="bg-blue-600 text-white px-4 py-1 rounded text-sm font-bold shadow hover:bg-blue-700">+ <span data-i18n="add_mosquee">Mosquée</span></button>
+      <div class="mb-6">
+        <h2 class="text-xl font-bold text-emerald-800 dark:text-emerald-400 mb-4 text-center" data-i18n="manage_title">Gestion</h2>
+        
+        <!-- Les 4 grosses cartes -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div onclick="openManageModal('pays')" class="bg-white dark:bg-slate-800 rounded-xl shadow border-2 border-transparent hover:border-emerald-500 cursor-pointer p-6 flex flex-col items-center justify-center transition-all hover:scale-105">
+            <div class="text-5xl mb-3">🌍</div>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100" data-i18n="add_pays">Pays</h3>
+            <p class="text-xs text-slate-500 mt-1">Ajouter / Voir</p>
+          </div>
+          
+          <div onclick="openManageModal('villes')" class="bg-white dark:bg-slate-800 rounded-xl shadow border-2 border-transparent hover:border-emerald-500 cursor-pointer p-6 flex flex-col items-center justify-center transition-all hover:scale-105">
+            <div class="text-5xl mb-3">🏙️</div>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100" data-i18n="add_ville">Villes</h3>
+            <p class="text-xs text-slate-500 mt-1">Ajouter / Voir</p>
+          </div>
+
+          <div onclick="openManageModal('halakat')" class="bg-white dark:bg-slate-800 rounded-xl shadow border-2 border-transparent hover:border-emerald-500 cursor-pointer p-6 flex flex-col items-center justify-center transition-all hover:scale-105">
+            <div class="text-5xl mb-3">⭕</div>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100" data-i18n="add_halaka">Halakat</h3>
+            <p class="text-xs text-slate-500 mt-1">Ajouter / Voir</p>
+          </div>
+
+          <div onclick="openManageModal('mosquees')" class="bg-white dark:bg-slate-800 rounded-xl shadow border-2 border-blue-500 cursor-pointer p-6 flex flex-col items-center justify-center transition-all hover:scale-105 relative">
+            <div class="absolute top-2 right-2 flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span></div>
+            <div class="text-5xl mb-3">🕌</div>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100" data-i18n="add_mosquee">Mosquées</h3>
+            <p class="text-xs text-slate-500 mt-1">Gérer les détails</p>
+          </div>
         </div>
       </div>
-
-      <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow mb-6 border border-slate-300 dark:border-slate-700">
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <div><label class="block text-xs font-semibold mb-1" data-i18n="country">Pays</label><select id="adm-sel-pays" onchange="onAdmPaysChange()" class="w-full border rounded px-2 py-1 text-sm"></select></div>
-          <div><label class="block text-xs font-semibold mb-1" data-i18n="city">Ville</label><select id="adm-sel-ville" onchange="onAdmVilleChange()" class="w-full border rounded px-2 py-1 text-sm"></select></div>
-          <div><label class="block text-xs font-semibold mb-1" data-i18n="sub_halaka">Halaka</label><select id="adm-sel-halaka" onchange="renderAdminMosquees()" class="w-full border rounded px-2 py-1 text-sm"></select></div>
-        </div>
-      </div>
-
-      <div id="admin-mosquees-list" class="space-y-2"></div>
     </section>
 
   </main>
 
   <!-- MODAL GLOBAL -->
   <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-[100] flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-lg p-5 relative my-8">
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-2xl p-5 relative my-8">
       <button onclick="closeModal()" class="absolute top-2 right-4 text-3xl text-gray-400 hover:text-gray-800 dark:hover:text-white">&times;</button>
       <div id="modal-content"></div>
     </div>
@@ -191,13 +205,13 @@
     // ==========================================
     const translations = {
       fr: { 
-        loading: "Chargement...", loading_error: "Connexion instante ou bloquée.", btn_retry: "Réessayer",
+        loading: "Chargement...", loading_error: "Connexion lente ou bloquée.", btn_retry: "Réessayer",
         app_title: "Khourouj Tabligh", app_subtitle: "Gestion des sorties", tab_consult: "📖 Consultation", tab_stats: "📊 Statistiques", tab_admin: "⚙️ Gestionnaire",
         country: "Pays", city: "Ville (Halaka)", sub_halaka: "Sous-Halaka", th_mosque: "Mosquée", th_ousboue: "Ousboue", th_dates: "Dates", th_status: "Statut",
         filter_stats: "Choisir une ville :", btn_share_city: "Partager (WhatsApp)", total_mosques: "Total Mosquées", mosques_5amal: "Mosquées 5 Amal", houses_around: "Maisons autour", houses_5amal: "Maisons 5 Amal",
         bros_4m: "Frères sortis 4 mois", bros_4m_year: "Frères donnant 4 mois/an", bros_40d: "Frères sortis 40 jours", jamaats_3d: "Jamaats 3 jours", ziara_2h30: "Donnant 2h30/jour", ziara_less: "Donnant < 2h30/jour",
         sisters_2m: "Sœurs sorties 2 mois", sisters_40d: "Sœurs sorties 40 jours", sisters_15d: "Sœurs sorties 15 jours", sisters_3d: "Sœurs sorties 3 jours",
-        manage_title: "Gestion", btn_structure: "⚙️ Structure", add_mosquee: "Mosquée", add_pays: "Pays", add_ville: "Ville", add_halaka: "Sous-Halaka",
+        manage_title: "Tableau de Bord", btn_structure: "⚙️ Structure", add_mosquee: "Mosquée", add_pays: "Pays", add_ville: "Ville", add_halaka: "Halaka",
         form_nom: "Nom", form_ousboue: "Ousboue", form_pass: "Mot de passe", form_emir: "Émir", form_tel: "Téléphone", btn_save: "Enregistrer", btn_delete: "Supprimer",
         no_mosque: "Aucune mosquée.", select_halaka_hint: "Sélectionnez une halaka pour voir les mosquées.",
         modal_add_pays: "Ajouter un Pays", modal_add_ville: "Ajouter une Ville", modal_add_halaka: "Ajouter un Sous-Halaka", modal_structure: "Gérer la structure",
@@ -205,6 +219,7 @@
         label_statut: "Statut", label_heure: "Heure de sortie", label_dest: "Destination", label_nb: "Nombre de frères", label_liste: "Liste des frères",
         label_emir: "Nom de l'Émir", label_emir_tel: "Téléphone de l'Émir", label_h_aller: "Hidayat Aller", label_h_retour: "Hidayat Retour", label_lieu_heure: "Lieu et heure",
         stat_aucune: "Aucune", stat_mosque: "Frères à la mosquée", stat_sortie: "Jamaat en sortie",
+        list_title: "Liste existante", btn_add: "Ajouter", btn_close: "Fermer", filter_by_halaka: "Filtrer par Halaka",
         mois: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre']
       },
       en: { 
@@ -214,7 +229,7 @@
         filter_stats: "Select a city:", btn_share_city: "Share (WhatsApp)", total_mosques: "Total Mosques", mosques_5amal: "Mosques 5 Amal", houses_around: "Houses around", houses_5amal: "Houses 5 Amal",
         bros_4m: "Brothers out 4 months", bros_4m_year: "Brothers giving 4m/year", bros_40d: "Brothers out 40 days", jamaats_3d: "Jamaats 3 days", ziara_2h30: "Giving 2h30/day", ziara_less: "Giving < 2h30/day",
         sisters_2m: "Sisters out 2 months", sisters_40d: "Sisters out 40 days", sisters_15d: "Sisters out 15 days", sisters_3d: "Sisters out 3 days",
-        manage_title: "Management", btn_structure: "⚙️ Structure", add_mosquee: "Mosque", add_pays: "Country", add_ville: "City", add_halaka: "Sub-Halaka",
+        manage_title: "Dashboard", btn_structure: "⚙️ Structure", add_mosquee: "Mosque", add_pays: "Country", add_ville: "City", add_halaka: "Halaka",
         form_nom: "Name", form_ousboue: "Ousboue", form_pass: "Password", form_emir: "Emir", form_tel: "Phone", btn_save: "Save", btn_delete: "Delete",
         no_mosque: "No mosque.", select_halaka_hint: "Select a halaka to view mosques.",
         modal_add_pays: "Add a Country", modal_add_ville: "Add a City", modal_add_halaka: "Add a Sub-Halaka", modal_structure: "Manage structure",
@@ -222,6 +237,7 @@
         label_statut: "Status", label_heure: "Departure time", label_dest: "Destination", label_nb: "Number of brothers", label_liste: "List of brothers",
         label_emir: "Emir Name", label_emir_tel: "Emir Phone", label_h_aller: "Hidayat Aller", label_h_retour: "Hidayat Retour", label_lieu_heure: "Place & time",
         stat_aucune: "None", stat_mosque: "Brothers at mosque", stat_sortie: "Jamaat out",
+        list_title: "Existing list", btn_add: "Add", btn_close: "Close", filter_by_halaka: "Filter by Halaka",
         mois: ['January','February','March','April','May','June','July','August','September','October','November','December']
       },
       ar: { 
@@ -231,7 +247,7 @@
         filter_stats: "اختر مدينة:", btn_share_city: "مشاركة (واتساب)", total_mosques: "إجمالي المساجد", mosques_5amal: "مساجد 5 أعمال", houses_around: "البيوت المحيطة", houses_5amal: "بيوت 5 أعمال",
         bros_4m: "إخوة خرجوا 4 أشهر", bros_4m_year: "إخوة يعطون 4 أشهر/سنة", bros_40d: "إخوة خرجوا 40 يوماً", jamaats_3d: "جماعات 3 أيام", ziara_2h30: "يعطون 2.30/يوم", ziara_less: "يعطون < 2.30/يوم",
         sisters_2m: "أخوات خرجن شهرين", sisters_40d: "أخوات خرجن 40 يوماً", sisters_15d: "أخوات خرجن 15 يوماً", sisters_3d: "أخوات خرجن 3 أيام",
-        manage_title: "إدارة", btn_structure: "⚙️ الهيكل", add_mosquee: "مسجد", add_pays: "بلد", add_ville: "مدينة", add_halaka: "حلقة",
+        manage_title: "لوحة القيادة", btn_structure: "⚙️ الهيكل", add_mosquee: "مسجد", add_pays: "بلد", add_ville: "مدينة", add_halaka: "حلقة",
         form_nom: "الاسم", form_ousboue: "الأسبوع", form_pass: "كلمة المرور", form_emir: "الأمير", form_tel: "الهاتف", btn_save: "حفظ", btn_delete: "حذف",
         no_mosque: "لا يوجد مسجد.", select_halaka_hint: "اختر حلقة لعرض المساجد.",
         modal_add_pays: "إضافة بلد", modal_add_ville: "إضافة مدينة", modal_add_halaka: "إضافة حلقة فرعية", modal_structure: "إدارة الهيكل",
@@ -239,6 +255,7 @@
         label_statut: "الحالة", label_heure: "وقت الخروج", label_dest: "الوجهة", label_nb: "عدد الإخوة", label_liste: "أسماء الإخوة",
         label_emir: "اسم الأمير", label_emir_tel: "هاتف الأمير", label_h_aller: "هداية الذهاب", label_h_retour: "هداية العودة", label_lieu_heure: "المكان والوقت",
         stat_aucune: "لا يوجد", stat_mosque: "إخوة في المسجد", stat_sortie: "جماعة في الخروج",
+        list_title: "القائمة الحالية", btn_add: "إضافة", btn_close: "إغلاق", filter_by_halaka: "تصفية حسب الحلقة",
         mois: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر']
       },
       ur: { 
@@ -248,7 +265,7 @@
         filter_stats: "شہر منتخب کریں:", btn_share_city: "شیئر (واٹس ایپ)", total_mosques: "کل مساجد", mosques_5amal: "5 اعمال والی مساجد", houses_around: "ارد گرد کے گھر", houses_5amal: "5 اعمال والے گھر",
         bros_4m: "بھائی 4 ماہ خروج", bros_4m_year: "بھائی 4 ماہ/سال", bros_40d: "بھائی 40 دن خروج", jamaats_3d: "جماعتیں 3 دن", ziara_2h30: "2.30/دن دیتے ہیں", ziara_less: "< 2.30/دن دیتے ہیں",
         sisters_2m: "بہنیں 2 ماہ خروج", sisters_40d: "بہنیں 40 دن خروج", sisters_15d: "بہنیں 15 دن خروج", sisters_3d: "بہنیں 3 دن خروج",
-        manage_title: "انتظام", btn_structure: "⚙️ ڈھانچہ", add_mosquee: "مسجد", add_pays: "ملک", add_ville: "شہر", add_halaka: "حلقہ",
+        manage_title: "ڈیش بورڈ", btn_structure: "⚙️ ڈھانچہ", add_mosquee: "مسجد", add_pays: "ملک", add_ville: "شہر", add_halaka: "حلقہ",
         form_nom: "نام", form_ousboue: "ہفتہ", form_pass: "پاس ورڈ", form_emir: "امیر", form_tel: "فون", btn_save: "محفوظ", btn_delete: "حذف",
         no_mosque: "کوئی مسجد نہیں۔", select_halaka_hint: "مساجد دیکھنے کے لیے حلقہ منتخب کریں۔",
         modal_add_pays: "ملک شامل کریں", modal_add_ville: "شہر شامل کریں", modal_add_halaka: "ذیلی حلقہ شامل کریں", modal_structure: "ڈھانچہ کا انتظام",
@@ -256,6 +273,7 @@
         label_statut: "حالت", label_heure: "خروج کا وقت", label_dest: "منزل", label_nb: "بھائیوں کی تعداد", label_liste: "بھائیوں کے نام",
         label_emir: "امیر کا نام", label_emir_tel: "امیر کا فون", label_h_aller: "ہدایت (روانگی)", label_h_retour: "ہدایت (واپسی)", label_lieu_heure: "جگہ اور وقت",
         stat_aucune: "کوئی نہیں", stat_mosque: "مسجد میں بھائی", stat_sortie: "خروج میں جماعت",
+        list_title: "موجودہ فہرست", btn_add: "شامل کریں", btn_close: "بند کریں", filter_by_halaka: "حلقہ کے لحاظ سے فلٹر کریں",
         mois: ['جنوری','فروری','مارچ','اپریل','مئی','جون','جولائی','اگست','ستمبر','اکتوبر','نومبر','دسمبر']
       }
     };
@@ -266,7 +284,6 @@
         currentLang = lang; 
         localStorage.setItem('khourouj_lang', lang); 
         applyTranslations();
-        if (!document.getElementById('view-admin').classList.contains('hidden')) window.initAdmin();
         if (!document.getElementById('view-consult').classList.contains('hidden')) renderPlanning();
     }
 
@@ -286,7 +303,6 @@
             if (dict[key]) el.textContent = dict[key];
         });
         
-        // Traduction dynamique des mois
         const monthSel = document.getElementById('sel-mois');
         if(monthSel) {
             const selectedMonth = monthSel.value;
@@ -359,7 +375,6 @@
     const yearSel = document.getElementById('sel-annee'); const curYear = new Date().getFullYear();
     yearSel.innerHTML = ''; for (let y = curYear - 1; y <= curYear + 1; y++) { const o = document.createElement('option'); o.value = y; o.textContent = y; if (y === curYear) o.selected = true; yearSel.appendChild(o); }
     
-    // Initialisation des mois au chargement
     const monthSel = document.getElementById('sel-mois'); monthSel.innerHTML = '';
     const currentMonth = new Date().getMonth() + 1;
     translations[currentLang].mois.forEach((m, i) => {
@@ -389,7 +404,6 @@
             document.getElementById('loading-screen').style.display = 'none';
             
             switchTab('consult');
-            initAdminSelects();
             autoSelectFirst();
         } catch(err) {
             document.getElementById('loading-error').classList.remove('hidden');
@@ -423,7 +437,7 @@
         }
     }
 
-    async function syncData() { await loadData(); refreshConsult(); initAdminSelects(); }
+    async function syncData() { await loadData(); refreshConsult(); }
 
     // ==========================================
     // NAVIGATION
@@ -434,7 +448,7 @@
         const idle = 'px-4 py-3 font-medium border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200';
         document.getElementById('tab-consult').className = idle; document.getElementById('tab-stats').className = idle; document.getElementById('tab-admin').className = idle;
         document.getElementById('view-' + tab).classList.remove('hidden'); document.getElementById('tab-' + tab).className = active;
-        if (tab === 'consult') { refreshConsult(); } if (tab === 'stats') { refreshStatsSelect(); } if (tab === 'admin') { initAdminSelects(); }
+        if (tab === 'consult') { refreshConsult(); } if (tab === 'stats') { refreshStatsSelect(); }
     }
 
     // ==========================================
@@ -476,8 +490,6 @@
 
             document.getElementById('planning-empty').classList.add('hidden'); document.getElementById('planning-content').classList.remove('hidden');
             document.getElementById('planning-title').textContent = `${villeNom} — ${halakaNom}`; 
-            
-            // Traduction du mois dans le sous-titre
             const dict = translations[currentLang];
             document.getElementById('planning-subtitle').textContent = `${dict.mois[month - 1]} ${year}`;
             
@@ -543,81 +555,107 @@
         const mosquees = dataCache.mosquees.filter(m => halakas.includes(String(m.halaka_id)));
         const sum = (f) => mosquees.reduce((t, m) => t + (m[f] || 0), 0);
         let txt = `🕌 *BILAN : ${ville.nom}* 🕌\n\n🕌 Total Mosquées : *${ville.nb_mosquees_total || 0}*\n⭐ Mosquées 5 Amal : *${mosquees.filter(m => m.est_5amal).length}*\n🏠 Maisons autour : *${sum('nb_maisons_autour')}* (dont ${sum('nb_maisons_5amal')} 5A)\n\n👨‍🦱 *FRÈRES :*\n• 4 mois : ${sum('nb_freres_4mois')} (dont ${sum('nb_freres_4mois_an')} chaque année)\n• 40 jours : ${sum('nb_freres_40jours')}\n• Jamaats 3 jours : ${sum('nb_jamaats_3jours')}\n• Donnant 2h30/jour : ${sum('nb_freres_ziara_2h30')}\n• Donnant moins de 2h30/jour : ${sum('nb_freres_ziara_moins')}\n\n👩‍🦱 *SŒURS :*\n• 2 mois : ${sum('nb_soeurs_2mois')}\n• 40 jours : ${sum('nb_soeurs_40jours')}\n• 15 jours : ${sum('nb_soeurs_15jours')}\n• 3 jours : ${sum('nb_soeurs_3jours')}\n\nبارك الله فيكم`;
-        navigator.clipboard.writeText(txt).then(() => alert('✅ Copié !'));
+        navigator.clipboard.writeText(txt).then(() => alert('✅ Bilan copié !'));
     };
 
     // ==========================================
-    // 3. GESTIONNAIRE
+    // 3. GESTIONNAIRE (POPUPS)
     // ==========================================
-    function initAdminSelects() {
-        const ap = document.getElementById('adm-sel-pays');
-        ap.innerHTML = '<option value="">-- Choisir --</option>' + dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('');
-        document.getElementById('adm-sel-ville').innerHTML = '<option value="">--</option>'; document.getElementById('adm-sel-halaka').innerHTML = '<option value="">--</option>';
-        document.getElementById('admin-mosquees-list').innerHTML = `<p class="text-center text-gray-500 mt-4">${translations[currentLang].select_halaka_hint}</p>`;
-    }
-
-    window.onAdmPaysChange = function() {
-        const pid = document.getElementById('adm-sel-pays').value; const vSel = document.getElementById('adm-sel-ville');
-        vSel.innerHTML = '<option value="">--</option>'; document.getElementById('adm-sel-halaka').innerHTML = '<option value="">--</option>'; document.getElementById('admin-mosquees-list').innerHTML = '';
-        if(pid) dataCache.villes.filter(v => String(v.pays_id) === pid).forEach(v => vSel.insertAdjacentHTML('beforeend', `<option value="${v.id}">${escapeHtml(v.nom)}</option>`));
-    }
-
-    window.onAdmVilleChange = function() {
-        const vid = document.getElementById('adm-sel-ville').value; const hSel = document.getElementById('adm-sel-halaka');
-        hSel.innerHTML = '<option value="">--</option>'; document.getElementById('admin-mosquees-list').innerHTML = '';
-        if(vid) dataCache.halakat.filter(h => String(h.ville_id) === vid).forEach(h => hSel.insertAdjacentHTML('beforeend', `<option value="${h.id}">${escapeHtml(h.nom)}</option>`));
-    }
-
-    window.renderAdminMosquees = function() {
-        const hid = document.getElementById('adm-sel-halaka').value; const list = document.getElementById('admin-mosquees-list');
+    window.openManageModal = function(type) {
         const dict = translations[currentLang];
-        if(!hid) { list.innerHTML = `<p class="text-center text-gray-500 mt-4">${dict.select_halaka_hint}</p>`; return; }
-        const mosquees = dataCache.mosquees.filter(m => String(m.halaka_id) === hid);
-        if(mosquees.length === 0) { list.innerHTML = `<p class="text-center text-gray-500 mt-4">${dict.no_mosque}</p>`; return; }
-        list.innerHTML = mosquees.map(m => `<div class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded p-3 flex justify-between items-center shadow-sm"><div><p class="font-bold text-sm">${escapeHtml(m.nom)} <span class="text-xs font-normal text-gray-500">(Ousboue ${m.ousboue})</span></p><p class="text-xs text-emerald-600 dark:text-emerald-400">${m.jamaat_statut || dict.stat_aucune}</p></div><div class="flex gap-2"><button onclick="openEditMosqueeModal(${m.id})" class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-xs font-bold">✏️</button><button onclick="promptDeleteMosquee(${m.id})" class="bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 px-2 py-1 rounded text-xs font-bold">🗑️</button></div></div>`).join('');
-    }
+        let html = '';
 
-    window.openStructureModal = function() {
-        const dict = translations[currentLang];
-        document.getElementById('modal-content').innerHTML = `<h3 class="text-lg font-bold mb-4">${dict.modal_structure}</h3><div class="space-y-2"><button onclick="openAddPaysModal()" class="w-full text-left bg-slate-100 dark:bg-slate-700 p-3 rounded font-bold hover:bg-slate-200 dark:hover:bg-slate-600">+ ${dict.add_pays}</button><button onclick="openAddVilleModal()" class="w-full text-left bg-slate-100 dark:bg-slate-700 p-3 rounded font-bold hover:bg-slate-200 dark:hover:bg-slate-600">+ ${dict.add_ville}</button><button onclick="openAddHalakaModal()" class="w-full text-left bg-slate-100 dark:bg-slate-700 p-3 rounded font-bold hover:bg-slate-200 dark:hover:bg-slate-600">+ ${dict.add_halaka}</button></div>`;
+        if (type === 'pays') {
+            html = `
+                <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">🌍 ${dict.add_pays}</h3>
+                <div class="flex gap-2 mb-4">
+                    <input id="m-p-nom" type="text" class="flex-1 border rounded px-3 py-2" placeholder="Ex: Cameroun">
+                    <button onclick="doAddPays()" class="bg-emerald-600 text-white px-4 py-2 rounded">${dict.btn_add}</button>
+                </div>
+                <div class="max-h-60 overflow-y-auto space-y-2 border-t pt-2 dark:border-slate-700">
+                    ${dataCache.pays.map(p => `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-2 rounded"><span>${escapeHtml(p.nom)}</span><button onclick="deletePays(${p.id})" class="text-red-600 text-sm">${dict.btn_delete}</button></div>`).join('') || '<p class="text-sm text-gray-500">-</p>'}
+                </div>
+            `;
+        } 
+        else if (type === 'villes') {
+            html = `
+                <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">🏙️ ${dict.add_ville}</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
+                    <select id="m-v-pays" class="border rounded px-2 py-2 text-sm">${dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('')}</select>
+                    <input id="m-v-nom" type="text" class="border rounded px-2 py-2 text-sm" placeholder="Ex: Douala">
+                    <button onclick="doAddVille()" class="bg-emerald-600 text-white px-4 py-2 rounded text-sm">${dict.btn_add}</button>
+                </div>
+                <div class="max-h-60 overflow-y-auto space-y-2 border-t pt-2 dark:border-slate-700">
+                    ${dataCache.villes.map(v => { const p = dataCache.pays.find(x=>x.id===v.pays_id); return `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-2 rounded"><span>${escapeHtml(v.nom)} <span class="text-xs text-gray-500">(${escapeHtml(p?.nom || '?')})</span></span><button onclick="deleteVille(${v.id})" class="text-red-600 text-sm">${dict.btn_delete}</button></div>`; }).join('') || '<p class="text-sm text-gray-500">-</p>'}
+                </div>
+            `;
+        }
+        else if (type === 'halakat') {
+            html = `
+                <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">⭕ ${dict.add_halaka}</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
+                    <select id="m-h-ville" class="border rounded px-2 py-2 text-sm">${dataCache.villes.map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join('')}</select>
+                    <input id="m-h-nom" type="text" class="border rounded px-2 py-2 text-sm" placeholder="Ex: Halaka 1">
+                    <button onclick="doAddHalaka()" class="bg-emerald-600 text-white px-4 py-2 rounded text-sm">${dict.btn_add}</button>
+                </div>
+                <div class="max-h-60 overflow-y-auto space-y-2 border-t pt-2 dark:border-slate-700">
+                    ${dataCache.halakat.map(h => { const v = dataCache.villes.find(x=>x.id===h.ville_id); return `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-2 rounded"><span>${escapeHtml(h.nom)} <span class="text-xs text-gray-500">(${escapeHtml(v?.nom || '?')})</span></span><button onclick="deleteHalaka(${h.id})" class="text-red-600 text-sm">${dict.btn_delete}</button></div>`; }).join('') || '<p class="text-sm text-gray-500">-</p>'}
+                </div>
+            `;
+        }
+        else if (type === 'mosquees') {
+            // Filtre Halaka pour les mosquées
+            const firstHalaka = dataCache.halakat.length > 0 ? dataCache.halakat[0].id : '';
+            html = `
+                <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">🕌 ${dict.add_mosquee}</h3>
+                
+                <div class="mb-4 bg-slate-100 dark:bg-slate-700/50 p-3 rounded-lg">
+                    <label class="text-xs font-bold mb-1 block">${dict.filter_by_halaka} :</label>
+                    <select id="m-filter-halaka" onchange="renderAdminMosqueesInModal(this.value)" class="w-full border rounded px-2 py-1 text-sm mb-2">
+                        ${dataCache.halakat.map(h => `<option value="${h.id}" ${String(h.id) === String(firstHalaka) ? 'selected' : ''}>${escapeHtml(h.nom)} (${dataCache.villes.find(v=>v.id===h.ville_id)?.nom || '?'})</option>`).join('')}
+                    </select>
+                    <button onclick="openAddMosqueeModal()" class="bg-blue-600 text-white w-full py-2 rounded font-bold text-sm">+ ${dict.modal_add_mosque}</button>
+                </div>
+
+                <div id="modal-admin-mosquees-list" class="max-h-60 overflow-y-auto space-y-2"></div>
+            `;
+            setTimeout(() => { if(firstHalaka) renderAdminMosqueesInModal(firstHalaka); }, 100);
+        }
+
+        document.getElementById('modal-content').innerHTML = html;
         document.getElementById('modal').classList.remove('hidden');
     }
 
-    window.openAddPaysModal = function() {
+    // Liste des mosquées dans la popup
+    window.renderAdminMosqueesInModal = function(hid) {
+        const list = document.getElementById('modal-admin-mosquees-list');
         const dict = translations[currentLang];
-        document.getElementById('modal-content').innerHTML = `<h3 class="text-lg font-bold mb-4">${dict.modal_add_pays}</h3><input id="m-p-nom" type="text" class="w-full border rounded px-3 py-2 mb-3" placeholder="Ex: Cameroun"><button onclick="doAddPays()" class="bg-emerald-600 text-white w-full py-2 rounded">${dict.btn_save}</button>`;
-        document.getElementById('modal').classList.remove('hidden');
-    }
-    window.doAddPays = async () => { 
-        const nom = document.getElementById('m-p-nom').value.trim(); if(!nom) return; 
-        if (dataCache.pays.some(p => p.nom.toLowerCase() === nom.toLowerCase())) { alert("Ce pays existe déjà !"); return; } 
-        await supabase.from('pays').insert({ nom }); closeModal(); await syncData(); 
+        if(!list) return;
+        if(!hid) { list.innerHTML = `<p class="text-center text-gray-500 mt-2">${dict.select_halaka_hint}</p>`; return; }
+        const mosquees = dataCache.mosquees.filter(m => String(m.halaka_id) === String(hid));
+        if(mosquees.length === 0) { list.innerHTML = `<p class="text-center text-gray-500 mt-2">${dict.no_mosque}</p>`; return; }
+        
+        list.innerHTML = mosquees.map(m => `<div class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded p-3 flex justify-between items-center shadow-sm mb-2"><div><p class="font-bold text-sm">${escapeHtml(m.nom)} <span class="text-xs font-normal text-gray-500">(Ousboue ${m.ousboue})</span></p><p class="text-xs text-emerald-600 dark:text-emerald-400">${m.jamaat_statut || dict.stat_aucune}</p></div><div class="flex gap-2"><button onclick="openEditMosqueeModal(${m.id})" class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-xs font-bold">✏️</button><button onclick="promptDeleteMosquee(${m.id})" class="bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 px-2 py-1 rounded text-xs font-bold">🗑️</button></div></div>`).join('');
     }
 
-    window.openAddVilleModal = function() {
-        const dict = translations[currentLang];
-        document.getElementById('modal-content').innerHTML = `<h3 class="text-lg font-bold mb-4">${dict.modal_add_ville}</h3><label class="text-xs">${dict.country}</label><select id="m-v-pays" class="w-full border rounded px-3 py-2 mb-2">${dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('')}</select><label class="text-xs">${dict.form_nom}</label><input id="m-v-nom" type="text" class="w-full border rounded px-3 py-2 mb-3" placeholder="Ex: Douala"><button onclick="doAddVille()" class="bg-emerald-600 text-white w-full py-2 rounded">${dict.btn_save}</button>`;
-        document.getElementById('modal').classList.remove('hidden');
-    }
-    window.doAddVille = async () => { 
-        const pays_id = document.getElementById('m-v-pays').value; const nom = document.getElementById('m-v-nom').value.trim(); if(!nom) return; 
-        if (dataCache.villes.some(v => String(v.pays_id) === pays_id && v.nom.toLowerCase() === nom.toLowerCase())) { alert("Cette ville existe déjà !"); return; } 
-        await supabase.from('villes').insert({ nom, pays_id, nb_mosquees_total: 0 }); closeModal(); await syncData(); 
-    }
+    // --- CRUD PAYS ---
+    window.doAddPays = async () => { const nom = document.getElementById('m-p-nom').value.trim(); if(!nom) return; if (dataCache.pays.some(p => p.nom.toLowerCase() === nom.toLowerCase())) { alert("Existe déjà !"); return; } await supabase.from('pays').insert({ nom }); closeModal(); await syncData(); }
+    window.deletePays = async (id) => { if(!confirm("Supprimer ?")) return; await supabase.from('pays').delete().eq('id', id); closeModal(); await syncData(); }
 
-    window.openAddHalakaModal = function() {
-        const dict = translations[currentLang];
-        document.getElementById('modal-content').innerHTML = `<h3 class="text-lg font-bold mb-4">${dict.modal_add_halaka}</h3><label class="text-xs">${dict.city}</label><select id="m-h-ville" class="w-full border rounded px-3 py-2 mb-2">${dataCache.villes.map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join('')}</select><label class="text-xs">${dict.form_nom}</label><input id="m-h-nom" type="text" class="w-full border rounded px-3 py-2 mb-3" placeholder="Ex: Halaka 1"><button onclick="doAddHalaka()" class="bg-emerald-600 text-white w-full py-2 rounded">${dict.btn_save}</button>`;
-        document.getElementById('modal').classList.remove('hidden');
-    }
-    window.doAddHalaka = async () => { 
-        const ville_id = document.getElementById('m-h-ville').value; const nom = document.getElementById('m-h-nom').value.trim(); if(!nom) return; 
-        if (dataCache.halakat.some(h => String(h.ville_id) === ville_id && h.nom.toLowerCase() === nom.toLowerCase())) { alert("Ce sous-halaka existe déjà !"); return; } 
-        await supabase.from('halakat').insert({ nom, ville_id }); closeModal(); await syncData(); 
-    }
+    // --- CRUD VILLES ---
+    window.doAddVille = async () => { const pays_id = document.getElementById('m-v-pays').value; const nom = document.getElementById('m-v-nom').value.trim(); if(!nom) return; if (dataCache.villes.some(v => String(v.pays_id) === pays_id && v.nom.toLowerCase() === nom.toLowerCase())) { alert("Existe déjà !"); return; } await supabase.from('villes').insert({ nom, pays_id, nb_mosquees_total: 0 }); closeModal(); await syncData(); }
+    window.deleteVille = async (id) => { if(!confirm("Supprimer ?")) return; await supabase.from('villes').delete().eq('id', id); closeModal(); await syncData(); }
 
+    // --- CRUD HALAKAT ---
+    window.doAddHalaka = async () => { const ville_id = document.getElementById('m-h-ville').value; const nom = document.getElementById('m-h-nom').value.trim(); if(!nom) return; if (dataCache.halakat.some(h => String(h.ville_id) === ville_id && h.nom.toLowerCase() === nom.toLowerCase())) { alert("Existe déjà !"); return; } await supabase.from('halakat').insert({ nom, ville_id }); closeModal(); await syncData(); }
+    window.deleteHalaka = async (id) => { if(!confirm("Supprimer ?")) return; await supabase.from('halakat').delete().eq('id', id); closeModal(); await syncData(); }
+
+    // --- CRUD MOSQUEES ---
     window.openAddMosqueeModal = function() {
-        const hid = document.getElementById('adm-sel-halaka').value; if(!hid) { alert("Sélectionnez une Halaka en haut."); return; } openMosqueeForm(null, hid);
+        const filterSel = document.getElementById('m-filter-halaka');
+        const hid = filterSel ? filterSel.value : (dataCache.halakat.length > 0 ? dataCache.halakat[0].id : null);
+        if(!hid) { alert("Veuillez créer une Halaka d'abord."); return; }
+        openMosqueeForm(null, hid);
     }
     window.openEditMosqueeModal = function(id) { const m = dataCache.mosquees.find(x => x.id === id); if(!m) return; openMosqueeForm(m, m.halaka_id); }
 
@@ -626,48 +664,47 @@
         let html = `
             <h3 class="text-lg font-bold mb-4 text-emerald-800 dark:text-emerald-400">${isEdit ? dict.modal_edit_mosque : dict.modal_add_mosque}</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
-                <div><label class="text-xs font-bold text-gray-600 dark:text-gray-300">${dict.form_nom}</label><input id="m-m-nom" type="text" class="w-full border rounded px-2 py-1" value="${isEdit ? escapeHtml(m.nom) : ''}"></div>
-                <div><label class="text-xs font-bold text-gray-600 dark:text-gray-300">${dict.form_ousboue}</label><select id="m-m-ousboue" class="w-full border rounded px-2 py-1">${[1,2,3,4].map(n => `<option value="${n}" ${isEdit && m.ousboue === n ? 'selected' : ''}>${dict.th_ousboue} ${n}</option>`).join('')}</select></div>
+                <div><label class="text-xs font-bold">${dict.form_nom}</label><input id="m-m-nom" type="text" class="w-full border rounded px-2 py-1" value="${isEdit ? escapeHtml(m.nom) : ''}"></div>
+                <div><label class="text-xs font-bold">${dict.form_ousboue}</label><select id="m-m-ousboue" class="w-full border rounded px-2 py-1">${[1,2,3,4].map(n => `<option value="${n}" ${isEdit && m.ousboue === n ? 'selected' : ''}>Ousboue ${n}</option>`).join('')}</select></div>
             </div>
             <div class="mb-3">
                 <label class="text-xs font-bold text-yellow-600">${dict.form_pass} ${isEdit ? '(Laisser vide)' : ''}</label>
-                <div class="relative"><input id="m-m-pass" type="password" class="w-full border rounded px-2 py-1 pr-10 bg-yellow-50 dark:bg-yellow-900/30"><button type="button" onclick="togglePassword('m-m-pass', 'eye-icon')" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-800 dark:hover:text-white text-lg">👁️</button></div>
+                <div class="relative"><input id="m-m-pass" type="password" class="w-full border rounded px-2 py-1 pr-10 bg-yellow-50 dark:bg-yellow-900/30"><button type="button" onclick="togglePassword('m-m-pass', 'eye-icon')" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">👁️</button></div>
             </div>
 
             <details class="mb-2 bg-slate-100 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-300 dark:border-slate-600">
-                <summary class="text-sm font-bold cursor-pointer text-slate-800 dark:text-slate-200">📊 ${dict.tab_stats}</summary>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                    <div class="sm:col-span-2 flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 p-2 rounded border border-blue-200 dark:border-blue-800"><input type="checkbox" id="m-m-5amal" class="w-5 h-5 text-emerald-600 rounded" ${isEdit && m.est_5amal ? 'checked' : ''}><label for="m-m-5amal" class="text-sm font-bold text-blue-800 dark:text-blue-200">${dict.mosques_5amal}</label></div>
-                    <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.houses_around}</label><input id="m-m-maisons" type="number" value="${isEdit ? m.nb_maisons_autour || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
-                    <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.houses_5amal}</label><input id="m-m-maisons5a" type="number" value="${isEdit ? m.nb_maisons_5amal || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
-                    <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.bros_4m}</label><input id="m-m-fr4m" type="number" value="${isEdit ? m.nb_freres_4mois || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
-                    <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.bros_4m_year}</label><input id="m-m-fr4ma" type="number" value="${isEdit ? m.nb_freres_4mois_an || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
-                    <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.bros_40d}</label><input id="m-m-fr40j" type="number" value="${isEdit ? m.nb_freres_40jours || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
-                    <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.jamaats_3d}</label><input id="m-m-jamaats" type="number" value="${isEdit ? m.nb_jamaats_3jours || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
-                    <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.ziara_2h30}</label><input id="m-m-z2h30" type="number" value="${isEdit ? m.nb_freres_ziara_2h30 || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
-                    <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.ziara_less}</label><input id="m-m-zmoins" type="number" value="${isEdit ? m.nb_freres_ziara_moins || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
-                    <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.sisters_2m}</label><input id="m-m-so2m" type="number" value="${isEdit ? m.nb_soeurs_2mois || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
-                    <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.sisters_40d}</label><input id="m-m-so40j" type="number" value="${isEdit ? m.nb_soeurs_40jours || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
-                    <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.sisters_15d}</label><input id="m-m-so15j" type="number" value="${isEdit ? m.nb_soeurs_15jours || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
-                    <div><label class="text-xs text-gray-600 dark:text-gray-300">${dict.sisters_3d}</label><input id="m-m-so3j" type="number" value="${isEdit ? m.nb_soeurs_3jours || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                <summary class="text-sm font-bold cursor-pointer">📊 ${dict.tab_stats}</summary>
+                <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
+                    <div><label>Maisons</label><input id="m-m-maisons" type="number" value="${isEdit ? m.nb_maisons_autour || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>Maisons 5A</label><input id="m-m-maisons5a" type="number" value="${isEdit ? m.nb_maisons_5amal || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>F. 4 mois</label><input id="m-m-fr4m" type="number" value="${isEdit ? m.nb_freres_4mois || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>F. 4m/an</label><input id="m-m-fr4ma" type="number" value="${isEdit ? m.nb_freres_4mois_an || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>F. 40j</label><input id="m-m-fr40j" type="number" value="${isEdit ? m.nb_freres_40jours || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>Jamaats</label><input id="m-m-jamaats" type="number" value="${isEdit ? m.nb_jamaats_3jours || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>2h30</label><input id="m-m-z2h30" type="number" value="${isEdit ? m.nb_freres_ziara_2h30 || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>< 2h30</label><input id="m-m-zmoins" type="number" value="${isEdit ? m.nb_freres_ziara_moins || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>S. 2m</label><input id="m-m-so2m" type="number" value="${isEdit ? m.nb_soeurs_2mois || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>S. 40j</label><input id="m-m-so40j" type="number" value="${isEdit ? m.nb_soeurs_40jours || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>S. 15j</label><input id="m-m-so15j" type="number" value="${isEdit ? m.nb_soeurs_15jours || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>S. 3j</label><input id="m-m-so3j" type="number" value="${isEdit ? m.nb_soeurs_3jours || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
                 </div>
             </details>
 
             <details class="mb-3 bg-emerald-50 dark:bg-emerald-900/30 p-3 rounded-lg border border-emerald-200 dark:border-emerald-700">
-                <summary class="text-sm font-bold cursor-pointer text-emerald-800 dark:text-emerald-300">👁️ ${dict.modal_jamaat}</summary>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                    <div class="sm:col-span-2"><label class="text-xs font-bold text-emerald-800 dark:text-emerald-300">${dict.label_statut}</label><select id="m-m-jstatut" class="w-full border rounded px-2 py-1"><option value="Aucune" ${isEdit && m.jamaat_statut === 'Aucune' ? 'selected' : ''}>${dict.stat_aucune}</option><option value="Frères à la mosquée" ${isEdit && m.jamaat_statut === 'Frères à la mosquée' ? 'selected' : ''}>${dict.stat_mosque}</option><option value="Jamaat en sortie" ${isEdit && m.jamaat_statut === 'Jamaat en sortie' ? 'selected' : ''}>${dict.stat_sortie}</option></select></div>
-                    <div><label class="text-xs">${dict.label_heure}</label><input id="m-m-heure" type="text" value="${isEdit ? escapeHtml(m.jamaat_heure || '') : ''}" class="w-full border rounded px-2 py-1" placeholder="Ex: Vendredi 15h"></div>
-                    <div><label class="text-xs">${dict.label_dest}</label><input id="m-m-dest" type="text" value="${isEdit ? escapeHtml(m.jamaat_destination || '') : ''}" class="w-full border rounded px-2 py-1" placeholder="Ex: Yaoundé"></div>
-                    <div><label class="text-xs">${dict.label_nb}</label><input id="m-m-nbfreres" type="number" value="${isEdit ? m.jamaat_nb_freres || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
-                    <div><label class="text-xs">${dict.label_liste}</label><input id="m-m-liste" type="text" value="${isEdit ? escapeHtml(m.jamaat_freres_liste || '') : ''}" class="w-full border rounded px-2 py-1" placeholder="Noms..."></div>
-                    <div><label class="text-xs font-bold mt-2">${dict.label_emir}</label><input id="m-m-emir" type="text" value="${isEdit ? escapeHtml(m.jamaat_emir_nom || '') : ''}" class="w-full border rounded px-2 py-1"></div>
-                    <div><label class="text-xs font-bold mt-2">${dict.label_emir_tel}</label><input id="m-m-emirtel" type="tel" value="${isEdit ? escapeHtml(m.jamaat_emir_tel || '') : ''}" class="w-full border rounded px-2 py-1"></div>
-                    <div class="sm:col-span-2 border-t border-emerald-300 dark:border-emerald-700 pt-2 mt-2"><label class="text-xs font-bold text-emerald-800 dark:text-emerald-300 block mb-1">${dict.label_h_aller}</label><div class="grid grid-cols-2 gap-2"><input id="m-m-hanom" type="text" value="${isEdit ? escapeHtml(m.hidayat_aller_nom || '') : ''}" class="w-full border rounded px-2 py-1" placeholder="${dict.form_nom}"><input id="m-m-hatel" type="tel" value="${isEdit ? escapeHtml(m.hidayat_aller_tel || '') : ''}" class="w-full border rounded px-2 py-1" placeholder="${dict.form_tel}"><input id="m-m-hainfo" type="text" value="${isEdit ? escapeHtml(m.hidayat_aller_info || '') : ''}" class="w-full border rounded px-2 py-1 col-span-2" placeholder="${dict.label_lieu_heure}"></div></div>
-                    <div class="sm:col-span-2 border-t border-emerald-300 dark:border-emerald-700 pt-2 mt-2"><label class="text-xs font-bold text-emerald-800 dark:text-emerald-300 block mb-1">${dict.label_h_retour}</label><div class="grid grid-cols-2 gap-2"><input id="m-m-hrnom" type="text" value="${isEdit ? escapeHtml(m.hidayat_retour_nom || '') : ''}" class="w-full border rounded px-2 py-1" placeholder="${dict.form_nom}"><input id="m-m-hrtel" type="tel" value="${isEdit ? escapeHtml(m.hidayat_retour_tel || '') : ''}" class="w-full border rounded px-2 py-1" placeholder="${dict.form_tel}"><input id="m-m-hrinfo" type="text" value="${isEdit ? escapeHtml(m.hidayat_retour_info || '') : ''}" class="w-full border rounded px-2 py-1 col-span-2" placeholder="${dict.label_lieu_heure}"></div></div>
+                <summary class="text-sm font-bold cursor-pointer">👁️ ${dict.modal_jamaat}</summary>
+                <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
+                    <div class="col-span-2"><label>${dict.label_statut}</label><select id="m-m-jstatut" class="w-full border rounded px-1 py-1"><option value="Aucune" ${isEdit && m.jamaat_statut === 'Aucune' ? 'selected' : ''}>${dict.stat_aucune}</option><option value="Frères à la mosquée" ${isEdit && m.jamaat_statut === 'Frères à la mosquée' ? 'selected' : ''}>${dict.stat_mosque}</option><option value="Jamaat en sortie" ${isEdit && m.jamaat_statut === 'Jamaat en sortie' ? 'selected' : ''}>${dict.stat_sortie}</option></select></div>
+                    <div><label>${dict.label_heure}</label><input id="m-m-heure" type="text" value="${isEdit ? escapeHtml(m.jamaat_heure || '') : ''}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>${dict.label_dest}</label><input id="m-m-dest" type="text" value="${isEdit ? escapeHtml(m.jamaat_destination || '') : ''}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>${dict.label_nb}</label><input id="m-m-nbfreres" type="number" value="${isEdit ? m.jamaat_nb_freres || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>${dict.label_liste}</label><input id="m-m-liste" type="text" value="${isEdit ? escapeHtml(m.jamaat_freres_liste || '') : ''}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>${dict.label_emir}</label><input id="m-m-emir" type="text" value="${isEdit ? escapeHtml(m.jamaat_emir_nom || '') : ''}" class="w-full border rounded px-1 py-1"></div>
+                    <div><label>${dict.label_emir_tel}</label><input id="m-m-emirtel" type="tel" value="${isEdit ? escapeHtml(m.jamaat_emir_tel || '') : ''}" class="w-full border rounded px-1 py-1"></div>
+                    <div class="col-span-2 border-t pt-2"><label class="font-bold">${dict.label_h_aller}</label><input id="m-m-hanom" type="text" value="${isEdit ? escapeHtml(m.hidayat_aller_nom || '') : ''}" class="w-full border rounded px-1 py-1 mb-1" placeholder="${dict.form_nom}"><input id="m-m-hatel" type="tel" value="${isEdit ? escapeHtml(m.hidayat_aller_tel || '') : ''}" class="w-full border rounded px-1 py-1 mb-1" placeholder="${dict.form_tel}"><input id="m-m-hainfo" type="text" value="${isEdit ? escapeHtml(m.hidayat_aller_info || '') : ''}" class="w-full border rounded px-1 py-1" placeholder="${dict.label_lieu_heure}"></div>
+                    <div class="col-span-2 border-t pt-2"><label class="font-bold">${dict.label_h_retour}</label><input id="m-m-hrnom" type="text" value="${isEdit ? escapeHtml(m.hidayat_retour_nom || '') : ''}" class="w-full border rounded px-1 py-1 mb-1" placeholder="${dict.form_nom}"><input id="m-m-hrtel" type="tel" value="${isEdit ? escapeHtml(m.hidayat_retour_tel || '') : ''}" class="w-full border rounded px-1 py-1 mb-1" placeholder="${dict.form_tel}"><input id="m-m-hrinfo" type="text" value="${isEdit ? escapeHtml(m.hidayat_retour_info || '') : ''}" class="w-full border rounded px-1 py-1" placeholder="${dict.label_lieu_heure}"></div>
                 </div>
             </details>
-            <button onclick="doSaveMosquee(${halakaId}, ${isEdit ? m.id : 'null'})" class="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 rounded font-bold text-lg shadow mt-4">${dict.btn_save}</button>
+            <button onclick="doSaveMosquee(${halakaId}, ${isEdit ? m.id : 'null'})" class="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 rounded font-bold shadow mt-4">${dict.btn_save}</button>
         `;
         document.getElementById('modal-content').innerHTML = html;
         document.getElementById('modal').classList.remove('hidden');
@@ -698,7 +735,9 @@
         if(id) await supabase.from('mosquees').update(data).eq('id', id); 
         else await supabase.from('mosquees').insert({ ...data, halaka_id: halakaId, password: pass });
         
-        closeModal(); await syncData(); renderAdminMosquees();
+        closeModal(); await syncData(); 
+        // Re-ouvre la modale mosquée pour voir la liste mise à jour
+        openManageModal('mosquees');
     }
 
     window.promptDeleteMosquee = function(id) {
@@ -708,7 +747,7 @@
             <p class="text-xs mb-3">${dict.form_pass} :</p>
             <div class="relative mb-3">
                 <input id="m-del-pass" type="password" class="w-full border rounded px-3 py-2 pr-10">
-                <button type="button" onclick="togglePassword('m-del-pass', 'eye-del')" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-800 dark:hover:text-white text-lg">👁️</button>
+                <button type="button" onclick="togglePassword('m-del-pass', 'eye-del')" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">👁️</button>
             </div>
             <button onclick="doDeleteMosquee(${id})" class="bg-red-600 text-white w-full py-2 rounded">${dict.btn_delete}</button>`;
         document.getElementById('modal').classList.remove('hidden');
@@ -716,7 +755,7 @@
     window.doDeleteMosquee = async (id) => {
         const p = document.getElementById('m-del-pass').value;
         const { data } = await supabase.rpc('delete_mosquee_rpc', { p_id: id, p_password: p });
-        if(data === true) { closeModal(); await syncData(); renderAdminMosquees(); }
+        if(data === true) { closeModal(); await syncData(); openManageModal('mosquees'); }
         else alert("Mot de passe incorrect !");
     }
 
