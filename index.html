@@ -159,7 +159,6 @@
       <div class="mb-6">
         <h2 class="text-xl font-bold text-emerald-800 dark:text-emerald-400 mb-4 text-center" data-i18n="manage_title">Gestion</h2>
         
-        <!-- Les 4 grosses cartes -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div onclick="openManageModal('pays')" class="bg-white dark:bg-slate-800 rounded-xl shadow border-2 border-transparent hover:border-emerald-500 cursor-pointer p-6 flex flex-col items-center justify-center transition-all hover:scale-105">
             <div class="text-5xl mb-3">🌍</div>
@@ -211,15 +210,29 @@
         filter_stats: "Choisir une ville :", btn_share_city: "Partager (WhatsApp)", total_mosques: "Total Mosquées", mosques_5amal: "Mosquées 5 Amal", houses_around: "Maisons autour", houses_5amal: "Maisons 5 Amal",
         bros_4m: "Frères sortis 4 mois", bros_4m_year: "Frères donnant 4 mois/an", bros_40d: "Frères sortis 40 jours", jamaats_3d: "Jamaats 3 jours", ziara_2h30: "Donnant 2h30/jour", ziara_less: "Donnant < 2h30/jour",
         sisters_2m: "Sœurs sorties 2 mois", sisters_40d: "Sœurs sorties 40 jours", sisters_15d: "Sœurs sorties 15 jours", sisters_3d: "Sœurs sorties 3 jours",
-        manage_title: "Tableau de Bord", btn_structure: "⚙️ Structure", add_mosquee: "Mosquée", add_pays: "Pays", add_ville: "Ville", add_halaka: "Halaka",
+        manage_title: "Gestion", btn_structure: "⚙️ Structure", add_mosquee: "Mosquée", add_pays: "Pays", add_ville: "Ville", add_halaka: "Halaka",
         form_nom: "Nom", form_ousboue: "Ousboue", form_pass: "Mot de passe", form_emir: "Émir", form_tel: "Téléphone", btn_save: "Enregistrer", btn_delete: "Supprimer",
         no_mosque: "Aucune mosquée.", select_halaka_hint: "Sélectionnez une halaka pour voir les mosquées.",
         modal_add_pays: "Ajouter un Pays", modal_add_ville: "Ajouter une Ville", modal_add_halaka: "Ajouter un Sous-Halaka", modal_structure: "Gérer la structure",
-        modal_add_mosque: "Ajouter une Mosquée", modal_edit_mosque: "Modifier une Mosquée",
+        modal_add_mosque: "Ajouter une Mosquée", modal_edit_mosque: "Modifier une Mosquée", modal_jamaat: "Détails Jamaat",
         label_statut: "Statut", label_heure: "Heure de sortie", label_dest: "Destination", label_nb: "Nombre de frères", label_liste: "Liste des frères",
         label_emir: "Nom de l'Émir", label_emir_tel: "Téléphone de l'Émir", label_h_aller: "Hidayat Aller", label_h_retour: "Hidayat Retour", label_lieu_heure: "Lieu et heure",
         stat_aucune: "Aucune", stat_mosque: "Frères à la mosquée", stat_sortie: "Jamaat en sortie",
         list_title: "Liste existante", btn_add: "Ajouter", btn_close: "Fermer", filter_by_halaka: "Filtrer par Halaka",
+        contact_emir: "📞 Contacter l'Émir", contact_ha: "📞 Contacter Hidayat Aller", contact_hr: "📞 Contacter Hidayat Retour",
+        stat_5amal_checkbox: "Mosquée avec 5 Amal ?",
+        stat_maisons: "Nombre de maisons autour de la mosquée",
+        stat_maisons_5amal: "Nombre de maisons avec 5 Amal",
+        stat_fr_4m: "Nombre de frères sortis 4 mois",
+        stat_fr_4ma: "Nombre de frères donnant 4 mois chaque année",
+        stat_fr_40j: "Nombre de frères sortis 40 jours",
+        stat_jamaats: "Nombre de Jamaats sorties 3 jours",
+        stat_z2h30: "Nombre de frères donnant 2 heures trente par jour",
+        stat_zmoins: "Nombre de frères donnant moins de 2 heures trente par jour",
+        stat_so_2m: "Nombre de sœurs sorties 2 mois",
+        stat_so_40j: "Nombre de sœurs sorties 40 jours",
+        stat_so_15j: "Nombre de sœurs sorties 15 jours",
+        stat_so_3j: "Nombre de sœurs sorties 3 jours",
         mois: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre']
       },
       en: { 
@@ -229,15 +242,29 @@
         filter_stats: "Select a city:", btn_share_city: "Share (WhatsApp)", total_mosques: "Total Mosques", mosques_5amal: "Mosques 5 Amal", houses_around: "Houses around", houses_5amal: "Houses 5 Amal",
         bros_4m: "Brothers out 4 months", bros_4m_year: "Brothers giving 4m/year", bros_40d: "Brothers out 40 days", jamaats_3d: "Jamaats 3 days", ziara_2h30: "Giving 2h30/day", ziara_less: "Giving < 2h30/day",
         sisters_2m: "Sisters out 2 months", sisters_40d: "Sisters out 40 days", sisters_15d: "Sisters out 15 days", sisters_3d: "Sisters out 3 days",
-        manage_title: "Dashboard", btn_structure: "⚙️ Structure", add_mosquee: "Mosque", add_pays: "Country", add_ville: "City", add_halaka: "Halaka",
+        manage_title: "Management", btn_structure: "⚙️ Structure", add_mosquee: "Mosque", add_pays: "Country", add_ville: "City", add_halaka: "Halaka",
         form_nom: "Name", form_ousboue: "Ousboue", form_pass: "Password", form_emir: "Emir", form_tel: "Phone", btn_save: "Save", btn_delete: "Delete",
         no_mosque: "No mosque.", select_halaka_hint: "Select a halaka to view mosques.",
         modal_add_pays: "Add a Country", modal_add_ville: "Add a City", modal_add_halaka: "Add a Sub-Halaka", modal_structure: "Manage structure",
-        modal_add_mosque: "Add a Mosque", modal_edit_mosque: "Edit Mosque",
+        modal_add_mosque: "Add a Mosque", modal_edit_mosque: "Edit Mosque", modal_jamaat: "Jamaat Details",
         label_statut: "Status", label_heure: "Departure time", label_dest: "Destination", label_nb: "Number of brothers", label_liste: "List of brothers",
         label_emir: "Emir Name", label_emir_tel: "Emir Phone", label_h_aller: "Hidayat Aller", label_h_retour: "Hidayat Retour", label_lieu_heure: "Place & time",
         stat_aucune: "None", stat_mosque: "Brothers at mosque", stat_sortie: "Jamaat out",
         list_title: "Existing list", btn_add: "Add", btn_close: "Close", filter_by_halaka: "Filter by Halaka",
+        contact_emir: "📞 Contact Emir", contact_ha: "📞 Contact Hidayat Aller", contact_hr: "📞 Contact Hidayat Retour",
+        stat_5amal_checkbox: "Mosque with 5 Amal?",
+        stat_maisons: "Number of houses around the mosque",
+        stat_maisons_5amal: "Number of houses with 5 Amal",
+        stat_fr_4m: "Number of brothers out 4 months",
+        stat_fr_4ma: "Number of brothers giving 4 months every year",
+        stat_fr_40j: "Number of brothers out 40 days",
+        stat_jamaats: "Number of Jamaats out 3 days",
+        stat_z2h30: "Number of brothers giving 2h30 per day",
+        stat_zmoins: "Number of brothers giving less than 2h30 per day",
+        stat_so_2m: "Number of sisters out 2 months",
+        stat_so_40j: "Number of sisters out 40 days",
+        stat_so_15j: "Number of sisters out 15 days",
+        stat_so_3j: "Number of sisters out 3 days",
         mois: ['January','February','March','April','May','June','July','August','September','October','November','December']
       },
       ar: { 
@@ -251,11 +278,25 @@
         form_nom: "الاسم", form_ousboue: "الأسبوع", form_pass: "كلمة المرور", form_emir: "الأمير", form_tel: "الهاتف", btn_save: "حفظ", btn_delete: "حذف",
         no_mosque: "لا يوجد مسجد.", select_halaka_hint: "اختر حلقة لعرض المساجد.",
         modal_add_pays: "إضافة بلد", modal_add_ville: "إضافة مدينة", modal_add_halaka: "إضافة حلقة فرعية", modal_structure: "إدارة الهيكل",
-        modal_add_mosque: "إضافة مسجد", modal_edit_mosque: "تعديل مسجد",
+        modal_add_mosque: "إضافة مسجد", modal_edit_mosque: "تعديل مسجد", modal_jamaat: "تفاصيل الجماعة",
         label_statut: "الحالة", label_heure: "وقت الخروج", label_dest: "الوجهة", label_nb: "عدد الإخوة", label_liste: "أسماء الإخوة",
         label_emir: "اسم الأمير", label_emir_tel: "هاتف الأمير", label_h_aller: "هداية الذهاب", label_h_retour: "هداية العودة", label_lieu_heure: "المكان والوقت",
         stat_aucune: "لا يوجد", stat_mosque: "إخوة في المسجد", stat_sortie: "جماعة في الخروج",
         list_title: "القائمة الحالية", btn_add: "إضافة", btn_close: "إغلاق", filter_by_halaka: "تصفية حسب الحلقة",
+        contact_emir: "📞 اتصل بالأمير", contact_ha: "📞 اتصل بهداء الذهاب", contact_hr: "📞 اتصل بهداء العودة",
+        stat_5amal_checkbox: "مسجد بـ 5 أعمال؟",
+        stat_maisons: "عدد البيوت المحيطة بالمسجد",
+        stat_maisons_5amal: "عدد البيوت بـ 5 أعمال",
+        stat_fr_4m: "عدد الإخوة الذين خرجوا 4 أشهر",
+        stat_fr_4ma: "عدد الإخوة الذين يعطون 4 أشهر كل سنة",
+        stat_fr_40j: "عدد الإخوة الذين خرجوا 40 يوماً",
+        stat_jamaats: "عدد الجماعات التي خرجت 3 أيام",
+        stat_z2h30: "عدد الإخوة الذين يعطون ساعتين ونصف يومياً",
+        stat_zmoins: "عدد الإخوة الذين يعطون أقل من ساعتين ونصف يومياً",
+        stat_so_2m: "عدد الأخوات اللواتي خرجن شهرين",
+        stat_so_40j: "عدد الأخوات اللواتي خرجن 40 يوماً",
+        stat_so_15j: "عدد الأخوات اللواتي خرجن 15 يوماً",
+        stat_so_3j: "عدد الأخوات اللواتي خرجن 3 أيام",
         mois: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر']
       },
       ur: { 
@@ -269,11 +310,25 @@
         form_nom: "نام", form_ousboue: "ہفتہ", form_pass: "پاس ورڈ", form_emir: "امیر", form_tel: "فون", btn_save: "محفوظ", btn_delete: "حذف",
         no_mosque: "کوئی مسجد نہیں۔", select_halaka_hint: "مساجد دیکھنے کے لیے حلقہ منتخب کریں۔",
         modal_add_pays: "ملک شامل کریں", modal_add_ville: "شہر شامل کریں", modal_add_halaka: "ذیلی حلقہ شامل کریں", modal_structure: "ڈھانچہ کا انتظام",
-        modal_add_mosque: "مسجد شامل کریں", modal_edit_mosque: "مسجد میں ترمیم کریں",
+        modal_add_mosque: "مسجد شامل کریں", modal_edit_mosque: "مسجد میں ترمیم کریں", modal_jamaat: "جماعت کی تفصیلات",
         label_statut: "حالت", label_heure: "خروج کا وقت", label_dest: "منزل", label_nb: "بھائیوں کی تعداد", label_liste: "بھائیوں کے نام",
         label_emir: "امیر کا نام", label_emir_tel: "امیر کا فون", label_h_aller: "ہدایت (روانگی)", label_h_retour: "ہدایت (واپسی)", label_lieu_heure: "جگہ اور وقت",
         stat_aucune: "کوئی نہیں", stat_mosque: "مسجد میں بھائی", stat_sortie: "خروج میں جماعت",
         list_title: "موجودہ فہرست", btn_add: "شامل کریں", btn_close: "بند کریں", filter_by_halaka: "حلقہ کے لحاظ سے فلٹر کریں",
+        contact_emir: "📞 امیر سے رابطہ کریں", contact_ha: "📞 ہدایت (روانگی) سے رابطہ", contact_hr: "📞 ہدایت (واپسی) سے رابطہ",
+        stat_5amal_checkbox: "5 اعمال والی مسجد؟",
+        stat_maisons: "مسجد کے ارد گرد گھروں کی تعداد",
+        stat_maisons_5amal: "5 اعمال والے گھروں کی تعداد",
+        stat_fr_4m: "4 ماہ خروج کرنے والے بھائیوں کی تعداد",
+        stat_fr_4ma: "ہر سال 4 ماہ دینے والے بھائیوں کی تعداد",
+        stat_fr_40j: "40 دن خروج کرنے والے بھائیوں کی تعداد",
+        stat_jamaats: "3 دن خروج کرنے والی جماعتوں کی تعداد",
+        stat_z2h30: "روزانہ 2.30 گھنٹے دینے والے بھائیوں کی تعداد",
+        stat_zmoins: "روزانہ 2.30 گھنٹے سے کم دینے والے بھائیوں کی تعداد",
+        stat_so_2m: "2 ماہ خروج کرنے والی بہنوں کی تعداد",
+        stat_so_40j: "40 دن خروج کرنے والی بہنوں کی تعداد",
+        stat_so_15j: "15 دن خروج کرنے والی بہنوں کی تعداد",
+        stat_so_3j: "3 دن خروج کرنے والی بہنوں کی تعداد",
         mois: ['جنوری','فروری','مارچ','اپریل','مئی','جون','جولائی','اگست','ستمبر','اکتوبر','نومبر','دسمبر']
       }
     };
@@ -505,11 +560,48 @@
     window.openJamaatModal = function(id) {
         const m = dataCache.mosquees.find(x => x.id === id); if(!m) return;
         const dict = translations[currentLang];
-        let html = `<h3 class="text-xl font-bold mb-4">${dict.modal_jamaat}</h3><p class="font-bold text-lg">${escapeHtml(m.nom)}</p>`;
-        html += `<p class="text-sm mt-2">${dict.label_statut} : <span class="font-bold">${m.jamaat_statut || dict.stat_aucune}</span></p>`;
-        html += `<p class="text-sm">${dict.label_emir} : ${escapeHtml(m.jamaat_emir_nom || '-')}</p>`;
-        if(m.jamaat_emir_tel) { const cleanTel = m.jamaat_emir_tel.replace(/[^0-9]/g, ''); html += `<a href="https://wa.me/${cleanTel}" class="block text-center bg-green-600 text-white rounded py-2 mt-4">${dict.contact} ${dict.label_emir}</a>`; }
-        document.getElementById('modal-content').innerHTML = html; document.getElementById('modal').classList.remove('hidden');
+        
+        let statutColor = m.jamaat_statut === 'Jamaat en sortie' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300' : (m.jamaat_statut === 'Frères à la mosquée' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' : 'bg-gray-100 text-gray-800 dark:bg-slate-700 dark:text-gray-300');
+        
+        let html = `
+            <h3 class="text-xl font-bold mb-1 text-emerald-800 dark:text-emerald-400">${dict.modal_jamaat}</h3>
+            <p class="text-lg font-bold text-slate-700 dark:text-slate-200 mb-3">${escapeHtml(m.nom)}</p>
+            
+            <div class="mb-4">
+                <span class="inline-block px-3 py-1 rounded-full text-sm font-bold ${statutColor}">${m.jamaat_statut || dict.stat_aucune}</span>
+            </div>
+
+            <div class="space-y-2 text-sm bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-200 dark:border-slate-600 mb-4">
+                ${m.jamaat_destination ? `<div class="flex justify-between border-b pb-1 dark:border-slate-600"><span class="text-gray-500">${dict.label_dest} :</span> <span class="font-semibold text-right">${escapeHtml(m.jamaat_destination)}</span></div>` : ''}
+                ${m.jamaat_heure ? `<div class="flex justify-between border-b pb-1 dark:border-slate-600"><span class="text-gray-500">${dict.label_heure} :</span> <span class="font-semibold text-right">${escapeHtml(m.jamaat_heure)}</span></div>` : ''}
+                ${m.jamaat_nb_freres > 0 ? `<div class="flex justify-between border-b pb-1 dark:border-slate-600"><span class="text-gray-500">${dict.label_nb} :</span> <span class="font-semibold text-right">${m.jamaat_nb_freres}</span></div>` : ''}
+                ${m.jamaat_freres_liste ? `<div class="flex justify-between pb-1"><span class="text-gray-500">${dict.label_liste} :</span> <span class="font-semibold text-right">${escapeHtml(m.jamaat_freres_liste)}</span></div>` : ''}
+            </div>
+
+            <div class="space-y-3">
+                ${m.jamaat_emir_nom ? `
+                <div class="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-200 dark:border-green-800">
+                    <p class="text-sm font-bold text-green-900 dark:text-green-200 mb-2">${dict.label_emir} : ${escapeHtml(m.jamaat_emir_nom)}</p>
+                    ${m.jamaat_emir_tel ? `<a href="https://wa.me/${m.jamaat_emir_tel.replace(/[^0-9]/g, '')}" class="block text-center w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-bold shadow">${dict.contact_emir}</a>` : ''}
+                </div>` : ''}
+
+                ${m.hidayat_aller_nom ? `
+                <div class="bg-teal-50 dark:bg-teal-900/20 p-3 rounded-lg border border-teal-200 dark:border-teal-800">
+                    <p class="text-sm font-bold text-teal-900 dark:text-teal-200 mb-1">${dict.label_h_aller} : ${escapeHtml(m.hidayat_aller_nom)}</p>
+                    ${m.hidayat_aller_info ? `<p class="text-xs text-gray-600 dark:text-gray-300 mb-2">${escapeHtml(m.hidayat_aller_info)}</p>` : ''}
+                    ${m.hidayat_aller_tel ? `<a href="https://wa.me/${m.hidayat_aller_tel.replace(/[^0-9]/g, '')}" class="block text-center w-full bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded font-bold shadow">${dict.contact_ha}</a>` : ''}
+                </div>` : ''}
+
+                ${m.hidayat_retour_nom ? `
+                <div class="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg border border-purple-200 dark:border-purple-800">
+                    <p class="text-sm font-bold text-purple-900 dark:text-purple-200 mb-1">${dict.label_h_retour} : ${escapeHtml(m.hidayat_retour_nom)}</p>
+                    ${m.hidayat_retour_info ? `<p class="text-xs text-gray-600 dark:text-gray-300 mb-2">${escapeHtml(m.hidayat_retour_info)}</p>` : ''}
+                    ${m.hidayat_retour_tel ? `<a href="https://wa.me/${m.hidayat_retour_tel.replace(/[^0-9]/g, '')}" class="block text-center w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded font-bold shadow">${dict.contact_hr}</a>` : ''}
+                </div>` : ''}
+            </div>
+        `;
+        document.getElementById('modal-content').innerHTML = html; 
+        document.getElementById('modal').classList.remove('hidden');
     }
 
     // ==========================================
@@ -559,7 +651,7 @@
     };
 
     // ==========================================
-    // 3. GESTIONNAIRE (POPUPS)
+    // 3. GESTIONNAIRE (TABLEAU DE BORD)
     // ==========================================
     window.openManageModal = function(type) {
         const dict = translations[currentLang];
@@ -604,7 +696,6 @@
             `;
         }
         else if (type === 'mosquees') {
-            // Filtre Halaka pour les mosquées
             const firstHalaka = dataCache.halakat.length > 0 ? dataCache.halakat[0].id : '';
             html = `
                 <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">🕌 ${dict.add_mosquee}</h3>
@@ -626,7 +717,6 @@
         document.getElementById('modal').classList.remove('hidden');
     }
 
-    // Liste des mosquées dans la popup
     window.renderAdminMosqueesInModal = function(hid) {
         const list = document.getElementById('modal-admin-mosquees-list');
         const dict = translations[currentLang];
@@ -664,8 +754,8 @@
         let html = `
             <h3 class="text-lg font-bold mb-4 text-emerald-800 dark:text-emerald-400">${isEdit ? dict.modal_edit_mosque : dict.modal_add_mosque}</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
-                <div><label class="text-xs font-bold">${dict.form_nom}</label><input id="m-m-nom" type="text" class="w-full border rounded px-2 py-1" value="${isEdit ? escapeHtml(m.nom) : ''}"></div>
-                <div><label class="text-xs font-bold">${dict.form_ousboue}</label><select id="m-m-ousboue" class="w-full border rounded px-2 py-1">${[1,2,3,4].map(n => `<option value="${n}" ${isEdit && m.ousboue === n ? 'selected' : ''}>Ousboue ${n}</option>`).join('')}</select></div>
+                <div><label class="text-xs font-bold text-gray-600 dark:text-gray-300">${dict.form_nom}</label><input id="m-m-nom" type="text" class="w-full border rounded px-2 py-1" value="${isEdit ? escapeHtml(m.nom) : ''}"></div>
+                <div><label class="text-xs font-bold text-gray-600 dark:text-gray-300">${dict.form_ousboue}</label><select id="m-m-ousboue" class="w-full border rounded px-2 py-1">${[1,2,3,4].map(n => `<option value="${n}" ${isEdit && m.ousboue === n ? 'selected' : ''}>Ousboue ${n}</option>`).join('')}</select></div>
             </div>
             <div class="mb-3">
                 <label class="text-xs font-bold text-yellow-600">${dict.form_pass} ${isEdit ? '(Laisser vide)' : ''}</label>
@@ -674,34 +764,54 @@
 
             <details class="mb-2 bg-slate-100 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-300 dark:border-slate-600">
                 <summary class="text-sm font-bold cursor-pointer">📊 ${dict.tab_stats}</summary>
-                <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
-                    <div><label>Maisons</label><input id="m-m-maisons" type="number" value="${isEdit ? m.nb_maisons_autour || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>Maisons 5A</label><input id="m-m-maisons5a" type="number" value="${isEdit ? m.nb_maisons_5amal || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>F. 4 mois</label><input id="m-m-fr4m" type="number" value="${isEdit ? m.nb_freres_4mois || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>F. 4m/an</label><input id="m-m-fr4ma" type="number" value="${isEdit ? m.nb_freres_4mois_an || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>F. 40j</label><input id="m-m-fr40j" type="number" value="${isEdit ? m.nb_freres_40jours || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>Jamaats</label><input id="m-m-jamaats" type="number" value="${isEdit ? m.nb_jamaats_3jours || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>2h30</label><input id="m-m-z2h30" type="number" value="${isEdit ? m.nb_freres_ziara_2h30 || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>< 2h30</label><input id="m-m-zmoins" type="number" value="${isEdit ? m.nb_freres_ziara_moins || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>S. 2m</label><input id="m-m-so2m" type="number" value="${isEdit ? m.nb_soeurs_2mois || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>S. 40j</label><input id="m-m-so40j" type="number" value="${isEdit ? m.nb_soeurs_40jours || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>S. 15j</label><input id="m-m-so15j" type="number" value="${isEdit ? m.nb_soeurs_15jours || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>S. 3j</label><input id="m-m-so3j" type="number" value="${isEdit ? m.nb_soeurs_3jours || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
+                <div class="grid grid-cols-1 gap-2 mt-3 text-sm">
+                    <div class="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 p-2 rounded border border-blue-200 dark:border-blue-800 mb-2">
+                        <input type="checkbox" id="m-m-5amal" class="w-5 h-5 text-emerald-600 rounded" ${isEdit && m.est_5amal ? 'checked' : ''}>
+                        <label for="m-m-5amal" class="text-sm font-bold text-blue-800 dark:text-blue-200">${dict.stat_5amal_checkbox}</label>
+                    </div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_maisons}</label><input id="m-m-maisons" type="number" value="${isEdit ? m.nb_maisons_autour || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_maisons_5amal}</label><input id="m-m-maisons5a" type="number" value="${isEdit ? m.nb_maisons_5amal || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_fr_4m}</label><input id="m-m-fr4m" type="number" value="${isEdit ? m.nb_freres_4mois || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_fr_4ma}</label><input id="m-m-fr4ma" type="number" value="${isEdit ? m.nb_freres_4mois_an || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_fr_40j}</label><input id="m-m-fr40j" type="number" value="${isEdit ? m.nb_freres_40jours || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_jamaats}</label><input id="m-m-jamaats" type="number" value="${isEdit ? m.nb_jamaats_3jours || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_z2h30}</label><input id="m-m-z2h30" type="number" value="${isEdit ? m.nb_freres_ziara_2h30 || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_zmoins}</label><input id="m-m-zmoins" type="number" value="${isEdit ? m.nb_freres_ziara_moins || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_so_2m}</label><input id="m-m-so2m" type="number" value="${isEdit ? m.nb_soeurs_2mois || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_so_40j}</label><input id="m-m-so40j" type="number" value="${isEdit ? m.nb_soeurs_40jours || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_so_15j}</label><input id="m-m-so15j" type="number" value="${isEdit ? m.nb_soeurs_15jours || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_so_3j}</label><input id="m-m-so3j" type="number" value="${isEdit ? m.nb_soeurs_3jours || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
                 </div>
             </details>
 
             <details class="mb-3 bg-emerald-50 dark:bg-emerald-900/30 p-3 rounded-lg border border-emerald-200 dark:border-emerald-700">
                 <summary class="text-sm font-bold cursor-pointer">👁️ ${dict.modal_jamaat}</summary>
-                <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
-                    <div class="col-span-2"><label>${dict.label_statut}</label><select id="m-m-jstatut" class="w-full border rounded px-1 py-1"><option value="Aucune" ${isEdit && m.jamaat_statut === 'Aucune' ? 'selected' : ''}>${dict.stat_aucune}</option><option value="Frères à la mosquée" ${isEdit && m.jamaat_statut === 'Frères à la mosquée' ? 'selected' : ''}>${dict.stat_mosque}</option><option value="Jamaat en sortie" ${isEdit && m.jamaat_statut === 'Jamaat en sortie' ? 'selected' : ''}>${dict.stat_sortie}</option></select></div>
-                    <div><label>${dict.label_heure}</label><input id="m-m-heure" type="text" value="${isEdit ? escapeHtml(m.jamaat_heure || '') : ''}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>${dict.label_dest}</label><input id="m-m-dest" type="text" value="${isEdit ? escapeHtml(m.jamaat_destination || '') : ''}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>${dict.label_nb}</label><input id="m-m-nbfreres" type="number" value="${isEdit ? m.jamaat_nb_freres || 0 : 0}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>${dict.label_liste}</label><input id="m-m-liste" type="text" value="${isEdit ? escapeHtml(m.jamaat_freres_liste || '') : ''}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>${dict.label_emir}</label><input id="m-m-emir" type="text" value="${isEdit ? escapeHtml(m.jamaat_emir_nom || '') : ''}" class="w-full border rounded px-1 py-1"></div>
-                    <div><label>${dict.label_emir_tel}</label><input id="m-m-emirtel" type="tel" value="${isEdit ? escapeHtml(m.jamaat_emir_tel || '') : ''}" class="w-full border rounded px-1 py-1"></div>
-                    <div class="col-span-2 border-t pt-2"><label class="font-bold">${dict.label_h_aller}</label><input id="m-m-hanom" type="text" value="${isEdit ? escapeHtml(m.hidayat_aller_nom || '') : ''}" class="w-full border rounded px-1 py-1 mb-1" placeholder="${dict.form_nom}"><input id="m-m-hatel" type="tel" value="${isEdit ? escapeHtml(m.hidayat_aller_tel || '') : ''}" class="w-full border rounded px-1 py-1 mb-1" placeholder="${dict.form_tel}"><input id="m-m-hainfo" type="text" value="${isEdit ? escapeHtml(m.hidayat_aller_info || '') : ''}" class="w-full border rounded px-1 py-1" placeholder="${dict.label_lieu_heure}"></div>
-                    <div class="col-span-2 border-t pt-2"><label class="font-bold">${dict.label_h_retour}</label><input id="m-m-hrnom" type="text" value="${isEdit ? escapeHtml(m.hidayat_retour_nom || '') : ''}" class="w-full border rounded px-1 py-1 mb-1" placeholder="${dict.form_nom}"><input id="m-m-hrtel" type="tel" value="${isEdit ? escapeHtml(m.hidayat_retour_tel || '') : ''}" class="w-full border rounded px-1 py-1 mb-1" placeholder="${dict.form_tel}"><input id="m-m-hrinfo" type="text" value="${isEdit ? escapeHtml(m.hidayat_retour_info || '') : ''}" class="w-full border rounded px-1 py-1" placeholder="${dict.label_lieu_heure}"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 text-sm">
+                    <div class="col-span-1 sm:col-span-2"><label class="font-medium text-gray-700 dark:text-gray-300">${dict.label_statut}</label><select id="m-m-jstatut" class="w-full border rounded px-2 py-1"><option value="Aucune" ${isEdit && m.jamaat_statut === 'Aucune' ? 'selected' : ''}>${dict.stat_aucune}</option><option value="Frères à la mosquée" ${isEdit && m.jamaat_statut === 'Frères à la mosquée' ? 'selected' : ''}>${dict.stat_mosque}</option><option value="Jamaat en sortie" ${isEdit && m.jamaat_statut === 'Jamaat en sortie' ? 'selected' : ''}>${dict.stat_sortie}</option></select></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.label_heure}</label><input id="m-m-heure" type="text" value="${isEdit ? escapeHtml(m.jamaat_heure || '') : ''}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.label_dest}</label><input id="m-m-dest" type="text" value="${isEdit ? escapeHtml(m.jamaat_destination || '') : ''}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.label_nb}</label><input id="m-m-nbfreres" type="number" value="${isEdit ? m.jamaat_nb_freres || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.label_liste}</label><input id="m-m-liste" type="text" value="${isEdit ? escapeHtml(m.jamaat_freres_liste || '') : ''}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.label_emir}</label><input id="m-m-emir" type="text" value="${isEdit ? escapeHtml(m.jamaat_emir_nom || '') : ''}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.label_emir_tel}</label><input id="m-m-emirtel" type="tel" value="${isEdit ? escapeHtml(m.jamaat_emir_tel || '') : ''}" class="w-full border rounded px-2 py-1"></div>
+                    
+                    <div class="col-span-1 sm:col-span-2 border-t border-emerald-300 dark:border-emerald-700 pt-2 mt-2">
+                        <label class="font-bold text-emerald-800 dark:text-emerald-300 block mb-1">${dict.label_h_aller}</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input id="m-m-hanom" type="text" value="${isEdit ? escapeHtml(m.hidayat_aller_nom || '') : ''}" class="w-full border rounded px-2 py-1" placeholder="${dict.form_nom}">
+                            <input id="m-m-hatel" type="tel" value="${isEdit ? escapeHtml(m.hidayat_aller_tel || '') : ''}" class="w-full border rounded px-2 py-1" placeholder="${dict.form_tel}">
+                            <input id="m-m-hainfo" type="text" value="${isEdit ? escapeHtml(m.hidayat_aller_info || '') : ''}" class="w-full border rounded px-2 py-1 col-span-1 sm:col-span-2" placeholder="${dict.label_lieu_heure}">
+                        </div>
+                    </div>
+
+                    <div class="col-span-1 sm:col-span-2 border-t border-emerald-300 dark:border-emerald-700 pt-2 mt-2">
+                        <label class="font-bold text-emerald-800 dark:text-emerald-300 block mb-1">${dict.label_h_retour}</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input id="m-m-hrnom" type="text" value="${isEdit ? escapeHtml(m.hidayat_retour_nom || '') : ''}" class="w-full border rounded px-2 py-1" placeholder="${dict.form_nom}">
+                            <input id="m-m-hrtel" type="tel" value="${isEdit ? escapeHtml(m.hidayat_retour_tel || '') : ''}" class="w-full border rounded px-2 py-1" placeholder="${dict.form_tel}">
+                            <input id="m-m-hrinfo" type="text" value="${isEdit ? escapeHtml(m.hidayat_retour_info || '') : ''}" class="w-full border rounded px-2 py-1 col-span-1 sm:col-span-2" placeholder="${dict.label_lieu_heure}">
+                        </div>
+                    </div>
                 </div>
             </details>
             <button onclick="doSaveMosquee(${halakaId}, ${isEdit ? m.id : 'null'})" class="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 rounded font-bold shadow mt-4">${dict.btn_save}</button>
@@ -736,7 +846,6 @@
         else await supabase.from('mosquees').insert({ ...data, halaka_id: halakaId, password: pass });
         
         closeModal(); await syncData(); 
-        // Re-ouvre la modale mosquée pour voir la liste mise à jour
         openManageModal('mosquees');
     }
 
