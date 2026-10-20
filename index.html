@@ -19,13 +19,21 @@
     [dir="rtl"] th, [dir="rtl"] td { text-align: right; }
     .chart-container { position: relative; height: 300px; width: 100%; }
     
-    /* Correction forcée pour les champs de saisie */
-    input, select, textarea { color: #1e293b; }
-    .dark input, .dark select, .dark textarea { color: #f8fafc; background-color: #334155; border-color: #475569; }
+    /* CORRECTION FORCÉE POUR LA LISIBILITÉ DES CHAMPS */
+    input, select, textarea { 
+        color: #1e293b !important; 
+        background-color: #ffffff !important;
+    }
+    .dark input, .dark select, .dark textarea { 
+        color: #f8fafc !important; 
+        background-color: #334155 !important; 
+        border-color: #475569 !important; 
+    }
   </style>
 </head>
 <body class="bg-slate-200 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen font-sans transition-colors duration-300">
 
+  <!-- BOÎTE D'ERREUR ROUGE -->
   <div id="debug-box" class="debug-box"></div>
 
   <div id="offline-banner" class="hidden bg-orange-500 text-white text-center py-2 px-4 text-sm font-bold shadow-md no-print">
@@ -39,7 +47,10 @@
       <button onclick="setLanguage('ar')" id="btn-lang-ar" class="px-3 py-1 rounded hover:bg-slate-600 transition">🇸🇦 AR</button>
       <button onclick="setLanguage('ur')" id="btn-lang-ur" class="px-3 py-1 rounded hover:bg-slate-600 transition">🇵🇰 UR</button>
     </div>
-    <button onclick="toggleDarkMode()" id="dark-mode-btn" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded transition text-lg">🌙</button>
+    <div class="flex gap-2">
+      <button onclick="forceReload()" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded transition text-sm font-bold" title="Actualiser les données">🔄</button>
+      <button onclick="toggleDarkMode()" id="dark-mode-btn" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded transition text-lg">🌙</button>
+    </div>
   </div>
 
   <header class="bg-emerald-800 dark:bg-emerald-950 text-white shadow-lg no-print transition-colors">
@@ -156,7 +167,6 @@
     <!-- ================= 3. GESTIONNAIRE ================= -->
     <section id="view-admin" class="hidden">
       
-      <!-- Barre d'outils simplifiée -->
       <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow mb-6 border border-slate-300 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-3">
         <h2 class="text-lg font-bold text-emerald-800 dark:text-emerald-400" data-i18n="manage_title">Gestion</h2>
         <div class="flex gap-2">
@@ -188,14 +198,23 @@
 
   <script>
     // ==========================================
-    // TRADUCTIONS & THEME
+    // GESTION DES ERREURS & THEME
     // ==========================================
+    window.onerror = function(message) { 
+        const box = document.getElementById('debug-box'); 
+        if(box) { box.style.display = 'block'; box.innerHTML = "⚠️ Erreur JS : " + message; }
+    };
+
+    function forceReload() {
+        localStorage.removeItem('khourouj_offline_data');
+        window.location.reload();
+    }
+
     function toggleDarkMode() {
       const html = document.documentElement;
       if (html.classList.contains('dark')) { html.classList.remove('dark'); localStorage.setItem('khourouj_theme', 'light'); document.getElementById('dark-mode-btn').textContent = '🌙'; }
       else { html.classList.add('dark'); localStorage.setItem('khourouj_theme', 'dark'); document.getElementById('dark-mode-btn').textContent = '☀️'; }
       
-      // Correction du bug : on récupère la ville active pour redessiner le graphique
       const activeVille = document.getElementById('sel-stats-ville').value;
       if(activeVille) { renderStats(activeVille); }
     }
@@ -327,10 +346,17 @@
              return;
         }
         try {
-            const { data: pays } = await supabase.from('pays').select('*');
-            const { data: villes } = await supabase.from('villes').select('*');
-            const { data: halakat } = await supabase.from('halakat').select('*');
-            const { data: mosquees } = await supabase.from('mosquees').select('*');
+            const { data: pays, error: e1 } = await supabase.from('pays').select('*');
+            const { data: villes, error: e2 } = await supabase.from('villes').select('*');
+            const { data: halakat, error: e3 } = await supabase.from('halakat').select('*');
+            const { data: mosquees, error: e4 } = await supabase.from('mosquees').select('*');
+            
+            if (e1 || e2 || e3 || e4) {
+                 const box = document.getElementById('debug-box'); 
+                 if(box) { box.style.display = 'block'; box.innerHTML = "⚠️ Erreur de base de données. Avez-vous exécuté le SQL ?"; }
+                 return;
+            }
+
             dataCache = { pays: pays || [], villes: villes || [], halakat: halakat || [], mosquees: mosquees || [] };
             localStorage.setItem('khourouj_offline_data', JSON.stringify(dataCache));
             offlineBanner.classList.add('hidden');
