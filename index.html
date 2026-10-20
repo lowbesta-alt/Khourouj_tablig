@@ -38,26 +38,27 @@
 
   <div id="debug-box" class="debug-box"></div>
 
-  <!-- NOUVELLE BARRE DE LANGUE (Style Capture d'écran) -->
+  <!-- BARRE DE LANGUE (Centrée, toute seule) -->
   <div class="bg-slate-900 dark:bg-black text-white py-3 px-4 flex justify-center items-center gap-2 no-print shadow-md transition-colors">
     <button onclick="setLanguage('ur')" id="btn-lang-ur" class="px-4 py-1.5 rounded-full border text-sm font-bold transition">🇵🇰 UR</button>
     <button onclick="setLanguage('ar')" id="btn-lang-ar" class="px-4 py-1.5 rounded-full border text-sm font-bold transition">🇸🇦 AR</button>
     <button onclick="setLanguage('en')" id="btn-lang-en" class="px-4 py-1.5 rounded-full border text-sm font-bold transition">🇬🇧 EN</button>
     <button onclick="setLanguage('fr')" id="btn-lang-fr" class="px-4 py-1.5 rounded-full border text-sm font-bold transition">🇫🇷 FR</button>
-    
-    <!-- Boutons d'outils à droite -->
-    <div class="absolute right-2 flex gap-1">
-      <button onclick="clearCache()" class="px-2 py-1 text-red-500 hover:text-red-400 rounded transition text-sm font-bold" title="Vider le cache">🗑️</button>
-      <button onclick="toggleDarkMode()" id="dark-mode-btn" class="px-2 py-1 text-gray-400 hover:text-white rounded transition text-lg">🌙</button>
-    </div>
   </div>
 
+  <!-- EN-TÊTE AVEC LES OUTILS (Poubelle et Lune) -->
   <header class="bg-emerald-800 dark:bg-emerald-950 text-white shadow-lg no-print transition-colors">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center gap-3">
-      <div class="text-3xl bg-white dark:bg-slate-800 rounded-full p-1 leading-none shadow-inner">🕌</div>
-      <div>
-        <h1 class="text-xl md:text-2xl font-bold" data-i18n="app_title">Khourouj Tabligh</h1>
-        <p class="text-emerald-100 dark:text-emerald-300 text-sm" data-i18n="app_subtitle">Gestion des sorties</p>
+    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="text-3xl bg-white dark:bg-slate-800 rounded-full p-1 leading-none shadow-inner">🕌</div>
+        <div>
+          <h1 class="text-xl md:text-2xl font-bold" data-i18n="app_title">Khourouj Tabligh</h1>
+          <p class="text-emerald-100 dark:text-emerald-300 text-sm" data-i18n="app_subtitle">Gestion des sorties</p>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="clearCache()" class="px-3 py-1 bg-red-600 hover:bg-red-500 rounded transition text-sm font-bold shadow" title="Vider le cache">🗑️</button>
+        <button onclick="toggleDarkMode()" id="dark-mode-btn" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded transition text-lg shadow">🌙</button>
       </div>
     </div>
   </header>
@@ -228,10 +229,8 @@
         ['fr', 'en', 'ar', 'ur'].forEach(l => {
             const btn = document.getElementById('btn-lang-' + l);
             if (l === currentLang) {
-                // Style actif (Jaune/Or comme la capture)
                 btn.className = "px-4 py-1.5 rounded-full border border-amber-500 bg-amber-500 text-black text-sm font-bold transition shadow-md";
             } else {
-                // Style inactif
                 btn.className = "px-4 py-1.5 rounded-full border border-slate-600 text-slate-300 bg-transparent text-sm font-bold hover:bg-slate-700 transition";
             }
         });
@@ -291,7 +290,7 @@
             const SUPABASE_ANON_KEY = 'sb_publishable_JIjs3oxZszYHTaON8iH06g_-mnoCVfl';
             window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             
-            updateLanguageButtons(); // Initialise les boutons avec le bon style
+            updateLanguageButtons();
             
             await loadData();
             clearTimeout(loadTimeout);
