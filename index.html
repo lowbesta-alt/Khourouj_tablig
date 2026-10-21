@@ -169,7 +169,10 @@
 
     <section id="view-admin" class="hidden">
       <div class="mb-6">
-        <h2 class="text-xl font-bold text-emerald-800 dark:text-emerald-400 mb-4 text-center" data-i18n="manage_title">Gestion</h2>
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-emerald-800 dark:text-emerald-400" data-i18n="manage_title">Gestion</h2>
+            <button onclick="logoutAdmin()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-bold shadow transition">🔒 Déconnexion</button>
+        </div>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div onclick="openManageModal('pays')" class="bg-white dark:bg-slate-800 rounded-xl shadow border-2 border-transparent hover:border-emerald-500 cursor-pointer p-4 flex flex-col items-center justify-center transition-all hover:scale-105">
@@ -193,7 +196,6 @@
             <h3 class="text-base font-bold text-slate-800 dark:text-slate-100" data-i18n="add_mosquee">Mosquées</h3>
           </div>
 
-          <!-- NOUVELLE CARTE AHWAL DANS LE GESTIONNAIRE -->
           <div onclick="openManageModal('ahwal')" class="bg-white dark:bg-slate-800 rounded-xl shadow border-2 border-violet-500 cursor-pointer p-4 flex flex-col items-center justify-center transition-all hover:scale-105 relative">
             <div class="text-4xl mb-2">📢</div>
             <h3 class="text-base font-bold text-slate-800 dark:text-slate-100">Ahwal</h3>
@@ -223,8 +225,10 @@
     const SUPABASE_URL = 'https://rhtaqusrkgqawtbqysgw.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_JIjs3oxZszYHTaON8iH06g_-mnoCVfl'; // <-- LA CLÉ EST ICI
     
-    // CODE POUR ACCÉDER AUX AHWAL (Modifiable)
-    const CODE_AHWAL = "admin"; 
+    // ==========================================
+    // CODE ADMINISTRATEUR UNIQUE
+    // ==========================================
+    const MASTER_PASSWORD = "admin2024"; 
 
     // ==========================================
     // DICTIONNAIRE DE TRADUCTION COMPLET
@@ -237,14 +241,14 @@
         tab_events: "📅 Événements", event_upcoming: "Événements à venir", event_none: "Aucun événement à venir.",
         jamaats_en_sortie: "Mosquées en sortie", ahwal_ville: "Ahwal de la ville",
         event_add: "Ajouter un événement", event_title: "Titre de l'événement", event_date_start: "Date de début", event_date_end: "Date de fin",
-        event_place: "Lieu (Ville / Pays)", event_desc: "Description (Optionnel)", event_pass: "Mot de passe pour gérer les événements",
-        event_pass_wrong: "Mot de passe incorrect !", event_save: "Enregistrer l'événement",
+        event_place: "Lieu (Ville / Pays)", event_desc: "Description (Optionnel)", event_pass: "Code administrateur",
+        event_pass_wrong: "Code incorrect !", event_save: "Enregistrer l'événement",
         country: "Pays", city: "Ville (Halaka)", sub_halaka: "Sous-Halaka", th_mosque: "Mosquée", th_ousboue: "Ousboue", th_dates: "Dates", th_status: "Statut",
         filter_stats: "Choisir une ville :", btn_share_city: "Partager (WhatsApp)", total_mosques: "Total Mosquées", mosques_5amal: "Mosquées 5 Amal", houses_around: "Maisons autour", houses_5amal: "Maisons 5 Amal",
         bros_4m: "Frères sortis 4 mois", bros_4m_year: "Frères donnant 4 mois/an", bros_40d: "Frères sortis 40 jours", jamaats_3d: "Jamaats 3 jours", ziara_2h30: "Donnant 2h30/jour", ziara_less: "Donnant < 2h30/jour",
         sisters_2m: "Sœurs sorties 2 mois", sisters_40d: "Sœurs sorties 40 jours", sisters_15d: "Sœurs sorties 15 jours", sisters_3d: "Sœurs sorties 3 jours",
         manage_title: "Gestion", btn_structure: "⚙️ Structure", add_mosquee: "Mosquée", add_pays: "Pays", add_ville: "Ville", add_halaka: "Halaka",
-        form_nom: "Nom", form_ousboue: "Ousboue", form_pass: "Mot de passe", form_emir: "Émir", form_tel: "Téléphone", btn_save: "Enregistrer", btn_delete: "Supprimer", btn_edit: "Modifier",
+        form_nom: "Nom", form_ousboue: "Ousboue", form_pass: "Code Admin", form_emir: "Émir", form_tel: "Téléphone", btn_save: "Enregistrer", btn_delete: "Supprimer", btn_edit: "Modifier",
         form_ahwal: "Ahwal / Informations de la ville",
         no_mosque: "Aucune mosquée.", select_halaka_hint: "Sélectionnez une halaka pour voir les mosquées.",
         modal_add_pays: "Ajouter un Pays", modal_add_ville: "Ajouter une Ville", modal_add_halaka: "Ajouter un Sous-Halaka", modal_structure: "Gérer la structure",
@@ -277,14 +281,14 @@
         tab_events: "📅 Events", event_upcoming: "Upcoming Events", event_none: "No upcoming events.",
         jamaats_en_sortie: "Mosques out", ahwal_ville: "City Ahwal (News)",
         event_add: "Add an event", event_title: "Event Title", event_date_start: "Start Date", event_date_end: "End Date",
-        event_place: "Place (City / Country)", event_desc: "Description (Optional)", event_pass: "Password to manage events",
+        event_place: "Place (City / Country)", event_desc: "Description (Optional)", event_pass: "Admin password",
         event_pass_wrong: "Wrong password!", event_save: "Save Event",
         country: "Country", city: "City (Halaka)", sub_halaka: "Sub-Halaka", th_mosque: "Mosque", th_ousboue: "Ousboue", th_dates: "Dates", th_status: "Status",
         filter_stats: "Select a city:", btn_share_city: "Share (WhatsApp)", total_mosques: "Total Mosques", mosques_5amal: "Mosques 5 Amal", houses_around: "Houses around", houses_5amal: "Houses 5 Amal",
         bros_4m: "Brothers out 4 months", bros_4m_year: "Brothers giving 4m/year", bros_40d: "Brothers out 40 days", jamaats_3d: "Jamaats 3 days", ziara_2h30: "Giving 2h30/day", ziara_less: "Giving < 2h30/day",
         sisters_2m: "Sisters out 2 months", sisters_40d: "Sisters out 40 days", sisters_15d: "Sisters out 15 days", sisters_3d: "Sisters out 3 days",
         manage_title: "Management", btn_structure: "⚙️ Structure", add_mosquee: "Mosque", add_pays: "Country", add_ville: "City", add_halaka: "Halaka",
-        form_nom: "Name", form_ousboue: "Ousboue", form_pass: "Password", form_emir: "Emir", form_tel: "Phone", btn_save: "Save", btn_delete: "Delete", btn_edit: "Edit",
+        form_nom: "Name", form_ousboue: "Ousboue", form_pass: "Admin Code", form_emir: "Emir", form_tel: "Phone", btn_save: "Save", btn_delete: "Delete", btn_edit: "Edit",
         form_ahwal: "City Ahwal / News",
         no_mosque: "No mosque.", select_halaka_hint: "Select a halaka to view mosques.",
         modal_add_pays: "Add a Country", modal_add_ville: "Add a City", modal_add_halaka: "Add a Sub-Halaka", modal_structure: "Manage structure",
@@ -317,14 +321,14 @@
         tab_events: "📅 الأحداث", event_upcoming: "الأحداث القادمة", event_none: "لا توجد أحداث قادمة.",
         jamaats_en_sortie: "مساجد في الخروج", ahwal_ville: "أحوال المدينة",
         event_add: "إضافة حدث", event_title: "عنوان الحدث", event_date_start: "تاريخ البداية", event_date_end: "تاريخ النهاية",
-        event_place: "المكان (المدينة / البلد)", event_desc: "الوصف (اختياري)", event_pass: "كلمة مرور إدارة الأحداث",
+        event_place: "المكان (المدينة / البلد)", event_desc: "الوصف (اختياري)", event_pass: "كلمة مرور المسؤول",
         event_pass_wrong: "كلمة مرور خاطئة!", event_save: "حفظ الحدث",
         country: "البلد", city: "المدينة (حلقة)", sub_halaka: "الحلقة الفرعية", th_mosque: "المسجد", th_ousboue: "الأسبوع", th_dates: "التواريخ", th_status: "الحالة",
         filter_stats: "اختر مدينة:", btn_share_city: "مشاركة (واتساب)", total_mosques: "إجمالي المساجد", mosques_5amal: "مساجد 5 أعمال", houses_around: "البيوت المحيطة", houses_5amal: "بيوت 5 أعمال",
         bros_4m: "إخوة خرجوا 4 أشهر", bros_4m_year: "إخوة يعطون 4 أشهر/سنة", bros_40d: "إخوة خرجوا 40 يوماً", jamaats_3d: "جماعات 3 أيام", ziara_2h30: "يعطون 2.30/يوم", ziara_less: "يعطون < 2.30/يوم",
         sisters_2m: "أخوات خرجن شهرين", sisters_40d: "أخوات خرجن 40 يوماً", sisters_15d: "أخوات خرجن 15 يوماً", sisters_3d: "أخوات خرجن 3 أيام",
         manage_title: "لوحة القيادة", btn_structure: "⚙️ الهيكل", add_mosquee: "مسجد", add_pays: "بلد", add_ville: "مدينة", add_halaka: "حلقة",
-        form_nom: "الاسم", form_ousboue: "الأسبوع", form_pass: "كلمة المرور", form_emir: "الأمير", form_tel: "الهاتف", btn_save: "حفظ", btn_delete: "حذف", btn_edit: "تعديل",
+        form_nom: "الاسم", form_ousboue: "الأسبوع", form_pass: "رمز المسؤول", form_emir: "الأمير", form_tel: "الهاتف", btn_save: "حفظ", btn_delete: "حذف", btn_edit: "تعديل",
         form_ahwal: "أحوال / أخبار المدينة",
         no_mosque: "لا يوجد مسجد.", select_halaka_hint: "اختر حلقة لعرض المساجد.",
         modal_add_pays: "إضافة بلد", modal_add_ville: "إضافة مدينة", modal_add_halaka: "إضافة حلقة فرعية", modal_structure: "إدارة الهيكل",
@@ -357,14 +361,14 @@
         tab_events: "📅 تقریبات", event_upcoming: "آنے والی تقریبات", event_none: "کوئی آنے والی تقریب نہیں۔",
         jamaats_en_sortie: "خروج میں مساجد", ahwal_ville: "شہر کے احوال",
         event_add: "تقریب شامل کریں", event_title: "تقریب کا عنوان", event_date_start: "شروع کی تاریخ", event_date_end: "اختتام کی تاریخ",
-        event_place: "جگہ (شہر / ملک)", event_desc: "تفصیل (اختیاری)", event_pass: "تقریبات کے انتظام کا پاس ورڈ",
+        event_place: "جگہ (شہر / ملک)", event_desc: "تفصیل (اختیاری)", event_pass: "منتظم کا پاس ورڈ",
         event_pass_wrong: "غلط پاس ورڈ!", event_save: "تقریب محفوظ کریں",
         country: "ملک", city: "شہر (حلقہ)", sub_halaka: "ذیلی حلقہ", th_mosque: "مسجد", th_ousboue: "ہفتہ", th_dates: "تاریخ", th_status: "حالت",
         filter_stats: "شہر منتخب کریں:", btn_share_city: "شیئر (واٹس ایپ)", total_mosques: "کل مساجد", mosques_5amal: "5 اعمال والی مساجد", houses_around: "ارد گرد کے گھر", houses_5amal: "5 اعمال والے گھر",
         bros_4m: "بھائی 4 ماہ خروج", bros_4m_year: "بھائی 4 ماہ/سال", bros_40d: "بھائی 40 دن خروج", jamaats_3d: "جماعتیں 3 دن", ziara_2h30: "2.30/دن دیتے ہیں", ziara_less: "< 2.30/دن دیتے ہیں",
         sisters_2m: "بہنیں 2 ماہ خروج", sisters_40d: "بہنیں 40 دن خروج", sisters_15d: "بہنیں 15 دن خروج", sisters_3d: "بہنیں 3 دن خروج",
         manage_title: "ڈیش بورڈ", btn_structure: "⚙️ ڈھانچہ", add_mosquee: "مسجد", add_pays: "ملک", add_ville: "شہر", add_halaka: "حلقہ",
-        form_nom: "نام", form_ousboue: "ہفتہ", form_pass: "پاس ورڈ", form_emir: "امیر", form_tel: "فون", btn_save: "محفوظ", btn_delete: "حذف", btn_edit: "ترمیم",
+        form_nom: "نام", form_ousboue: "ہفتہ", form_pass: "منتظم کوڈ", form_emir: "امیر", form_tel: "فون", btn_save: "محفوظ", btn_delete: "حذف", btn_edit: "ترمیم",
         form_ahwal: "شہر کے احوال / معلومات",
         no_mosque: "کوئی مسجد نہیں۔", select_halaka_hint: "مساجد دیکھنے کے لیے حلقہ منتخب کریں۔",
         modal_add_pays: "ملک شامل کریں", modal_add_ville: "شہر شامل کریں", modal_add_halaka: "ذیلی حلقہ شامل کریں", modal_structure: "ڈھانچہ کا انتظام",
@@ -484,7 +488,6 @@
     // SUPABASE & CHARGEMENT
     // ==========================================
     let dataCache = { pays: [], villes: [], halakat: [], mosquees: [], evenements: [] };
-    let eventPassword = sessionStorage.getItem('khourouj_event_pass') || '';
 
     const script = document.createElement('script');
     script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
@@ -551,7 +554,15 @@
 
     async function syncData() { await loadData(); refreshConsult(); renderEventsBanner(); renderJamaatsEnSortie(); }
 
+    // ==========================================
+    // GESTION DE LA SÉCURITÉ
+    // ==========================================
     window.switchTab = function(tab) {
+        if (tab === 'admin' && !sessionStorage.getItem('khourouj_admin_pass')) {
+            openAdminLoginModal();
+            return;
+        }
+
         document.getElementById('view-consult').classList.add('hidden'); document.getElementById('view-stats').classList.add('hidden'); document.getElementById('view-admin').classList.add('hidden');
         const active = 'px-4 py-3 font-medium border-b-2 border-emerald-600 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-slate-700';
         const idle = 'px-4 py-3 font-medium border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200';
@@ -562,6 +573,36 @@
         if (tab === 'stats') { refreshStatsSelect(); }
     }
 
+    window.openAdminLoginModal = function() {
+        document.getElementById('modal-content').innerHTML = `
+            <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">🔒 Accès Gestionnaire</h3>
+            <p class="text-sm mb-3">Veuillez entrer le code administrateur pour continuer :</p>
+            <input id="admin-master-pass" type="password" class="w-full border rounded px-3 py-2 mb-4">
+            <button onclick="checkAdminPassword()" class="bg-emerald-600 text-white w-full py-2 rounded font-bold">Valider</button>
+        `;
+        document.getElementById('modal').classList.remove('hidden');
+    }
+
+    window.checkAdminPassword = function() {
+        const pass = document.getElementById('admin-master-pass').value;
+        if (pass === MASTER_PASSWORD) {
+            sessionStorage.setItem('khourouj_admin_pass', pass);
+            closeModal();
+            switchTab('admin');
+        } else {
+            alert("Code administrateur incorrect !");
+        }
+    }
+
+    window.logoutAdmin = function() {
+        sessionStorage.removeItem('khourouj_admin_pass');
+        switchTab('consult');
+        alert("Vous êtes déconnecté du Gestionnaire.");
+    }
+
+    // ==========================================
+    // SUITE DU CODE (LOGIC)
+    // ==========================================
     function refreshConsult() {
         const paysSel = document.getElementById('sel-pays'); const currentPays = paysSel.value;
         paysSel.innerHTML = '<option value="">--</option>' + dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('');
@@ -574,7 +615,6 @@
         }
     }
 
-    // Bandeau Mosquées en sortie
     window.renderJamaatsEnSortie = function() {
         const container = document.getElementById('jamaats-banner-container');
         const list = document.getElementById('jamaats-banner-list');
@@ -613,7 +653,6 @@
     window.renderEventsBanner = function() {
         const container = document.getElementById('event-banner-container');
         const list = document.getElementById('event-list-banner');
-        const dict = translations[currentLang];
         
         if (!dataCache.evenements || dataCache.evenements.length === 0) {
             container.classList.add('hidden'); return;
@@ -736,7 +775,6 @@
         }
         const ville = dataCache.villes.find(v => String(v.id) === villeId); if(!ville) return;
         
-        // Affichage du bandeau Ahwal (Violet)
         const ahwalContainer = document.getElementById('ahwal-banner-container');
         const ahwalContent = document.getElementById('ahwal-banner-content');
         if (ville.ahwal && ville.ahwal.trim() !== '') {
@@ -844,9 +882,6 @@
                     </select>
                     
                     <div id="m-ahwal-editor" class="hidden">
-                        <label class="text-xs font-bold mb-1 block text-violet-700 dark:text-violet-300">Code d'accès (Mot de passe) :</label>
-                        <input id="m-ahwal-pass" type="password" class="w-full border rounded px-2 py-1 text-sm mb-3 bg-white dark:bg-slate-800" placeholder="Entrez le code pour modifier">
-                        
                         <label class="text-xs font-bold mb-1 block">Informations (Ahwal) :</label>
                         <textarea id="m-ahwal-text" class="w-full border rounded px-2 py-1 text-sm" rows="5" placeholder="Écrivez les informations..."></textarea>
                         
@@ -856,49 +891,40 @@
             `;
         }
         else if (type === 'evenements') {
-            if (!eventPassword) {
-                html = `
-                    <h3 class="text-xl font-bold mb-4 text-amber-600">📅 ${dict.tab_events}</h3>
-                    <p class="text-sm mb-3">${dict.event_pass} :</p>
-                    <input id="m-ev-pass" type="password" class="w-full border rounded px-3 py-2 mb-3" placeholder="****">
-                    <button onclick="checkEventPassword()" class="bg-amber-600 text-white w-full py-2 rounded">Valider</button>
-                `;
-            } else {
-                html = `
-                    <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">📅 ${dict.tab_events}</h3>
-                    
-                    <div class="bg-slate-100 dark:bg-slate-700/50 p-3 rounded-lg mb-4">
-                        <h4 class="font-bold text-sm mb-2 text-slate-700 dark:text-slate-200">${dict.event_add}</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
-                            <div class="sm:col-span-2"><label class="text-xs">${dict.event_title}</label><input id="ev-titre" type="text" class="w-full border rounded px-2 py-1 text-sm"></div>
-                            <div><label class="text-xs">${dict.event_date_start}</label><input id="ev-date-start" type="date" class="w-full border rounded px-2 py-1 text-sm"></div>
-                            <div><label class="text-xs">${dict.event_date_end}</label><input id="ev-date-end" type="date" class="w-full border rounded px-2 py-1 text-sm"></div>
-                            <div class="sm:col-span-2"><label class="text-xs">${dict.event_place}</label><input id="ev-lieu" type="text" class="w-full border rounded px-2 py-1 text-sm"></div>
-                            <div class="sm:col-span-2"><label class="text-xs">${dict.event_desc}</label><textarea id="ev-desc" class="w-full border rounded px-2 py-1 text-sm" rows="2"></textarea></div>
-                        </div>
-                        <button onclick="doAddEvenement()" class="bg-amber-600 text-white w-full py-2 rounded font-bold text-sm mt-2">${dict.event_save}</button>
+            html = `
+                <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">📅 ${dict.tab_events}</h3>
+                
+                <div class="bg-slate-100 dark:bg-slate-700/50 p-3 rounded-lg mb-4">
+                    <h4 class="font-bold text-sm mb-2 text-slate-700 dark:text-slate-200">${dict.event_add}</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+                        <div class="sm:col-span-2"><label class="text-xs">${dict.event_title}</label><input id="ev-titre" type="text" class="w-full border rounded px-2 py-1 text-sm"></div>
+                        <div><label class="text-xs">${dict.event_date_start}</label><input id="ev-date-start" type="date" class="w-full border rounded px-2 py-1 text-sm"></div>
+                        <div><label class="text-xs">${dict.event_date_end}</label><input id="ev-date-end" type="date" class="w-full border rounded px-2 py-1 text-sm"></div>
+                        <div class="sm:col-span-2"><label class="text-xs">${dict.event_place}</label><input id="ev-lieu" type="text" class="w-full border rounded px-2 py-1 text-sm"></div>
+                        <div class="sm:col-span-2"><label class="text-xs">${dict.event_desc}</label><textarea id="ev-desc" class="w-full border rounded px-2 py-1 text-sm" rows="2"></textarea></div>
                     </div>
+                    <button onclick="doAddEvenement()" class="bg-amber-600 text-white w-full py-2 rounded font-bold text-sm mt-2">${dict.event_save}</button>
+                </div>
 
-                    <div class="max-h-60 overflow-y-auto space-y-2 border-t pt-2 dark:border-slate-700">
-                        ${dataCache.evenements.map(e => `
-                            <div class="flex justify-between items-start bg-slate-50 dark:bg-slate-700/50 p-2 rounded border dark:border-slate-600">
-                                <div>
-                                    <p class="font-bold text-sm">${escapeHtml(e.titre)}</p>
-                                    <p class="text-xs text-gray-500">${formatDateEvent(e.date_debut)} au ${formatDateEvent(e.date_fin)} - ${escapeHtml(e.lieu || '')}</p>
-                                </div>
-                                <button onclick="deleteEvenement(${e.id})" class="text-red-600 text-sm ml-2">${dict.btn_delete}</button>
+                <div class="max-h-60 overflow-y-auto space-y-2 border-t pt-2 dark:border-slate-700">
+                    ${dataCache.evenements.map(e => `
+                        <div class="flex justify-between items-start bg-slate-50 dark:bg-slate-700/50 p-2 rounded border dark:border-slate-600">
+                            <div>
+                                <p class="font-bold text-sm">${escapeHtml(e.titre)}</p>
+                                <p class="text-xs text-gray-500">${formatDateEvent(e.date_debut)} au ${formatDateEvent(e.date_fin)} - ${escapeHtml(e.lieu || '')}</p>
                             </div>
-                        `).join('') || `<p class="text-sm text-gray-500">${dict.event_none}</p>`}
-                    </div>
-                `;
-            }
+                            <button onclick="deleteEvenement(${e.id})" class="text-red-600 text-sm ml-2">${dict.btn_delete}</button>
+                        </div>
+                    `).join('') || `<p class="text-sm text-gray-500">${dict.event_none}</p>`}
+                </div>
+            `;
         }
 
         document.getElementById('modal-content').innerHTML = html;
         document.getElementById('modal').classList.remove('hidden');
     }
 
-    // GESTION DES AHWAL (NOUVEAU)
+    // GESTION DES AHWAL
     window.loadAhwalForEdit = function(villeId) {
         const editor = document.getElementById('m-ahwal-editor');
         const text = document.getElementById('m-ahwal-text');
@@ -911,17 +937,10 @@
 
     window.doSaveAhwalAdmin = async function() {
         const villeId = document.getElementById('m-ahwal-ville').value;
-        const pass = document.getElementById('m-ahwal-pass').value;
         const text = document.getElementById('m-ahwal-text').value.trim();
 
         if (!villeId) return;
         
-        // Vérification du code
-        if (pass !== CODE_AHWAL) {
-            alert("Code d'accès incorrect !");
-            return;
-        }
-
         try {
             const { error } = await supabase.from('villes').update({ ahwal: text }).eq('id', villeId);
             if (error) throw error;
@@ -930,7 +949,6 @@
             closeModal();
             await syncData();
             
-            // Si on est sur la page stats, on rafraîchit
             if (!document.getElementById('view-stats').classList.contains('hidden')) {
                 renderStats(document.getElementById('sel-stats-ville').value);
             }
@@ -938,34 +956,18 @@
     }
 
     // GESTION DES ÉVÉNEMENTS
-    window.checkEventPassword = async function() {
-        const pass = document.getElementById('m-ev-pass').value;
-        try {
-            const { error } = await supabase.rpc('add_evenement_rpc', {
-                p_password: pass, p_titre: '__TEST__', p_date_debut: '2000-01-01', p_date_fin: '2000-01-01', p_lieu: '', p_description: ''
-            });
-            if (error && error.message.includes('Mot de passe incorrect')) {
-                alert(translations[currentLang].event_pass_wrong);
-            } else {
-                eventPassword = pass;
-                sessionStorage.setItem('khourouj_event_pass', pass);
-                await supabase.from('evenements').delete().eq('titre', '__TEST__');
-                openManageModal('evenements');
-            }
-        } catch (e) { alert("Erreur : " + e.message); }
-    }
-
     window.doAddEvenement = async function() {
         const titre = document.getElementById('ev-titre').value.trim();
         const ds = document.getElementById('ev-date-start').value;
         const df = document.getElementById('ev-date-end').value;
         const lieu = document.getElementById('ev-lieu').value.trim();
         const desc = document.getElementById('ev-desc').value.trim();
+        const pass = sessionStorage.getItem('khourouj_admin_pass');
 
         if(!titre || !ds || !df) { alert("Titre et dates obligatoires."); return; }
 
         const { error } = await supabase.rpc('add_evenement_rpc', {
-            p_password: eventPassword, p_titre: titre, p_date_debut: ds, p_date_fin: df, p_lieu: lieu, p_description: desc
+            p_password: pass, p_titre: titre, p_date_debut: ds, p_date_fin: df, p_lieu: lieu, p_description: desc
         });
 
         if(error) { alert("Erreur : " + error.message); return; }
@@ -976,7 +978,8 @@
 
     window.deleteEvenement = async function(id) {
         if(!confirm("Supprimer cet événement ?")) return;
-        const { data, error } = await supabase.rpc('delete_evenement_rpc', { p_password: eventPassword, p_id: id });
+        const pass = sessionStorage.getItem('khourouj_admin_pass');
+        const { data, error } = await supabase.rpc('delete_evenement_rpc', { p_password: pass, p_id: id });
         if(error) { alert("Erreur : " + error.message); return; }
         if(data === true) { await syncData(); openManageModal('evenements'); }
     }
@@ -1045,10 +1048,6 @@
                 <div><label class="text-xs font-bold text-gray-600 dark:text-gray-300">Responsable (Optionnel)</label><input id="m-m-resp" type="text" class="w-full border rounded px-2 py-1" value="${isEdit ? escapeHtml(m.responsable || '') : ''}"></div>
                 <div><label class="text-xs font-bold text-gray-600 dark:text-gray-300">Téléphone (Optionnel)</label><input id="m-m-tel" type="text" class="w-full border rounded px-2 py-1" value="${isEdit ? escapeHtml(m.contact || '') : ''}"></div>
             </div>
-            <div class="mb-3">
-                <label class="text-xs font-bold text-yellow-600">${dict.form_pass} ${isEdit ? '(Laisser vide)' : ''}</label>
-                <div class="relative"><input id="m-m-pass" type="password" class="w-full border rounded px-2 py-1 pr-10 bg-yellow-50 dark:bg-yellow-900/30"><button type="button" id="eye-icon" onclick="togglePassword('m-m-pass', 'eye-icon')" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">👁️</button></div>
-            </div>
 
             <details class="mb-2 bg-slate-100 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-300 dark:border-slate-600">
                 <summary class="text-sm font-bold cursor-pointer">📊 ${dict.tab_stats}</summary>
@@ -1110,10 +1109,10 @@
 
     window.doSaveMosquee = async (halakaId, id) => {
         const nom = document.getElementById('m-m-nom').value.trim();
-        const passInput = document.getElementById('m-m-pass').value.trim();
+        const pass = sessionStorage.getItem('khourouj_admin_pass');
         
         if(!nom) { alert("Nom obligatoire."); return; }
-        if(!id && !passInput) { alert("Mot de passe obligatoire pour la création."); return; }
+        if(!pass) { alert("Session expirée. Veuillez vous reconnecter au gestionnaire."); return; }
         
         if(!id && dataCache.mosquees.some(m => String(m.halaka_id) === String(halakaId) && m.nom.toLowerCase() === nom.toLowerCase())) { alert("Cette mosquée existe déjà dans ce secteur."); return; }
         
@@ -1150,13 +1149,10 @@
             hidayat_retour_info: document.getElementById('m-m-hrinfo').value.trim()
         };
 
-        const existingMosque = id ? dataCache.mosquees.find(m => m.id === id) : null;
-        const finalPass = passInput || (existingMosque ? existingMosque.password : '');
-
         try {
             if (id) {
                 const { data: res, error } = await supabase.rpc('update_mosquee_rpc', {
-                    p_id: id, p_password: finalPass, p_nom: data.nom, p_ousboue: data.ousboue,
+                    p_id: id, p_password: pass, p_nom: data.nom, p_ousboue: data.ousboue,
                     p_responsable: data.responsable, p_contact: data.contact,
                     p_est_5amal: data.est_5amal, p_nb_maisons_autour: data.nb_maisons_autour, p_nb_maisons_5amal: data.nb_maisons_5amal,
                     p_nb_freres_4mois: data.nb_freres_4mois, p_nb_freres_4mois_an: data.nb_freres_4mois_an, p_nb_freres_40jours: data.nb_freres_40jours,
@@ -1168,10 +1164,10 @@
                     p_hidayat_retour_nom: data.hidayat_retour_nom, p_hidayat_retour_tel: data.hidayat_retour_tel, p_hidayat_retour_info: data.hidayat_retour_info
                 });
                 if (error) throw error;
-                if (res === false) throw new Error("Mot de passe incorrect pour cette mosquée.");
+                if (res === false) throw new Error("Code administrateur incorrect.");
             } else {
                 const { error } = await supabase.rpc('add_mosquee_rpc', {
-                    p_nom: data.nom, p_halaka_id: halakaId, p_ousboue: data.ousboue, p_responsable: data.responsable, p_contact: data.contact, p_password: finalPass,
+                    p_nom: data.nom, p_halaka_id: halakaId, p_ousboue: data.ousboue, p_responsable: data.responsable, p_contact: data.contact, p_password: pass,
                     p_est_5amal: data.est_5amal, p_nb_maisons_autour: data.nb_maisons_autour, p_nb_maisons_5amal: data.nb_maisons_5amal,
                     p_nb_freres_4mois: data.nb_freres_4mois, p_nb_freres_4mois_an: data.nb_freres_4mois_an, p_nb_freres_40jours: data.nb_freres_40jours,
                     p_nb_jamaats_3jours: data.nb_jamaats_3jours, p_nb_freres_ziara_2h30: data.nb_freres_ziara_2h30, p_nb_freres_ziara_moins: data.nb_freres_ziara_moins,
@@ -1200,22 +1196,19 @@
 
     window.promptDeleteMosquee = function(id) {
         const dict = translations[currentLang];
-        document.getElementById('modal-content').innerHTML = `
-            <h3 class="text-lg font-bold text-red-600 mb-2">${dict.btn_delete}</h3>
-            <p class="text-xs mb-3">${dict.form_pass} :</p>
-            <div class="relative mb-3">
-                <input id="m-del-pass" type="password" class="w-full border rounded px-3 py-2 pr-10">
-                <button type="button" id="eye-del" onclick="togglePassword('m-del-pass', 'eye-del')" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">👁️</button>
-            </div>
-            <button onclick="doDeleteMosquee(${id})" class="bg-red-600 text-white w-full py-2 rounded">${dict.btn_delete}</button>`;
-        document.getElementById('modal').classList.remove('hidden');
+        if(!confirm("Voulez-vous vraiment supprimer cette mosquée ?")) return;
+        
+        const pass = sessionStorage.getItem('khourouj_admin_pass');
+        if (!pass) { alert("Session expirée. Veuillez vous reconnecter."); return; }
+        
+        doDeleteMosquee(id, pass);
     }
-    window.doDeleteMosquee = async (id) => {
-        const p = document.getElementById('m-del-pass').value;
+    
+    window.doDeleteMosquee = async (id, p) => {
         const { data, error } = await supabase.rpc('delete_mosquee_rpc', { p_id: id, p_password: p });
         if(error) { alert("Erreur : " + error.message); return; }
         if(data === true) { closeModal(); await syncData(); openManageModal('mosquees'); }
-        else alert("Mot de passe incorrect !");
+        else alert("Code administrateur incorrect !");
     }
 
     window.closeModal = function() { document.getElementById('modal').classList.add('hidden'); };
