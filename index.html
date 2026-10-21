@@ -16,7 +16,6 @@
     @media print { .no-print { display: none !important; } body { background: white !important; } }
     .debug-box { display: none; background: #dc2626; color: white; padding: 15px; font-weight: bold; text-align: center; font-family: sans-serif; position: fixed; top: 0; width: 100%; z-index: 9999;}
     [dir="rtl"] th, [dir="rtl"] td { text-align: right; }
-    
     input, select, textarea { color: #1e293b !important; background-color: #ffffff !important; }
     .dark input, .dark select, .dark textarea { color: #f8fafc !important; background-color: #334155 !important; border-color: #475569 !important; }
   </style>
@@ -507,7 +506,6 @@
         paysSel.innerHTML = '<option value="">--</option>' + dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('');
         if(currentPays) paysSel.value = currentPays; else if(dataCache.pays.length > 0) paysSel.value = dataCache.pays[0].id;
         
-        // Si la base de données est vide, on le signale
         if(dataCache.pays.length === 0) {
              document.getElementById('planning-empty').innerHTML = "Veuillez ajouter des données dans le Gestionnaire pour commencer.";
              document.getElementById('planning-empty').classList.remove('hidden');
@@ -812,14 +810,103 @@
     }
 
     // GESTION PAYS, VILLES, HALAKAT, MOSQUÉES
-    window.doAddPays = async () => { const nom = document.getElementById('m-p-nom').value.trim(); if(!nom) return; if (dataCache.pays.some(p => p.nom.toLowerCase() === nom.toLowerCase())) { alert("Existe déjà !"); return; } await supabase.from('pays').insert({ nom }); closeModal(); await syncData(); }
-    window.deletePays = async (id) => { if(!confirm("Supprimer ?")) return; await supabase.from('pays').delete().eq('id', id); closeModal(); await syncData(); }
+    window.doAddPays = async () => {
+        const nom = document.getElementById('m-p-nom').value.trim();
+        if (!nom) return;
 
-    window.doAddVille = async () => { const pays_id = document.getElementById('m-v-pays').value; const nom = document.getElementById('m-v-nom').value.trim(); if(!nom) return; if (dataCache.villes.some(v => String(v.pays_id) === pays_id && v.nom.toLowerCase() === nom.toLowerCase())) { alert("Existe déjà !"); return; } await supabase.from('villes').insert({ nom, pays_id, nb_mosquees_total: 0 }); closeModal(); await syncData(); }
-    window.deleteVille = async (id) => { if(!confirm("Supprimer ?")) return; await supabase.from('villes').delete().eq('id', id); closeModal(); await syncData(); }
+        try {
+            if (dataCache.pays.some(p => p.nom.toLowerCase() === nom.toLowerCase())) {
+                alert("Ce pays existe déjà !");
+                return;
+            }
+            const { error } = await supabase.from('pays').insert({ nom });
+            if (error) throw error;
+            closeModal();
+            await syncData();
+        } catch (err) {
+            alert("Erreur lors de l'ajout du pays : " + err.message);
+        }
+    };
 
-    window.doAddHalaka = async () => { const ville_id = document.getElementById('m-h-ville').value; const nom = document.getElementById('m-h-nom').value.trim(); if(!nom) return; if (dataCache.halakat.some(h => String(h.ville_id) === ville_id && h.nom.toLowerCase() === nom.toLowerCase())) { alert("Existe déjà !"); return; } await supabase.from('halakat').insert({ nom, ville_id }); closeModal(); await syncData(); }
-    window.deleteHalaka = async (id) => { if(!confirm("Supprimer ?")) return; await supabase.from('halakat').delete().eq('id', id); closeModal(); await syncData(); }
+    window.deletePays = async (id) => {
+        if (!confirm("Supprimer ?")) return;
+        try {
+            const { error } = await supabase.from('pays').delete().eq('id', id);
+            if (error) throw error;
+            closeModal();
+            await syncData();
+        } catch (err) {
+            alert("Erreur lors de la suppression : " + err.message);
+        }
+    };
+
+    window.doAddVille = async () => {
+        const pays_id = document.getElementById('m-v-pays').value;
+        const nom = document.getElementById('m-v-nom').value.trim();
+        if (!pays_id || !nom) {
+            alert("Veuillez sélectionner un pays et saisir un nom de ville.");
+            return;
+        }
+
+        try {
+            if (dataCache.villes.some(v => String(v.pays_id) === String(pays_id) && v.nom.toLowerCase() === nom.toLowerCase())) {
+                alert("Cette ville existe déjà dans ce pays !");
+                return;
+            }
+            const { error } = await supabase.from('villes').insert({ nom, pays_id, nb_mosquees_total: 0 });
+            if (error) throw error;
+            closeModal();
+            await syncData();
+        } catch (err) {
+            alert("Erreur lors de l'ajout de la ville : " + err.message);
+        }
+    };
+
+    window.deleteVille = async (id) => {
+        if (!confirm("Supprimer ?")) return;
+        try {
+            const { error } = await supabase.from('villes').delete().eq('id', id);
+            if (error) throw error;
+            closeModal();
+            await syncData();
+        } catch (err) {
+            alert("Erreur lors de la suppression : " + err.message);
+        }
+    };
+
+    window.doAddHalaka = async () => {
+        const ville_id = document.getElementById('m-h-ville').value;
+        const nom = document.getElementById('m-h-nom').value.trim();
+        if (!ville_id || !nom) {
+            alert("Veuillez sélectionner une ville et saisir un nom de halaka.");
+            return;
+        }
+
+        try {
+            if (dataCache.halakat.some(h => String(h.ville_id) === String(ville_id) && h.nom.toLowerCase() === nom.toLowerCase())) {
+                alert("Ce sous-halaka existe déjà dans cette ville !");
+                return;
+            }
+            const { error } = await supabase.from('halakat').insert({ nom, ville_id });
+            if (error) throw error;
+            closeModal();
+            await syncData();
+        } catch (err) {
+            alert("Erreur lors de l'ajout de la halaka : " + err.message);
+        }
+    };
+
+    window.deleteHalaka = async (id) => {
+        if (!confirm("Supprimer ?")) return;
+        try {
+            const { error } = await supabase.from('halakat').delete().eq('id', id);
+            if (error) throw error;
+            closeModal();
+            await syncData();
+        } catch (err) {
+            alert("Erreur lors de la suppression : " + err.message);
+        }
+    };
 
     window.openAddMosqueeModal = function() {
         const filterSel = document.getElementById('m-filter-halaka');
