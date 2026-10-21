@@ -127,7 +127,7 @@
         <select id="sel-stats-ville" class="w-full border rounded px-3 py-2" onchange="renderStats(this.value)"></select>
       </div>
 
-      <!-- Bandeau Violet : Ahwal de la ville (Lecture seule) -->
+      <!-- Bandeau Violet : Ahwal de la ville (Lecture seule, pas de bouton) -->
       <div id="ahwal-banner-container" class="hidden mb-6">
         <div class="bg-violet-100 dark:bg-violet-900/40 border-l-4 border-violet-500 rounded-lg p-4 shadow-md transition-colors">
           <h3 class="text-violet-800 dark:text-violet-300 font-bold mb-2 flex items-center gap-2">📢 <span data-i18n="ahwal_ville">Ahwal de la ville</span></h3>
@@ -397,7 +397,7 @@
     };
 
     let currentLang = localStorage.getItem('khourouj_lang') || 'fr';
-    window.setLanguage = function(lang) { currentLang = lang; localStorage.setItem('khourouj_lang', lang); applyTranslations(); if (!document.getElementById('view-consult').classList.contains('hidden')) { renderPlanning(); renderEventsBanner(); renderJamaatsEnSortie(); } }
+    window.setLanguage = function(lang) { currentLang = lang; localStorage.setItem('khourouj_lang', lang); applyTranslations(); if (!document.getElementById('view-consult').classList.contains('hidden')) { renderPlanning(); renderEventsBanner(); renderJamaatsEnSortie(); } if (!document.getElementById('view-stats').classList.contains('hidden')) { renderStats(document.getElementById('sel-stats-ville').value); } }
 
     function applyTranslations() {
         const dict = translations[currentLang];
@@ -957,19 +957,19 @@
             const { error } = await supabase.from('villes').update({ ahwal: text }).eq('id', villeId);
             if (error) throw error;
             
+            // Mise à jour immédiate du cache local
             const villeCache = dataCache.villes.find(v => String(v.id) === String(villeId));
             if (villeCache) villeCache.ahwal = text;
-
-            // On mémorise cette ville pour l'onglet Statistiques
-            const statsSelect = document.getElementById('sel-stats-ville');
-            if (statsSelect) statsSelect.value = villeId;
 
             alert("Ahwal enregistré avec succès !");
             closeModal();
             
+            // Rechargement des données depuis Supabase en arrière-plan
             await syncData();
             
+            // Si on est sur la page statistiques, on force l'affichage de la ville modifiée
             if (!document.getElementById('view-stats').classList.contains('hidden')) {
+                document.getElementById('sel-stats-ville').value = villeId;
                 renderStats(villeId);
             }
         } catch (err) { alert("Erreur : " + err.message); }
