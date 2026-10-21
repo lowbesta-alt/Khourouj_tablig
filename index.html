@@ -75,6 +75,15 @@
         </div>
       </div>
 
+      <!-- === NOUVEAU : Bandeau Mosquées en sortie === -->
+      <div id="jamaats-banner-container" class="hidden mb-6">
+        <div class="bg-rose-100 dark:bg-rose-900/40 border-l-4 border-rose-500 rounded-lg p-4 shadow-md transition-colors">
+          <h3 class="text-rose-800 dark:text-rose-300 font-bold mb-2 flex items-center gap-2">🕌 <span data-i18n="jamaats_en_sortie">Mosquées en sortie</span></h3>
+          <ul id="jamaats-banner-list" class="space-y-1"></ul>
+        </div>
+      </div>
+      <!-- === FIN NOUVEAU === -->
+
       <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4 mb-6 border border-slate-300 dark:border-slate-700 transition-colors">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div><label class="block text-xs font-medium mb-1" data-i18n="country">Pays</label><select id="sel-pays" onchange="onPaysChange()" class="w-full border rounded px-2 py-2 text-sm"></select></div>
@@ -210,6 +219,7 @@
         no_data_hint: "Veuillez ajouter des données dans le Gestionnaire pour commencer.",
         app_title: "Khourouj Tabligh", app_subtitle: "Gestion des sorties", tab_consult: "📖 Consultation", tab_stats: "📊 Statistiques", tab_admin: "⚙️ Gestionnaire",
         tab_events: "📅 Événements", event_upcoming: "Événements à venir", event_none: "Aucun événement à venir.",
+        jamaats_en_sortie: "Mosquées en sortie",
         event_add: "Ajouter un événement", event_title: "Titre de l'événement", event_date_start: "Date de début", event_date_end: "Date de fin",
         event_place: "Lieu (Ville / Pays)", event_desc: "Description (Optionnel)", event_pass: "Mot de passe pour gérer les événements",
         event_pass_wrong: "Mot de passe incorrect !", event_save: "Enregistrer l'événement",
@@ -247,6 +257,7 @@
         no_data_hint: "Please add data in the Manager to start.",
         app_title: "Khourouj Tabligh", app_subtitle: "Sorties Management", tab_consult: "📖 Consult", tab_stats: "📊 Stats", tab_admin: "⚙️ Admin",
         tab_events: "📅 Events", event_upcoming: "Upcoming Events", event_none: "No upcoming events.",
+        jamaats_en_sortie: "Mosques out",
         event_add: "Add an event", event_title: "Event Title", event_date_start: "Start Date", event_date_end: "End Date",
         event_place: "Place (City / Country)", event_desc: "Description (Optional)", event_pass: "Password to manage events",
         event_pass_wrong: "Wrong password!", event_save: "Save Event",
@@ -284,6 +295,7 @@
         no_data_hint: "يرجى إضافة بيانات في الإدارة للبدء.",
         app_title: "خروج تبليغ", app_subtitle: "إدارة الخروج", tab_consult: "📖 استشارة", tab_stats: "📊 إحصائيات", tab_admin: "⚙️ إدارة",
         tab_events: "📅 الأحداث", event_upcoming: "الأحداث القادمة", event_none: "لا توجد أحداث قادمة.",
+        jamaats_en_sortie: "مساجد في الخروج",
         event_add: "إضافة حدث", event_title: "عنوان الحدث", event_date_start: "تاريخ البداية", event_date_end: "تاريخ النهاية",
         event_place: "المكان (المدينة / البلد)", event_desc: "الوصف (اختياري)", event_pass: "كلمة مرور إدارة الأحداث",
         event_pass_wrong: "كلمة مرور خاطئة!", event_save: "حفظ الحدث",
@@ -321,6 +333,7 @@
         no_data_hint: "شروع کرنے کے لیے منتظم میں ڈیٹا شامل کریں۔",
         app_title: "خروج تبلیغ", app_subtitle: "خروج کا انتظام", tab_consult: "📖 مشورہ", tab_stats: "📊 اعداد", tab_admin: "⚙️ منتظم",
         tab_events: "📅 تقریبات", event_upcoming: "آنے والی تقریبات", event_none: "کوئی آنے والی تقریب نہیں۔",
+        jamaats_en_sortie: "خروج میں مساجد",
         event_add: "تقریب شامل کریں", event_title: "تقریب کا عنوان", event_date_start: "شروع کی تاریخ", event_date_end: "اختتام کی تاریخ",
         event_place: "جگہ (شہر / ملک)", event_desc: "تفصیل (اختیاری)", event_pass: "تقریبات کے انتظام کا پاس ورڈ",
         event_pass_wrong: "غلط پاس ورڈ!", event_save: "تقریب محفوظ کریں",
@@ -356,7 +369,7 @@
     };
 
     let currentLang = localStorage.getItem('khourouj_lang') || 'fr';
-    window.setLanguage = function(lang) { currentLang = lang; localStorage.setItem('khourouj_lang', lang); applyTranslations(); if (!document.getElementById('view-consult').classList.contains('hidden')) { renderPlanning(); renderEventsBanner(); } }
+    window.setLanguage = function(lang) { currentLang = lang; localStorage.setItem('khourouj_lang', lang); applyTranslations(); if (!document.getElementById('view-consult').classList.contains('hidden')) { renderPlanning(); renderEventsBanner(); renderJamaatsEnSortie(); } }
 
     function applyTranslations() {
         const dict = translations[currentLang];
@@ -512,7 +525,7 @@
         }
     }
 
-    async function syncData() { await loadData(); refreshConsult(); renderEventsBanner(); }
+    async function syncData() { await loadData(); refreshConsult(); renderEventsBanner(); renderJamaatsEnSortie(); }
 
     window.switchTab = function(tab) {
         document.getElementById('view-consult').classList.add('hidden'); document.getElementById('view-stats').classList.add('hidden'); document.getElementById('view-admin').classList.add('hidden');
@@ -521,7 +534,7 @@
         document.getElementById('tab-consult').className = idle; document.getElementById('tab-stats').className = idle; document.getElementById('tab-admin').className = idle;
         document.getElementById('view-' + tab).classList.remove('hidden'); document.getElementById('tab-' + tab).className = active;
         
-        if (tab === 'consult') { refreshConsult(); renderEventsBanner(); } 
+        if (tab === 'consult') { refreshConsult(); renderEventsBanner(); renderJamaatsEnSortie(); } 
         if (tab === 'stats') { refreshStatsSelect(); }
     }
 
@@ -536,6 +549,43 @@
              document.getElementById('planning-content').classList.add('hidden');
         }
     }
+
+    // === NOUVEAU : Bandeau Mosquées en sortie (ville sélectionnée) ===
+    window.renderJamaatsEnSortie = function() {
+        const container = document.getElementById('jamaats-banner-container');
+        const list = document.getElementById('jamaats-banner-list');
+        if (!container || !list) return;
+
+        const villeId = document.getElementById('sel-ville').value;
+        if (!villeId) { container.classList.add('hidden'); list.innerHTML = ''; return; }
+
+        const halakasVille = dataCache.halakat
+            .filter(h => String(h.ville_id) === String(villeId))
+            .map(h => String(h.id));
+
+        const mosqueesEnSortie = dataCache.mosquees.filter(m =>
+            halakasVille.includes(String(m.halaka_id)) &&
+            m.jamaat_statut === 'Jamaat en sortie'
+        );
+
+        if (mosqueesEnSortie.length === 0) {
+            container.classList.add('hidden');
+            list.innerHTML = '';
+            return;
+        }
+
+        container.classList.remove('hidden');
+        list.innerHTML = mosqueesEnSortie.map(m => `
+            <li>
+                <button onclick="openJamaatModal(${m.id})"
+                        class="w-full text-left text-rose-900 dark:text-rose-200 font-semibold hover:underline flex items-center gap-1">
+                    <span>${escapeHtml(m.nom)}</span>
+                    <span class="text-rose-500 dark:text-rose-400 text-lg leading-none">›</span>
+                </button>
+            </li>
+        `).join('');
+    };
+    // === FIN NOUVEAU ===
 
     window.renderEventsBanner = function() {
         const container = document.getElementById('event-banner-container');
@@ -562,15 +612,17 @@
         const paysId = document.getElementById('sel-pays').value; const villeSel = document.getElementById('sel-ville');
         villeSel.innerHTML = '<option value="">--</option>'; document.getElementById('sel-halaka').innerHTML = '<option value="">--</option>';
         document.getElementById('planning-empty').classList.remove('hidden'); document.getElementById('planning-content').classList.add('hidden');
-        if (!paysId) return;
+        if (!paysId) { renderJamaatsEnSortie(); return; }
         const villes = dataCache.villes.filter(v => String(v.pays_id) === paysId);
         villes.forEach(v => { villeSel.insertAdjacentHTML('beforeend', `<option value="${v.id}">${escapeHtml(v.nom)}</option>`); });
         if(villes.length > 0) { villeSel.value = villes[0].id; onVilleChange(); }
+        else { renderJamaatsEnSortie(); }
     };
 
     window.onVilleChange = function() {
         const villeId = document.getElementById('sel-ville').value; const halakaSel = document.getElementById('sel-halaka');
         halakaSel.innerHTML = '<option value="">--</option>'; document.getElementById('planning-empty').classList.remove('hidden'); document.getElementById('planning-content').classList.add('hidden');
+        renderJamaatsEnSortie();
         if (!villeId) return;
         const halakas = dataCache.halakat.filter(h => String(h.ville_id) === villeId);
         halakas.forEach(h => { halakaSel.insertAdjacentHTML('beforeend', `<option value="${h.id}">${escapeHtml(h.nom)}</option>`); });
