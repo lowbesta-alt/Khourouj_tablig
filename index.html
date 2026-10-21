@@ -84,7 +84,9 @@
       </div>
 
       <div class="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden border border-slate-300 dark:border-slate-700 transition-colors">
-        <div id="planning-empty" class="p-8 text-center text-slate-500 dark:text-slate-400" data-i18n="loading">Chargement...</div>
+        <div id="planning-empty" class="p-8 text-center text-slate-500 dark:text-slate-400 font-medium">
+            Veuillez ajouter des données dans le Gestionnaire pour commencer.
+        </div>
         <div id="planning-content" class="hidden">
           <div class="p-4 border-b dark:border-slate-700 bg-emerald-50 dark:bg-emerald-900/30 transition-colors flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <div>
@@ -436,7 +438,7 @@
             
             applyTranslations();
             
-            await loadData(); // Appel sécurisé
+            await loadData(); 
             
             clearTimeout(loadTimeout);
             document.getElementById('loading-screen').style.display = 'none';
@@ -504,6 +506,13 @@
         const paysSel = document.getElementById('sel-pays'); const currentPays = paysSel.value;
         paysSel.innerHTML = '<option value="">--</option>' + dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('');
         if(currentPays) paysSel.value = currentPays; else if(dataCache.pays.length > 0) paysSel.value = dataCache.pays[0].id;
+        
+        // Si la base de données est vide, on le signale
+        if(dataCache.pays.length === 0) {
+             document.getElementById('planning-empty').innerHTML = "Veuillez ajouter des données dans le Gestionnaire pour commencer.";
+             document.getElementById('planning-empty').classList.remove('hidden');
+             document.getElementById('planning-content').classList.add('hidden');
+        }
     }
 
     window.renderEventsBanner = function() {
