@@ -924,7 +924,7 @@
         document.getElementById('modal').classList.remove('hidden');
     }
 
-    // GESTION DES AHWAL
+    // GESTION DES AHWAL (Corrigé pour affichage immédiat)
     window.loadAhwalForEdit = function(villeId) {
         const editor = document.getElementById('m-ahwal-editor');
         const text = document.getElementById('m-ahwal-text');
@@ -945,12 +945,20 @@
             const { error } = await supabase.from('villes').update({ ahwal: text }).eq('id', villeId);
             if (error) throw error;
             
+            // Mise à jour immédiate du cache local
+            const villeCache = dataCache.villes.find(v => String(v.id) === String(villeId));
+            if (villeCache) villeCache.ahwal = text;
+
             alert("Ahwal enregistré avec succès !");
             closeModal();
+            
+            // Rechargement des données depuis Supabase en arrière-plan
             await syncData();
             
+            // Si on est sur la page statistiques, on force l'affichage de la ville modifiée
             if (!document.getElementById('view-stats').classList.contains('hidden')) {
-                renderStats(document.getElementById('sel-stats-ville').value);
+                document.getElementById('sel-stats-ville').value = villeId;
+                renderStats(villeId);
             }
         } catch (err) { alert("Erreur : " + err.message); }
     }
