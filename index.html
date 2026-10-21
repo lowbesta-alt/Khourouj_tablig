@@ -17,7 +17,6 @@
     .debug-box { display: none; background: #dc2626; color: white; padding: 15px; font-weight: bold; text-align: center; font-family: sans-serif; position: fixed; top: 0; width: 100%; z-index: 9999;}
     [dir="rtl"] th, [dir="rtl"] td { text-align: right; }
     
-    /* FORCER LA COULEUR DES CHAMPS */
     input, select, textarea { color: #1e293b !important; background-color: #ffffff !important; }
     .dark input, .dark select, .dark textarea { color: #f8fafc !important; background-color: #334155 !important; border-color: #475569 !important; }
   </style>
@@ -35,7 +34,6 @@
 
   <div id="debug-box" class="debug-box"></div>
 
-  <!-- BARRE DE LANGUE -->
   <div class="bg-slate-900 dark:bg-black text-white py-3 px-4 flex justify-center items-center gap-2 no-print shadow-md transition-colors">
     <button onclick="setLanguage('ur')" id="btn-lang-ur" class="px-4 py-1.5 rounded-full border text-sm font-bold transition">🇵🇰 UR</button>
     <button onclick="setLanguage('ar')" id="btn-lang-ar" class="px-4 py-1.5 rounded-full border text-sm font-bold transition">🇸🇦 AR</button>
@@ -69,10 +67,7 @@
 
   <main class="max-w-6xl mx-auto px-4 py-6">
     
-    <!-- ================= 1. CONSULTATION ================= -->
     <section id="view-consult" class="hidden">
-      
-      <!-- BANNIÈRE ÉVÉNEMENTS -->
       <div id="event-banner-container" class="hidden mb-6">
         <div class="bg-amber-100 dark:bg-amber-900/40 border-l-4 border-amber-500 rounded-lg p-4 shadow-md transition-colors">
           <h3 class="text-amber-800 dark:text-amber-300 font-bold mb-2 flex items-center gap-2">📅 <span data-i18n="event_upcoming">Événements à venir</span></h3>
@@ -118,7 +113,6 @@
       </div>
     </section>
 
-    <!-- ================= 2. STATISTIQUES (SANS GRAPHIQUE) ================= -->
     <section id="view-stats" class="hidden">
       <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4 mb-6 border border-slate-300 dark:border-slate-700 transition-colors">
         <label class="block text-sm font-bold mb-2" data-i18n="filter_stats">Choisir une ville :</label>
@@ -157,7 +151,6 @@
       </div>
     </section>
 
-    <!-- ================= 3. GESTIONNAIRE (TABLEAU DE BORD) ================= -->
     <section id="view-admin" class="hidden">
       <div class="mb-6">
         <h2 class="text-xl font-bold text-emerald-800 dark:text-emerald-400 mb-4 text-center" data-i18n="manage_title">Gestion</h2>
@@ -194,7 +187,6 @@
 
   </main>
 
-  <!-- MODAL GLOBAL -->
   <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-[100] flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-2xl p-5 relative my-8">
       <button onclick="closeModal()" class="absolute top-2 right-4 text-3xl text-gray-400 hover:text-gray-800 dark:hover:text-white">&times;</button>
@@ -203,9 +195,6 @@
   </div>
 
   <script>
-    // ==========================================
-    // DICTIONNAIRE DE TRADUCTION COMPLET
-    // ==========================================
     const translations = {
       fr: { 
         loading: "Chargement...", loading_error: "Connexion lente ou bloquée.", btn_retry: "Réessayer",
@@ -354,29 +343,14 @@
     };
 
     let currentLang = localStorage.getItem('khourouj_lang') || 'fr';
-    
-    window.setLanguage = function(lang) { 
-        currentLang = lang; 
-        localStorage.setItem('khourouj_lang', lang); 
-        applyTranslations();
-        if (!document.getElementById('view-consult').classList.contains('hidden')) { renderPlanning(); renderEventsBanner(); }
-    }
+    window.setLanguage = function(lang) { currentLang = lang; localStorage.setItem('khourouj_lang', lang); applyTranslations(); if (!document.getElementById('view-consult').classList.contains('hidden')) { renderPlanning(); renderEventsBanner(); } }
 
     function applyTranslations() {
         const dict = translations[currentLang];
-        
-        if (currentLang === 'ar' || currentLang === 'ur') {
-            document.documentElement.setAttribute('dir', 'rtl');
-            document.documentElement.setAttribute('lang', currentLang);
-        } else {
-            document.documentElement.setAttribute('dir', 'ltr');
-            document.documentElement.setAttribute('lang', currentLang);
-        }
+        if (currentLang === 'ar' || currentLang === 'ur') { document.documentElement.setAttribute('dir', 'rtl'); document.documentElement.setAttribute('lang', currentLang); } 
+        else { document.documentElement.setAttribute('dir', 'ltr'); document.documentElement.setAttribute('lang', currentLang); }
 
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (dict[key]) el.textContent = dict[key];
-        });
+        document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (dict[key]) el.textContent = dict[key]; });
         
         const monthSel = document.getElementById('sel-mois');
         if(monthSel) {
@@ -398,9 +372,6 @@
         });
     }
 
-    // ==========================================
-    // SÉCURITÉ & THEME
-    // ==========================================
     let loadTimeout = setTimeout(() => {
         const loader = document.getElementById('loading-screen');
         if (loader && loader.style.display !== 'none') {
@@ -410,12 +381,7 @@
         }
     }, 4000);
 
-    window.onerror = function(message) { 
-        const box = document.getElementById('debug-box'); 
-        if(box) { box.style.display = 'block'; box.innerHTML = "⚠️ Erreur JS : " + message; }
-        clearTimeout(loadTimeout);
-        document.getElementById('loading-screen').style.display = 'none';
-    };
+    window.onerror = function(message) { const box = document.getElementById('debug-box'); if(box) { box.style.display = 'block'; box.innerHTML = "⚠️ Erreur JS : " + message; } clearTimeout(loadTimeout); document.getElementById('loading-screen').style.display = 'none'; };
 
     function clearCache() { localStorage.clear(); window.location.reload(); }
 
@@ -427,9 +393,6 @@
 
     if (localStorage.getItem('khourouj_theme') === 'dark') { document.documentElement.classList.add('dark'); document.getElementById('dark-mode-btn').textContent = '☀️'; }
 
-    // ==========================================
-    // UTILS & CALENDRIER
-    // ==========================================
     function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
     function getNthFriday(year, month, n) { const first = new Date(year, month - 1, 1); const firstDow = first.getDay(); const daysUntilFri = (5 - firstDow + 7) % 7; const day = 1 + daysUntilFri + (n - 1) * 7; return new Date(year, month - 1, day); }
     function getOusboueDates(year, month, ousboue) { const friday = getNthFriday(year, month, ousboue); const sunday = new Date(friday); sunday.setDate(friday.getDate() + 2); return { friday, sunday }; }
@@ -443,8 +406,7 @@
     function formatDateEvent(dateStr) { const d = new Date(dateStr); return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }); }
     
     function togglePassword(inputId, iconId) {
-        const input = document.getElementById(inputId); 
-        const icon = document.getElementById(iconId);
+        const input = document.getElementById(inputId); const icon = document.getElementById(iconId);
         if (!input || !icon) return;
         if (input.type === "password") { input.type = "text"; icon.textContent = "🙈"; } 
         else { input.type = "password"; icon.textContent = "👁️"; }
@@ -461,9 +423,6 @@
         monthSel.appendChild(o);
     });
 
-    // ==========================================
-    // SUPABASE & CHARGEMENT
-    // ==========================================
     let dataCache = { pays: [], villes: [], halakat: [], mosquees: [], evenements: [] };
     let eventPassword = sessionStorage.getItem('khourouj_event_pass') || '';
 
@@ -477,7 +436,8 @@
             
             applyTranslations();
             
-            await loadData();
+            await loadData(); // Appel sécurisé
+            
             clearTimeout(loadTimeout);
             document.getElementById('loading-screen').style.display = 'none';
             
@@ -498,13 +458,23 @@
     document.body.appendChild(script);
 
     async function loadData() {
-        const { data: pays } = await supabase.from('pays').select('*');
-        const { data: villes } = await supabase.from('villes').select('*');
-        const { data: halakat } = await supabase.from('halakat').select('*');
-        const { data: mosquees } = await supabase.from('mosquees').select('*');
-        const { data: evenements } = await supabase.from('evenements').select('*').gte('date_fin', new Date().toISOString().split('T')[0]).order('date_debut', { ascending: true });
-        
-        dataCache = { pays: pays || [], villes: villes || [], halakat: halakat || [], mosquees: mosquees || [], evenements: evenements || [] };
+        try {
+            const { data: pays } = await supabase.from('pays').select('*');
+            const { data: villes } = await supabase.from('villes').select('*');
+            const { data: halakat } = await supabase.from('halakat').select('*');
+            const { data: mosquees } = await supabase.from('mosquees').select('*');
+            
+            let evenements = [];
+            try {
+                const { data: ev } = await supabase.from('evenements').select('*').gte('date_fin', new Date().toISOString().split('T')[0]).order('date_debut', { ascending: true });
+                if(ev) evenements = ev;
+            } catch(e) { console.log("Events table not ready"); }
+
+            dataCache = { pays: pays || [], villes: villes || [], halakat: halakat || [], mosquees: mosquees || [], evenements: evenements };
+        } catch(err) {
+            console.error(err);
+            dataCache = { pays: dataCache.pays || [], villes: dataCache.villes || [], halakat: dataCache.halakat || [], mosquees: dataCache.mosquees || [], evenements: dataCache.evenements || [] };
+        }
     }
 
     function autoSelectFirst() {
@@ -519,9 +489,6 @@
 
     async function syncData() { await loadData(); refreshConsult(); renderEventsBanner(); }
 
-    // ==========================================
-    // NAVIGATION
-    // ==========================================
     window.switchTab = function(tab) {
         document.getElementById('view-consult').classList.add('hidden'); document.getElementById('view-stats').classList.add('hidden'); document.getElementById('view-admin').classList.add('hidden');
         const active = 'px-4 py-3 font-medium border-b-2 border-emerald-600 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-slate-700';
@@ -533,9 +500,6 @@
         if (tab === 'stats') { refreshStatsSelect(); }
     }
 
-    // ==========================================
-    // 1. CONSULTATION & ÉVÉNEMENTS (BANNIÈRE)
-    // ==========================================
     function refreshConsult() {
         const paysSel = document.getElementById('sel-pays'); const currentPays = paysSel.value;
         paysSel.innerHTML = '<option value="">--</option>' + dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('');
@@ -547,7 +511,7 @@
         const list = document.getElementById('event-list-banner');
         const dict = translations[currentLang];
         
-        if (dataCache.evenements.length === 0) {
+        if (!dataCache.evenements || dataCache.evenements.length === 0) {
             container.classList.add('hidden');
             return;
         }
@@ -656,9 +620,6 @@
         document.getElementById('modal').classList.remove('hidden');
     }
 
-    // ==========================================
-    // 2. STATISTIQUES (SANS GRAPHIQUE)
-    // ==========================================
     function refreshStatsSelect() {
         const sel = document.getElementById('sel-stats-ville');
         sel.innerHTML = '<option value="">--</option>' + dataCache.villes.map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join('');
@@ -695,17 +656,65 @@
         navigator.clipboard.writeText(txt).then(() => alert('✅ Bilan copié !'));
     };
 
-    // ==========================================
-    // 3. GESTIONNAIRE (TABLEAU DE BORD & ÉVÉNEMENTS)
-    // ==========================================
     window.openManageModal = function(type) {
         const dict = translations[currentLang];
         let html = '';
 
-        if (type === 'pays') { /* ... Code Pays inchangé ... */ }
-        else if (type === 'villes') { /* ... Code Villes inchangé ... */ }
-        else if (type === 'halakat') { /* ... Code Halakat inchangé ... */ }
-        else if (type === 'mosquees') { /* ... Code Mosquées inchangé ... */ }
+        if (type === 'pays') {
+            html = `
+                <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">🌍 ${dict.add_pays}</h3>
+                <div class="flex gap-2 mb-4">
+                    <input id="m-p-nom" type="text" class="flex-1 border rounded px-3 py-2" placeholder="Ex: Cameroun">
+                    <button onclick="doAddPays()" class="bg-emerald-600 text-white px-4 py-2 rounded">${dict.btn_add}</button>
+                </div>
+                <div class="max-h-60 overflow-y-auto space-y-2 border-t pt-2 dark:border-slate-700">
+                    ${dataCache.pays.map(p => `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-2 rounded"><span>${escapeHtml(p.nom)}</span><button onclick="deletePays(${p.id})" class="text-red-600 text-sm">${dict.btn_delete}</button></div>`).join('') || '<p class="text-sm text-gray-500">-</p>'}
+                </div>
+            `;
+        } 
+        else if (type === 'villes') {
+            html = `
+                <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">🏙️ ${dict.add_ville}</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
+                    <select id="m-v-pays" class="border rounded px-2 py-2 text-sm">${dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('')}</select>
+                    <input id="m-v-nom" type="text" class="border rounded px-2 py-2 text-sm" placeholder="Ex: Douala">
+                    <button onclick="doAddVille()" class="bg-emerald-600 text-white px-4 py-2 rounded text-sm">${dict.btn_add}</button>
+                </div>
+                <div class="max-h-60 overflow-y-auto space-y-2 border-t pt-2 dark:border-slate-700">
+                    ${dataCache.villes.map(v => { const p = dataCache.pays.find(x=>x.id===v.pays_id); return `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-2 rounded"><span>${escapeHtml(v.nom)} <span class="text-xs text-gray-500">(${escapeHtml(p?.nom || '?')})</span></span><button onclick="deleteVille(${v.id})" class="text-red-600 text-sm">${dict.btn_delete}</button></div>`; }).join('') || '<p class="text-sm text-gray-500">-</p>'}
+                </div>
+            `;
+        }
+        else if (type === 'halakat') {
+            html = `
+                <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">⭕ ${dict.add_halaka}</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
+                    <select id="m-h-ville" class="border rounded px-2 py-2 text-sm">${dataCache.villes.map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join('')}</select>
+                    <input id="m-h-nom" type="text" class="border rounded px-2 py-2 text-sm" placeholder="Ex: Halaka 1">
+                    <button onclick="doAddHalaka()" class="bg-emerald-600 text-white px-4 py-2 rounded text-sm">${dict.btn_add}</button>
+                </div>
+                <div class="max-h-60 overflow-y-auto space-y-2 border-t pt-2 dark:border-slate-700">
+                    ${dataCache.halakat.map(h => { const v = dataCache.villes.find(x=>x.id===h.ville_id); return `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-2 rounded"><span>${escapeHtml(h.nom)} <span class="text-xs text-gray-500">(${escapeHtml(v?.nom || '?')})</span></span><button onclick="deleteHalaka(${h.id})" class="text-red-600 text-sm">${dict.btn_delete}</button></div>`; }).join('') || '<p class="text-sm text-gray-500">-</p>'}
+                </div>
+            `;
+        }
+        else if (type === 'mosquees') {
+            const firstHalaka = dataCache.halakat.length > 0 ? dataCache.halakat[0].id : '';
+            html = `
+                <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">🕌 ${dict.add_mosquee}</h3>
+                
+                <div class="mb-4 bg-slate-100 dark:bg-slate-700/50 p-3 rounded-lg">
+                    <label class="text-xs font-bold mb-1 block">${dict.filter_by_halaka} :</label>
+                    <select id="m-filter-halaka" onchange="renderAdminMosqueesInModal(this.value)" class="w-full border rounded px-2 py-1 text-sm mb-2">
+                        ${dataCache.halakat.map(h => `<option value="${h.id}" ${String(h.id) === String(firstHalaka) ? 'selected' : ''}>${escapeHtml(h.nom)} (${dataCache.villes.find(v=>v.id===h.ville_id)?.nom || '?'})</option>`).join('')}
+                    </select>
+                    <button onclick="openAddMosqueeModal()" class="bg-blue-600 text-white w-full py-2 rounded font-bold text-sm">+ ${dict.modal_add_mosque}</button>
+                </div>
+
+                <div id="modal-admin-mosquees-list" class="max-h-60 overflow-y-auto space-y-2"></div>
+            `;
+            setTimeout(() => { if(firstHalaka) renderAdminMosqueesInModal(firstHalaka); }, 100);
+        }
         else if (type === 'evenements') {
             if (!eventPassword) {
                 html = `
@@ -752,25 +761,19 @@
     // GESTION DES ÉVÉNEMENTS
     window.checkEventPassword = async function() {
         const pass = document.getElementById('m-ev-pass').value;
-        // On fait une requête test pour voir si le mot de passe est bon
         try {
             const { error } = await supabase.rpc('add_evenement_rpc', {
-                p_password: pass, p_titre: 'TEST', p_date_debut: '2000-01-01', p_date_fin: '2000-01-01', p_lieu: '', p_description: ''
+                p_password: pass, p_titre: '__TEST__', p_date_debut: '2000-01-01', p_date_fin: '2000-01-01', p_lieu: '', p_description: ''
             });
-            // Si l'erreur est "Mot de passe incorrect", on refuse
             if (error && error.message.includes('Mot de passe incorrect')) {
                 alert(translations[currentLang].event_pass_wrong);
             } else {
-                // Si l'erreur est autre chose (ex: contrainte), c'est que le mot de passe était bon !
                 eventPassword = pass;
                 sessionStorage.setItem('khourouj_event_pass', pass);
-                // On supprime le test s'il a réussi par erreur
-                await supabase.from('evenements').delete().eq('titre', 'TEST');
+                await supabase.from('evenements').delete().eq('titre', '__TEST__');
                 openManageModal('evenements');
             }
-        } catch (e) {
-            alert("Erreur : " + e.message);
-        }
+        } catch (e) { alert("Erreur : " + e.message); }
     }
 
     window.doAddEvenement = async function() {
@@ -789,7 +792,7 @@
         if(error) { alert("Erreur : " + error.message); return; }
         
         await syncData();
-        openManageModal('evenements'); // Rafraîchit
+        openManageModal('evenements');
     }
 
     window.deleteEvenement = async function(id) {
@@ -799,10 +802,221 @@
         if(data === true) { await syncData(); openManageModal('evenements'); }
     }
 
+    // GESTION PAYS, VILLES, HALAKAT, MOSQUÉES
+    window.doAddPays = async () => { const nom = document.getElementById('m-p-nom').value.trim(); if(!nom) return; if (dataCache.pays.some(p => p.nom.toLowerCase() === nom.toLowerCase())) { alert("Existe déjà !"); return; } await supabase.from('pays').insert({ nom }); closeModal(); await syncData(); }
+    window.deletePays = async (id) => { if(!confirm("Supprimer ?")) return; await supabase.from('pays').delete().eq('id', id); closeModal(); await syncData(); }
+
+    window.doAddVille = async () => { const pays_id = document.getElementById('m-v-pays').value; const nom = document.getElementById('m-v-nom').value.trim(); if(!nom) return; if (dataCache.villes.some(v => String(v.pays_id) === pays_id && v.nom.toLowerCase() === nom.toLowerCase())) { alert("Existe déjà !"); return; } await supabase.from('villes').insert({ nom, pays_id, nb_mosquees_total: 0 }); closeModal(); await syncData(); }
+    window.deleteVille = async (id) => { if(!confirm("Supprimer ?")) return; await supabase.from('villes').delete().eq('id', id); closeModal(); await syncData(); }
+
+    window.doAddHalaka = async () => { const ville_id = document.getElementById('m-h-ville').value; const nom = document.getElementById('m-h-nom').value.trim(); if(!nom) return; if (dataCache.halakat.some(h => String(h.ville_id) === ville_id && h.nom.toLowerCase() === nom.toLowerCase())) { alert("Existe déjà !"); return; } await supabase.from('halakat').insert({ nom, ville_id }); closeModal(); await syncData(); }
+    window.deleteHalaka = async (id) => { if(!confirm("Supprimer ?")) return; await supabase.from('halakat').delete().eq('id', id); closeModal(); await syncData(); }
+
+    window.openAddMosqueeModal = function() {
+        const filterSel = document.getElementById('m-filter-halaka');
+        const hid = filterSel ? filterSel.value : (dataCache.halakat.length > 0 ? dataCache.halakat[0].id : null);
+        if(!hid) { alert("Veuillez créer une Halaka d'abord."); return; }
+        openMosqueeForm(null, hid);
+    }
+    window.openEditMosqueeModal = function(id) { const m = dataCache.mosquees.find(x => x.id === id); if(!m) return; openMosqueeForm(m, m.halaka_id); }
+
+    window.renderAdminMosqueesInModal = function(hid) {
+        const list = document.getElementById('modal-admin-mosquees-list');
+        const dict = translations[currentLang];
+        if(!list) return;
+        if(!hid) { list.innerHTML = `<p class="text-center text-gray-500 mt-2">${dict.select_halaka_hint}</p>`; return; }
+        const mosquees = dataCache.mosquees.filter(m => String(m.halaka_id) === String(hid));
+        if(mosquees.length === 0) { list.innerHTML = `<p class="text-center text-gray-500 mt-2">${dict.no_mosque}</p>`; return; }
+        
+        list.innerHTML = mosquees.map(m => `<div class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded p-3 flex justify-between items-center shadow-sm mb-2"><div><p class="font-bold text-sm">${escapeHtml(m.nom)} <span class="text-xs font-normal text-gray-500">(Ousboue ${m.ousboue})</span></p><p class="text-xs text-emerald-600 dark:text-emerald-400">${m.jamaat_statut || dict.stat_aucune}</p></div><div class="flex gap-2"><button onclick="openEditMosqueeModal(${m.id})" class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-xs font-bold">✏️</button><button onclick="promptDeleteMosquee(${m.id})" class="bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 px-2 py-1 rounded text-xs font-bold">🗑️</button></div></div>`).join('');
+    }
+
+    function openMosqueeForm(m, halakaId) {
+        const isEdit = m !== null; const dict = translations[currentLang];
+        let html = `
+            <h3 class="text-lg font-bold mb-4 text-emerald-800 dark:text-emerald-400">${isEdit ? dict.modal_edit_mosque : dict.modal_add_mosque}</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+                <div><label class="text-xs font-bold text-gray-600 dark:text-gray-300">${dict.form_nom}</label><input id="m-m-nom" type="text" class="w-full border rounded px-2 py-1" value="${isEdit ? escapeHtml(m.nom) : ''}"></div>
+                <div><label class="text-xs font-bold text-gray-600 dark:text-gray-300">${dict.form_ousboue}</label><select id="m-m-ousboue" class="w-full border rounded px-2 py-1">${[1,2,3,4].map(n => `<option value="${n}" ${isEdit && m.ousboue === n ? 'selected' : ''}>Ousboue ${n}</option>`).join('')}</select></div>
+                <div><label class="text-xs font-bold text-gray-600 dark:text-gray-300">Responsable (Optionnel)</label><input id="m-m-resp" type="text" class="w-full border rounded px-2 py-1" value="${isEdit ? escapeHtml(m.responsable || '') : ''}"></div>
+                <div><label class="text-xs font-bold text-gray-600 dark:text-gray-300">Téléphone (Optionnel)</label><input id="m-m-tel" type="text" class="w-full border rounded px-2 py-1" value="${isEdit ? escapeHtml(m.contact || '') : ''}"></div>
+            </div>
+            <div class="mb-3">
+                <label class="text-xs font-bold text-yellow-600">${dict.form_pass} ${isEdit ? '(Laisser vide)' : ''}</label>
+                <div class="relative"><input id="m-m-pass" type="password" class="w-full border rounded px-2 py-1 pr-10 bg-yellow-50 dark:bg-yellow-900/30"><button type="button" id="eye-icon" onclick="togglePassword('m-m-pass', 'eye-icon')" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">👁️</button></div>
+            </div>
+
+            <details class="mb-2 bg-slate-100 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-300 dark:border-slate-600">
+                <summary class="text-sm font-bold cursor-pointer">📊 ${dict.tab_stats}</summary>
+                <div class="grid grid-cols-1 gap-2 mt-3 text-sm">
+                    <div class="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 p-2 rounded border border-blue-200 dark:border-blue-800 mb-2">
+                        <input type="checkbox" id="m-m-5amal" class="w-5 h-5 text-emerald-600 rounded" ${isEdit && m.est_5amal ? 'checked' : ''}>
+                        <label for="m-m-5amal" class="text-sm font-bold text-blue-800 dark:text-blue-200">${dict.stat_5amal_checkbox}</label>
+                    </div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_maisons}</label><input id="m-m-maisons" type="number" value="${isEdit ? m.nb_maisons_autour || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_maisons_5amal}</label><input id="m-m-maisons5a" type="number" value="${isEdit ? m.nb_maisons_5amal || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_fr_4m}</label><input id="m-m-fr4m" type="number" value="${isEdit ? m.nb_freres_4mois || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_fr_4ma}</label><input id="m-m-fr4ma" type="number" value="${isEdit ? m.nb_freres_4mois_an || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_fr_40j}</label><input id="m-m-fr40j" type="number" value="${isEdit ? m.nb_freres_40jours || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_jamaats}</label><input id="m-m-jamaats" type="number" value="${isEdit ? m.nb_jamaats_3jours || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_z2h30}</label><input id="m-m-z2h30" type="number" value="${isEdit ? m.nb_freres_ziara_2h30 || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_zmoins}</label><input id="m-m-zmoins" type="number" value="${isEdit ? m.nb_freres_ziara_moins || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_so_2m}</label><input id="m-m-so2m" type="number" value="${isEdit ? m.nb_soeurs_2mois || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_so_40j}</label><input id="m-m-so40j" type="number" value="${isEdit ? m.nb_soeurs_40jours || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_so_15j}</label><input id="m-m-so15j" type="number" value="${isEdit ? m.nb_soeurs_15jours || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.stat_so_3j}</label><input id="m-m-so3j" type="number" value="${isEdit ? m.nb_soeurs_3jours || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                </div>
+            </details>
+
+            <details class="mb-3 bg-emerald-50 dark:bg-emerald-900/30 p-3 rounded-lg border border-emerald-200 dark:border-emerald-700">
+                <summary class="text-sm font-bold cursor-pointer">👁️ ${dict.modal_jamaat}</summary>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 text-sm">
+                    <div class="col-span-1 sm:col-span-2"><label class="font-medium text-gray-700 dark:text-gray-300">${dict.label_statut}</label><select id="m-m-jstatut" class="w-full border rounded px-2 py-1"><option value="Aucune" ${isEdit && m.jamaat_statut === 'Aucune' ? 'selected' : ''}>${dict.stat_aucune}</option><option value="Frères à la mosquée" ${isEdit && m.jamaat_statut === 'Frères à la mosquée' ? 'selected' : ''}>${dict.stat_mosque}</option><option value="Jamaat en sortie" ${isEdit && m.jamaat_statut === 'Jamaat en sortie' ? 'selected' : ''}>${dict.stat_sortie}</option></select></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.label_heure}</label><input id="m-m-heure" type="text" value="${isEdit ? escapeHtml(m.jamaat_heure || '') : ''}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.label_dest}</label><input id="m-m-dest" type="text" value="${isEdit ? escapeHtml(m.jamaat_destination || '') : ''}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.label_nb}</label><input id="m-m-nbfreres" type="number" value="${isEdit ? m.jamaat_nb_freres || 0 : 0}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.label_liste}</label><input id="m-m-liste" type="text" value="${isEdit ? escapeHtml(m.jamaat_freres_liste || '') : ''}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.label_emir}</label><input id="m-m-emir" type="text" value="${isEdit ? escapeHtml(m.jamaat_emir_nom || '') : ''}" class="w-full border rounded px-2 py-1"></div>
+                    <div><label class="font-medium text-gray-700 dark:text-gray-300">${dict.label_emir_tel}</label><input id="m-m-emirtel" type="tel" value="${isEdit ? escapeHtml(m.jamaat_emir_tel || '') : ''}" class="w-full border rounded px-2 py-1"></div>
+                    
+                    <div class="col-span-1 sm:col-span-2 border-t border-emerald-300 dark:border-emerald-700 pt-2 mt-2">
+                        <label class="font-bold text-emerald-800 dark:text-emerald-300 block mb-1">${dict.label_h_aller}</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input id="m-m-hanom" type="text" value="${isEdit ? escapeHtml(m.hidayat_aller_nom || '') : ''}" class="w-full border rounded px-2 py-1" placeholder="${dict.form_nom}">
+                            <input id="m-m-hatel" type="tel" value="${isEdit ? escapeHtml(m.hidayat_aller_tel || '') : ''}" class="w-full border rounded px-2 py-1" placeholder="${dict.form_tel}">
+                            <input id="m-m-hainfo" type="text" value="${isEdit ? escapeHtml(m.hidayat_aller_info || '') : ''}" class="w-full border rounded px-2 py-1 col-span-1 sm:col-span-2" placeholder="${dict.label_lieu_heure}">
+                        </div>
+                    </div>
+
+                    <div class="col-span-1 sm:col-span-2 border-t border-emerald-300 dark:border-emerald-700 pt-2 mt-2">
+                        <label class="font-bold text-emerald-800 dark:text-emerald-300 block mb-1">${dict.label_h_retour}</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input id="m-m-hrnom" type="text" value="${isEdit ? escapeHtml(m.hidayat_retour_nom || '') : ''}" class="w-full border rounded px-2 py-1" placeholder="${dict.form_nom}">
+                            <input id="m-m-hrtel" type="tel" value="${isEdit ? escapeHtml(m.hidayat_retour_tel || '') : ''}" class="w-full border rounded px-2 py-1" placeholder="${dict.form_tel}">
+                            <input id="m-m-hrinfo" type="text" value="${isEdit ? escapeHtml(m.hidayat_retour_info || '') : ''}" class="w-full border rounded px-2 py-1 col-span-1 sm:col-span-2" placeholder="${dict.label_lieu_heure}">
+                        </div>
+                    </div>
+                </div>
+            </details>
+            <button onclick="doSaveMosquee(${halakaId}, ${isEdit ? m.id : 'null'})" class="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 rounded font-bold shadow mt-4">${dict.btn_save}</button>
+        `;
+        document.getElementById('modal-content').innerHTML = html;
+        document.getElementById('modal').classList.remove('hidden');
+    }
+
+    window.doSaveMosquee = async (halakaId, id) => {
+        const nom = document.getElementById('m-m-nom').value.trim();
+        const passInput = document.getElementById('m-m-pass').value.trim();
+        
+        if(!nom) { alert("Nom obligatoire."); return; }
+        if(!id && !passInput) { alert("Mot de passe obligatoire pour la création."); return; }
+        
+        if(!id && dataCache.mosquees.some(m => String(m.halaka_id) === String(halakaId) && m.nom.toLowerCase() === nom.toLowerCase())) { alert("Cette mosquée existe déjà dans ce secteur."); return; }
+        
+        const data = {
+            nom: document.getElementById('m-m-nom').value.trim(),
+            ousboue: +document.getElementById('m-m-ousboue').value,
+            responsable: document.getElementById('m-m-resp').value.trim(),
+            contact: document.getElementById('m-m-tel').value.trim(),
+            est_5amal: document.getElementById('m-m-5amal').checked,
+            nb_maisons_autour: +document.getElementById('m-m-maisons').value || 0,
+            nb_maisons_5amal: +document.getElementById('m-m-maisons5a').value || 0,
+            nb_freres_4mois: +document.getElementById('m-m-fr4m').value || 0,
+            nb_freres_4mois_an: +document.getElementById('m-m-fr4ma').value || 0,
+            nb_freres_40jours: +document.getElementById('m-m-fr40j').value || 0,
+            nb_jamaats_3jours: +document.getElementById('m-m-jamaats').value || 0,
+            nb_freres_ziara_2h30: +document.getElementById('m-m-z2h30').value || 0,
+            nb_freres_ziara_moins: +document.getElementById('m-m-zmoins').value || 0,
+            nb_soeurs_2mois: +document.getElementById('m-m-so2m').value || 0,
+            nb_soeurs_40jours: +document.getElementById('m-m-so40j').value || 0,
+            nb_soeurs_15jours: +document.getElementById('m-m-so15j').value || 0,
+            nb_soeurs_3jours: +document.getElementById('m-m-so3j').value || 0,
+            jamaat_statut: document.getElementById('m-m-jstatut').value,
+            jamaat_heure: document.getElementById('m-m-heure').value.trim(),
+            jamaat_destination: document.getElementById('m-m-dest').value.trim(),
+            jamaat_nb_freres: +document.getElementById('m-m-nbfreres').value || 0,
+            jamaat_freres_liste: document.getElementById('m-m-liste').value.trim(),
+            jamaat_emir_nom: document.getElementById('m-m-emir').value.trim(),
+            jamaat_emir_tel: document.getElementById('m-m-emirtel').value.trim(),
+            hidayat_aller_nom: document.getElementById('m-m-hanom').value.trim(),
+            hidayat_aller_tel: document.getElementById('m-m-hatel').value.trim(),
+            hidayat_aller_info: document.getElementById('m-m-hainfo').value.trim(),
+            hidayat_retour_nom: document.getElementById('m-m-hrnom').value.trim(),
+            hidayat_retour_tel: document.getElementById('m-m-hrtel').value.trim(),
+            hidayat_retour_info: document.getElementById('m-m-hrinfo').value.trim()
+        };
+
+        const existingMosque = id ? dataCache.mosquees.find(m => m.id === id) : null;
+        const finalPass = passInput || (existingMosque ? existingMosque.password : '');
+
+        try {
+            if (id) {
+                const { data: res, error } = await supabase.rpc('update_mosquee_rpc', {
+                    p_id: id, p_password: finalPass, p_nom: data.nom, p_ousboue: data.ousboue,
+                    p_responsable: data.responsable, p_contact: data.contact,
+                    p_est_5amal: data.est_5amal, p_nb_maisons_autour: data.nb_maisons_autour, p_nb_maisons_5amal: data.nb_maisons_5amal,
+                    p_nb_freres_4mois: data.nb_freres_4mois, p_nb_freres_4mois_an: data.nb_freres_4mois_an, p_nb_freres_40jours: data.nb_freres_40jours,
+                    p_nb_jamaats_3jours: data.nb_jamaats_3jours, p_nb_freres_ziara_2h30: data.nb_freres_ziara_2h30, p_nb_freres_ziara_moins: data.nb_freres_ziara_moins,
+                    p_nb_soeurs_2mois: data.nb_soeurs_2mois, p_nb_soeurs_40jours: data.nb_soeurs_40jours, p_nb_soeurs_15jours: data.nb_soeurs_15jours, p_nb_soeurs_3jours: data.nb_soeurs_3jours,
+                    p_jamaat_statut: data.jamaat_statut, p_jamaat_heure: data.jamaat_heure, p_jamaat_destination: data.jamaat_destination, p_jamaat_nb_freres: data.jamaat_nb_freres,
+                    p_jamaat_emir_nom: data.jamaat_emir_nom, p_jamaat_emir_tel: data.jamaat_emir_tel, p_jamaat_freres_liste: data.jamaat_freres_liste,
+                    p_hidayat_aller_nom: data.hidayat_aller_nom, p_hidayat_aller_tel: data.hidayat_aller_tel, p_hidayat_aller_info: data.hidayat_aller_info,
+                    p_hidayat_retour_nom: data.hidayat_retour_nom, p_hidayat_retour_tel: data.hidayat_retour_tel, p_hidayat_retour_info: data.hidayat_retour_info
+                });
+                if (error) throw error;
+                if (res === false) throw new Error("Mot de passe incorrect pour cette mosquée.");
+            } else {
+                const { error } = await supabase.rpc('add_mosquee_rpc', {
+                    p_nom: data.nom, p_halaka_id: halakaId, p_ousboue: data.ousboue, p_responsable: data.responsable, p_contact: data.contact, p_password: finalPass,
+                    p_est_5amal: data.est_5amal, p_nb_maisons_autour: data.nb_maisons_autour, p_nb_maisons_5amal: data.nb_maisons_5amal,
+                    p_nb_freres_4mois: data.nb_freres_4mois, p_nb_freres_4mois_an: data.nb_freres_4mois_an, p_nb_freres_40jours: data.nb_freres_40jours,
+                    p_nb_jamaats_3jours: data.nb_jamaats_3jours, p_nb_freres_ziara_2h30: data.nb_freres_ziara_2h30, p_nb_freres_ziara_moins: data.nb_freres_ziara_moins,
+                    p_nb_soeurs_2mois: data.nb_soeurs_2mois, p_nb_soeurs_40jours: data.nb_soeurs_40jours, p_nb_soeurs_15jours: data.nb_soeurs_15jours, p_nb_soeurs_3jours: data.nb_soeurs_3jours,
+                    p_jamaat_statut: data.jamaat_statut, p_jamaat_heure: data.jamaat_heure, p_jamaat_destination: data.jamaat_destination, p_jamaat_nb_freres: data.jamaat_nb_freres,
+                    p_jamaat_emir_nom: data.jamaat_emir_nom, p_jamaat_emir_tel: data.jamaat_emir_tel, p_jamaat_freres_liste: data.jamaat_freres_liste,
+                    p_hidayat_aller_nom: data.hidayat_aller_nom, p_hidayat_aller_tel: data.hidayat_aller_tel, p_hidayat_aller_info: data.hidayat_aller_info,
+                    p_hidayat_retour_nom: data.hidayat_retour_nom, p_hidayat_retour_tel: data.hidayat_retour_tel, p_hidayat_retour_info: data.hidayat_retour_info
+                });
+                if (error) throw error;
+            }
+
+            await syncData(); 
+            openManageModal('mosquees');
+            
+            setTimeout(() => {
+                const newFilter = document.getElementById('m-filter-halaka');
+                if (newFilter) {
+                    newFilter.value = halakaId;
+                    renderAdminMosqueesInModal(halakaId);
+                }
+            }, 100);
+
+        } catch (err) {
+            alert("Erreur lors de l'enregistrement : " + err.message);
+        }
+    }
+
+    window.promptDeleteMosquee = function(id) {
+        const dict = translations[currentLang];
+        document.getElementById('modal-content').innerHTML = `
+            <h3 class="text-lg font-bold text-red-600 mb-2">${dict.btn_delete}</h3>
+            <p class="text-xs mb-3">${dict.form_pass} :</p>
+            <div class="relative mb-3">
+                <input id="m-del-pass" type="password" class="w-full border rounded px-3 py-2 pr-10">
+                <button type="button" id="eye-del" onclick="togglePassword('m-del-pass', 'eye-del')" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">👁️</button>
+            </div>
+            <button onclick="doDeleteMosquee(${id})" class="bg-red-600 text-white w-full py-2 rounded">${dict.btn_delete}</button>`;
+        document.getElementById('modal').classList.remove('hidden');
+    }
+    window.doDeleteMosquee = async (id) => {
+        const p = document.getElementById('m-del-pass').value;
+        const { data, error } = await supabase.rpc('delete_mosquee_rpc', { p_id: id, p_password: p });
+        if(error) { alert("Erreur : " + error.message); return; }
+        if(data === true) { closeModal(); await syncData(); openManageModal('mosquees'); }
+        else alert("Mot de passe incorrect !");
+    }
+
     window.closeModal = function() { document.getElementById('modal').classList.add('hidden'); };
-    
-    // (Fonctions CRUD Pays, Villes, Halakat, Mosquées restent inchangées ci-dessous)
-    // ... Je les réintègre dans le bloc <script> complet pour que ce soit fonctionnel
   </script>
 </body>
 </html>
