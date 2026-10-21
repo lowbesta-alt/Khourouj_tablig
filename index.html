@@ -19,9 +19,15 @@
     
     input, select, textarea { color: #1e293b !important; background-color: #ffffff !important; }
     .dark input, .dark select, .dark textarea { color: #f8fafc !important; background-color: #334155 !important; border-color: #475569 !important; }
+    
+    /* Bandeau Hors Ligne */
+    #offline-banner { display: none; background: #f59e0b; color: black; text-align: center; padding: 8px; font-weight: bold; font-size: 14px; position: sticky; top: 0; z-index: 999; }
   </style>
 </head>
 <body class="bg-slate-200 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen font-sans transition-colors duration-300">
+
+  <!-- Bandeau Mode Hors Ligne -->
+  <div id="offline-banner">⚠️ Mode Hors-Ligne : Vous consultez les dernières données sauvegardées.</div>
 
   <div id="loading-screen" class="fixed inset-0 bg-slate-900 z-[999] flex flex-col items-center justify-center text-white">
     <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-500 mb-4"></div>
@@ -127,7 +133,7 @@
         <select id="sel-stats-ville" class="w-full border rounded px-3 py-2" onchange="renderStats(this.value)"></select>
       </div>
 
-      <!-- Bandeau Violet : Ahwal de la ville (Lecture seule, pas de bouton) -->
+      <!-- Bandeau Violet : Ahwal de la ville -->
       <div id="ahwal-banner-container" class="hidden mb-6">
         <div class="bg-violet-100 dark:bg-violet-900/40 border-l-4 border-violet-500 rounded-lg p-4 shadow-md transition-colors">
           <h3 class="text-violet-800 dark:text-violet-300 font-bold mb-2 flex items-center gap-2">📢 <span data-i18n="ahwal_ville">Ahwal de la ville</span></h3>
@@ -485,18 +491,34 @@
     });
 
     // ==========================================
-    // SUPABASE & CHARGEMENT
+    // SUPABASE & CHARGEMENT (MODE HORS LIGNE)
     // ==========================================
     let dataCache = { pays: [], villes: [], halakat: [], mosquees: [], evenements: [] };
+    
+    // Fonction pour charger depuis la mémoire du téléphone si pas de réseau
+    function loadFromLocalStorage() {
+        const cached = localStorage.getItem('khourouj_data_cache');
+        if (cached) {
+            try { dataCache = JSON.parse(cached); return true; } catch(e) { return false; }
+        }
+        return false;
+    }
+
+    // Fonction pour sauvegarder dans la mémoire du téléphone
+    function saveToLocalStorage() {
+        localStorage.setItem('khourouj_data_cache', JSON.stringify(dataCache));
+    }
+
+    // Détecter si on est hors ligne
+    window.addEventListener('offline', () => { document.getElementById('offline-banner').style.display = 'block'; });
+    window.addEventListener('online', () => { document.getElementById('offline-banner').style.display = 'none'; });
+    if (!navigator.onLine) document.getElementById('offline-banner').style.display = 'block';
 
     const script = document.createElement('script');
     script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
     script.onload = async () => {
         try {
-            if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === 'VOTRE_CLE_ANON_ICI') {
-                throw new Error("La clé API n'est pas configurée.");
-            }
-
+            if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === 'VOTRE_CLE_ANON_ICI') { throw new Error("La clé API n'est pas configurée."); }
             window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             
             applyTranslations();
@@ -508,18 +530,34 @@
             switchTab('consult');
             autoSelectFirst();
         } catch(err) {
-            document.getElementById('debug-box').style.display = 'block';
-            document.getElementById('debug-box').innerHTML = "⚠️ Erreur de connexion : " + err.message;
-            document.querySelector('#loading-screen h2').textContent = "Erreur";
-            document.querySelector('#loading-screen .animate-spin').style.display = 'none';
+            // Si erreur réseau, on charge depuis le cache
+            if (loadFromLocalStorage()) {
+                document.getElementById('offline-banner').style.display = 'block';
+                document.getElementById('loading-screen').style.display = 'none';
+                switchTab('consult');
+                autoSelectFirst();
+            } else {
+                document.getElementById('debug-box').style.display = 'block';
+                document.getElementById('debug-box').innerHTML = "⚠️ Erreur de connexion : " + err.message;
+                document.querySelector('#loading-screen h2').textContent = "Erreur";
+                document.querySelector('#loading-screen .animate-spin').style.display = 'none';
+            }
             console.error(err);
         }
     };
     script.onerror = () => {
-        document.getElementById('debug-box').style.display = 'block';
-        document.getElementById('debug-box').innerHTML = "⚠️ Le réseau bloque le chargement de Supabase.";
-        document.querySelector('#loading-screen h2').textContent = "Réseau bloqué";
-        document.querySelector('#loading-screen .animate-spin').style.display = 'none';
+        // Si le script Supabase ne charge pas (pas de réseau), on utilise le cache
+        if (loadFromLocalStorage()) {
+            document.getElementById('offline-banner').style.display = 'block';
+            document.getElementById('loading-screen').style.display = 'none';
+            switchTab('consult');
+            autoSelectFirst();
+        } else {
+            document.getElementById('debug-box').style.display = 'block';
+            document.getElementById('debug-box').innerHTML = "⚠️ Le réseau bloque le chargement de Supabase.";
+            document.querySelector('#loading-screen h2').textContent = "Réseau bloqué";
+            document.querySelector('#loading-screen .animate-spin').style.display = 'none';
+        }
     };
     document.body.appendChild(script);
 
@@ -540,6 +578,7 @@
         } catch(e) { console.log("Events table not ready"); }
 
         dataCache = { pays: pays || [], villes: villes || [], halakat: halakat || [], mosquees: mosquees || [], evenements: evenements };
+        saveToLocalStorage(); // On sauvegarde en mémoire locale !
     }
 
     function autoSelectFirst() {
@@ -552,7 +591,14 @@
         }
     }
 
-    async function syncData() { await loadData(); refreshConsult(); renderEventsBanner(); renderJamaatsEnSortie(); }
+    async function syncData() { 
+        try {
+            await loadData(); 
+            refreshConsult(); 
+            renderEventsBanner(); 
+            renderJamaatsEnSortie(); 
+        } catch(e) { alert("Impossible de synchroniser, vous êtes hors ligne."); }
+    }
 
     // ==========================================
     // GESTION DE LA SÉCURITÉ
@@ -623,26 +669,15 @@
         const villeId = document.getElementById('sel-ville').value;
         if (!villeId) { container.classList.add('hidden'); list.innerHTML = ''; return; }
 
-        const halakasVille = dataCache.halakat
-            .filter(h => String(h.ville_id) === String(villeId))
-            .map(h => String(h.id));
+        const halakasVille = dataCache.halakat.filter(h => String(h.ville_id) === String(villeId)).map(h => String(h.id));
+        const mosqueesEnSortie = dataCache.mosquees.filter(m => halakasVille.includes(String(m.halaka_id)) && m.jamaat_statut === 'Jamaat en sortie');
 
-        const mosqueesEnSortie = dataCache.mosquees.filter(m =>
-            halakasVille.includes(String(m.halaka_id)) &&
-            m.jamaat_statut === 'Jamaat en sortie'
-        );
-
-        if (mosqueesEnSortie.length === 0) {
-            container.classList.add('hidden');
-            list.innerHTML = '';
-            return;
-        }
+        if (mosqueesEnSortie.length === 0) { container.classList.add('hidden'); list.innerHTML = ''; return; }
 
         container.classList.remove('hidden');
         list.innerHTML = mosqueesEnSortie.map(m => `
             <li>
-                <button onclick="openJamaatModal(${m.id})"
-                        class="w-full text-left text-rose-900 dark:text-rose-200 font-semibold hover:underline flex items-center gap-1">
+                <button onclick="openJamaatModal(${m.id})" class="w-full text-left text-rose-900 dark:text-rose-200 font-semibold hover:underline flex items-center gap-1">
                     <span>${escapeHtml(m.nom)}</span>
                     <span class="text-rose-500 dark:text-rose-400 text-lg leading-none">›</span>
                 </button>
@@ -654,15 +689,12 @@
         const container = document.getElementById('event-banner-container');
         const list = document.getElementById('event-list-banner');
         
-        if (!dataCache.evenements || dataCache.evenements.length === 0) {
-            container.classList.add('hidden'); return;
-        }
+        if (!dataCache.evenements || dataCache.evenements.length === 0) { container.classList.add('hidden'); return; }
 
         container.classList.remove('hidden');
         list.innerHTML = dataCache.evenements.map(e => {
             let dateText = formatDateEvent(e.date_debut);
             if (e.date_debut !== e.date_fin) dateText += ` au ${formatDateEvent(e.date_fin)}`;
-            
             return `<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-sm border-b border-amber-200 dark:border-amber-800 pb-2 last:border-0 last:pb-0">
                 <div><span class="font-bold text-amber-900 dark:text-amber-200">${escapeHtml(e.titre)}</span><span class="text-amber-800 dark:text-amber-300 ml-1">(${escapeHtml(e.lieu || '')})</span></div>
                 <div class="text-amber-700 dark:text-amber-400 font-medium whitespace-nowrap">📅 ${dateText}</div>
@@ -763,11 +795,10 @@
 
     function refreshStatsSelect() {
         const sel = document.getElementById('sel-stats-ville');
-        const currentVal = sel.value; // Sauvegarde la ville actuelle
+        const currentVal = sel.value; 
         
         sel.innerHTML = '<option value="">--</option>' + dataCache.villes.map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join('');
         
-        // Si une ville était sélectionnée, on la garde, sinon on prend la première
         if (currentVal && dataCache.villes.some(v => String(v.id) === String(currentVal))) {
             sel.value = currentVal;
         } else if(dataCache.villes.length > 0) {
@@ -954,21 +985,18 @@
         if (!villeId) return;
         
         try {
-            // Utilisation de la fonction RPC qu'on a créée dans Supabase
             const { error } = await supabase.rpc('update_ahwal_rpc', { p_id: parseInt(villeId), p_ahwal: text });
             if (error) throw error;
             
-            // Mise à jour immédiate du cache local
             const villeCache = dataCache.villes.find(v => String(v.id) === String(villeId));
             if (villeCache) villeCache.ahwal = text;
+            saveToLocalStorage(); // Mise à jour locale
 
             alert("Ahwal enregistré avec succès !");
             closeModal();
             
-            // Rechargement des données depuis Supabase en arrière-plan
             await syncData();
             
-            // Si on est sur la page statistiques, on force l'affichage de la ville modifiée
             if (!document.getElementById('view-stats').classList.contains('hidden')) {
                 document.getElementById('sel-stats-ville').value = villeId;
                 renderStats(villeId);
