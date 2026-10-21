@@ -75,14 +75,13 @@
         </div>
       </div>
 
-      <!-- === NOUVEAU : Bandeau Mosquées en sortie === -->
+      <!-- Bandeau Mosquées en sortie -->
       <div id="jamaats-banner-container" class="hidden mb-6">
         <div class="bg-rose-100 dark:bg-rose-900/40 border-l-4 border-rose-500 rounded-lg p-4 shadow-md transition-colors">
           <h3 class="text-rose-800 dark:text-rose-300 font-bold mb-2 flex items-center gap-2">🕌 <span data-i18n="jamaats_en_sortie">Mosquées en sortie</span></h3>
           <ul id="jamaats-banner-list" class="space-y-1"></ul>
         </div>
       </div>
-      <!-- === FIN NOUVEAU === -->
 
       <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4 mb-6 border border-slate-300 dark:border-slate-700 transition-colors">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -126,6 +125,14 @@
       <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4 mb-6 border border-slate-300 dark:border-slate-700 transition-colors">
         <label class="block text-sm font-bold mb-2" data-i18n="filter_stats">Choisir une ville :</label>
         <select id="sel-stats-ville" class="w-full border rounded px-3 py-2" onchange="renderStats(this.value)"></select>
+      </div>
+
+      <!-- Bandeau Violet : Ahwal de la ville -->
+      <div id="ahwal-banner-container" class="hidden mb-6">
+        <div class="bg-violet-100 dark:bg-violet-900/40 border-l-4 border-violet-500 rounded-lg p-4 shadow-md transition-colors">
+          <h3 class="text-violet-800 dark:text-violet-300 font-bold mb-2 flex items-center gap-2">📢 <span data-i18n="ahwal_ville">Ahwal de la ville</span></h3>
+          <div id="ahwal-banner-content" class="text-violet-900 dark:text-violet-200 whitespace-pre-wrap text-sm"></div>
+        </div>
       </div>
 
       <div id="stats-view-container" class="hidden">
@@ -219,7 +226,7 @@
         no_data_hint: "Veuillez ajouter des données dans le Gestionnaire pour commencer.",
         app_title: "Khourouj Tabligh", app_subtitle: "Gestion des sorties", tab_consult: "📖 Consultation", tab_stats: "📊 Statistiques", tab_admin: "⚙️ Gestionnaire",
         tab_events: "📅 Événements", event_upcoming: "Événements à venir", event_none: "Aucun événement à venir.",
-        jamaats_en_sortie: "Mosquées en sortie",
+        jamaats_en_sortie: "Mosquées en sortie", ahwal_ville: "Ahwal de la ville",
         event_add: "Ajouter un événement", event_title: "Titre de l'événement", event_date_start: "Date de début", event_date_end: "Date de fin",
         event_place: "Lieu (Ville / Pays)", event_desc: "Description (Optionnel)", event_pass: "Mot de passe pour gérer les événements",
         event_pass_wrong: "Mot de passe incorrect !", event_save: "Enregistrer l'événement",
@@ -228,10 +235,11 @@
         bros_4m: "Frères sortis 4 mois", bros_4m_year: "Frères donnant 4 mois/an", bros_40d: "Frères sortis 40 jours", jamaats_3d: "Jamaats 3 jours", ziara_2h30: "Donnant 2h30/jour", ziara_less: "Donnant < 2h30/jour",
         sisters_2m: "Sœurs sorties 2 mois", sisters_40d: "Sœurs sorties 40 jours", sisters_15d: "Sœurs sorties 15 jours", sisters_3d: "Sœurs sorties 3 jours",
         manage_title: "Gestion", btn_structure: "⚙️ Structure", add_mosquee: "Mosquée", add_pays: "Pays", add_ville: "Ville", add_halaka: "Halaka",
-        form_nom: "Nom", form_ousboue: "Ousboue", form_pass: "Mot de passe", form_emir: "Émir", form_tel: "Téléphone", btn_save: "Enregistrer", btn_delete: "Supprimer",
+        form_nom: "Nom", form_ousboue: "Ousboue", form_pass: "Mot de passe", form_emir: "Émir", form_tel: "Téléphone", btn_save: "Enregistrer", btn_delete: "Supprimer", btn_edit: "Modifier",
+        form_ahwal: "Ahwal / Informations de la ville",
         no_mosque: "Aucune mosquée.", select_halaka_hint: "Sélectionnez une halaka pour voir les mosquées.",
         modal_add_pays: "Ajouter un Pays", modal_add_ville: "Ajouter une Ville", modal_add_halaka: "Ajouter un Sous-Halaka", modal_structure: "Gérer la structure",
-        modal_add_mosque: "Ajouter une Mosquée", modal_edit_mosque: "Modifier une Mosquée", modal_jamaat: "Détails Jamaat",
+        modal_add_mosque: "Ajouter une Mosquée", modal_edit_mosque: "Modifier une Mosquée", modal_jamaat: "Détails Jamaat", modal_edit_ville: "Modifier la ville",
         label_statut: "Statut", label_heure: "Heure de sortie", label_dest: "Destination", label_nb: "Nombre de frères", label_liste: "Liste des frères",
         label_emir: "Nom de l'Émir", label_emir_tel: "Téléphone de l'Émir", label_h_aller: "Hidayat Aller", label_h_retour: "Hidayat Retour", label_lieu_heure: "Lieu et heure",
         stat_aucune: "Aucune", stat_mosque: "Frères à la mosquée", stat_sortie: "Jamaat en sortie",
@@ -250,6 +258,7 @@
         stat_so_40j: "Nombre de sœurs sorties 40 jours",
         stat_so_15j: "Nombre de sœurs sorties 15 jours",
         stat_so_3j: "Nombre de sœurs sorties 3 jours",
+        global_stats: "Statistiques globales",
         mois: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre']
       },
       en: { 
@@ -257,7 +266,7 @@
         no_data_hint: "Please add data in the Manager to start.",
         app_title: "Khourouj Tabligh", app_subtitle: "Sorties Management", tab_consult: "📖 Consult", tab_stats: "📊 Stats", tab_admin: "⚙️ Admin",
         tab_events: "📅 Events", event_upcoming: "Upcoming Events", event_none: "No upcoming events.",
-        jamaats_en_sortie: "Mosques out",
+        jamaats_en_sortie: "Mosques out", ahwal_ville: "City Ahwal (News)",
         event_add: "Add an event", event_title: "Event Title", event_date_start: "Start Date", event_date_end: "End Date",
         event_place: "Place (City / Country)", event_desc: "Description (Optional)", event_pass: "Password to manage events",
         event_pass_wrong: "Wrong password!", event_save: "Save Event",
@@ -266,10 +275,11 @@
         bros_4m: "Brothers out 4 months", bros_4m_year: "Brothers giving 4m/year", bros_40d: "Brothers out 40 days", jamaats_3d: "Jamaats 3 days", ziara_2h30: "Giving 2h30/day", ziara_less: "Giving < 2h30/day",
         sisters_2m: "Sisters out 2 months", sisters_40d: "Sisters out 40 days", sisters_15d: "Sisters out 15 days", sisters_3d: "Sisters out 3 days",
         manage_title: "Management", btn_structure: "⚙️ Structure", add_mosquee: "Mosque", add_pays: "Country", add_ville: "City", add_halaka: "Halaka",
-        form_nom: "Name", form_ousboue: "Ousboue", form_pass: "Password", form_emir: "Emir", form_tel: "Phone", btn_save: "Save", btn_delete: "Delete",
+        form_nom: "Name", form_ousboue: "Ousboue", form_pass: "Password", form_emir: "Emir", form_tel: "Phone", btn_save: "Save", btn_delete: "Delete", btn_edit: "Edit",
+        form_ahwal: "City Ahwal / News",
         no_mosque: "No mosque.", select_halaka_hint: "Select a halaka to view mosques.",
         modal_add_pays: "Add a Country", modal_add_ville: "Add a City", modal_add_halaka: "Add a Sub-Halaka", modal_structure: "Manage structure",
-        modal_add_mosque: "Add a Mosque", modal_edit_mosque: "Edit Mosque", modal_jamaat: "Jamaat Details",
+        modal_add_mosque: "Add a Mosque", modal_edit_mosque: "Edit Mosque", modal_jamaat: "Jamaat Details", modal_edit_ville: "Edit City",
         label_statut: "Status", label_heure: "Departure time", label_dest: "Destination", label_nb: "Number of brothers", label_liste: "List of brothers",
         label_emir: "Emir Name", label_emir_tel: "Emir Phone", label_h_aller: "Hidayat Aller", label_h_retour: "Hidayat Retour", label_lieu_heure: "Place & time",
         stat_aucune: "None", stat_mosque: "Brothers at mosque", stat_sortie: "Jamaat out",
@@ -288,6 +298,7 @@
         stat_so_40j: "Number of sisters out 40 days",
         stat_so_15j: "Number of sisters out 15 days",
         stat_so_3j: "Number of sisters out 3 days",
+        global_stats: "Global statistics",
         mois: ['January','February','March','April','May','June','July','August','September','October','November','December']
       },
       ar: { 
@@ -295,7 +306,7 @@
         no_data_hint: "يرجى إضافة بيانات في الإدارة للبدء.",
         app_title: "خروج تبليغ", app_subtitle: "إدارة الخروج", tab_consult: "📖 استشارة", tab_stats: "📊 إحصائيات", tab_admin: "⚙️ إدارة",
         tab_events: "📅 الأحداث", event_upcoming: "الأحداث القادمة", event_none: "لا توجد أحداث قادمة.",
-        jamaats_en_sortie: "مساجد في الخروج",
+        jamaats_en_sortie: "مساجد في الخروج", ahwal_ville: "أحوال المدينة",
         event_add: "إضافة حدث", event_title: "عنوان الحدث", event_date_start: "تاريخ البداية", event_date_end: "تاريخ النهاية",
         event_place: "المكان (المدينة / البلد)", event_desc: "الوصف (اختياري)", event_pass: "كلمة مرور إدارة الأحداث",
         event_pass_wrong: "كلمة مرور خاطئة!", event_save: "حفظ الحدث",
@@ -304,10 +315,11 @@
         bros_4m: "إخوة خرجوا 4 أشهر", bros_4m_year: "إخوة يعطون 4 أشهر/سنة", bros_40d: "إخوة خرجوا 40 يوماً", jamaats_3d: "جماعات 3 أيام", ziara_2h30: "يعطون 2.30/يوم", ziara_less: "يعطون < 2.30/يوم",
         sisters_2m: "أخوات خرجن شهرين", sisters_40d: "أخوات خرجن 40 يوماً", sisters_15d: "أخوات خرجن 15 يوماً", sisters_3d: "أخوات خرجن 3 أيام",
         manage_title: "لوحة القيادة", btn_structure: "⚙️ الهيكل", add_mosquee: "مسجد", add_pays: "بلد", add_ville: "مدينة", add_halaka: "حلقة",
-        form_nom: "الاسم", form_ousboue: "الأسبوع", form_pass: "كلمة المرور", form_emir: "الأمير", form_tel: "الهاتف", btn_save: "حفظ", btn_delete: "حذف",
+        form_nom: "الاسم", form_ousboue: "الأسبوع", form_pass: "كلمة المرور", form_emir: "الأمير", form_tel: "الهاتف", btn_save: "حفظ", btn_delete: "حذف", btn_edit: "تعديل",
+        form_ahwal: "أحوال / أخبار المدينة",
         no_mosque: "لا يوجد مسجد.", select_halaka_hint: "اختر حلقة لعرض المساجد.",
         modal_add_pays: "إضافة بلد", modal_add_ville: "إضافة مدينة", modal_add_halaka: "إضافة حلقة فرعية", modal_structure: "إدارة الهيكل",
-        modal_add_mosque: "إضافة مسجد", modal_edit_mosque: "تعديل مسجد", modal_jamaat: "تفاصيل الجماعة",
+        modal_add_mosque: "إضافة مسجد", modal_edit_mosque: "تعديل مسجد", modal_jamaat: "تفاصيل الجماعة", modal_edit_ville: "تعديل المدينة",
         label_statut: "الحالة", label_heure: "وقت الخروج", label_dest: "الوجهة", label_nb: "عدد الإخوة", label_liste: "أسماء الإخوة",
         label_emir: "اسم الأمير", label_emir_tel: "هاتف الأمير", label_h_aller: "هداية الذهاب", label_h_retour: "هداية العودة", label_lieu_heure: "المكان والوقت",
         stat_aucune: "لا يوجد", stat_mosque: "إخوة في المسجد", stat_sortie: "جماعة في الخروج",
@@ -326,6 +338,7 @@
         stat_so_40j: "عدد الأخوات اللواتي خرجن 40 يوماً",
         stat_so_15j: "عدد الأخوات اللواتي خرجن 15 يوماً",
         stat_so_3j: "عدد الأخوات اللواتي خرجن 3 أيام",
+        global_stats: "إحصائيات شاملة",
         mois: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر']
       },
       ur: { 
@@ -333,7 +346,7 @@
         no_data_hint: "شروع کرنے کے لیے منتظم میں ڈیٹا شامل کریں۔",
         app_title: "خروج تبلیغ", app_subtitle: "خروج کا انتظام", tab_consult: "📖 مشورہ", tab_stats: "📊 اعداد", tab_admin: "⚙️ منتظم",
         tab_events: "📅 تقریبات", event_upcoming: "آنے والی تقریبات", event_none: "کوئی آنے والی تقریب نہیں۔",
-        jamaats_en_sortie: "خروج میں مساجد",
+        jamaats_en_sortie: "خروج میں مساجد", ahwal_ville: "شہر کے احوال",
         event_add: "تقریب شامل کریں", event_title: "تقریب کا عنوان", event_date_start: "شروع کی تاریخ", event_date_end: "اختتام کی تاریخ",
         event_place: "جگہ (شہر / ملک)", event_desc: "تفصیل (اختیاری)", event_pass: "تقریبات کے انتظام کا پاس ورڈ",
         event_pass_wrong: "غلط پاس ورڈ!", event_save: "تقریب محفوظ کریں",
@@ -342,10 +355,11 @@
         bros_4m: "بھائی 4 ماہ خروج", bros_4m_year: "بھائی 4 ماہ/سال", bros_40d: "بھائی 40 دن خروج", jamaats_3d: "جماعتیں 3 دن", ziara_2h30: "2.30/دن دیتے ہیں", ziara_less: "< 2.30/دن دیتے ہیں",
         sisters_2m: "بہنیں 2 ماہ خروج", sisters_40d: "بہنیں 40 دن خروج", sisters_15d: "بہنیں 15 دن خروج", sisters_3d: "بہنیں 3 دن خروج",
         manage_title: "ڈیش بورڈ", btn_structure: "⚙️ ڈھانچہ", add_mosquee: "مسجد", add_pays: "ملک", add_ville: "شہر", add_halaka: "حلقہ",
-        form_nom: "نام", form_ousboue: "ہفتہ", form_pass: "پاس ورڈ", form_emir: "امیر", form_tel: "فون", btn_save: "محفوظ", btn_delete: "حذف",
+        form_nom: "نام", form_ousboue: "ہفتہ", form_pass: "پاس ورڈ", form_emir: "امیر", form_tel: "فون", btn_save: "محفوظ", btn_delete: "حذف", btn_edit: "ترمیم",
+        form_ahwal: "شہر کے احوال / معلومات",
         no_mosque: "کوئی مسجد نہیں۔", select_halaka_hint: "مساجد دیکھنے کے لیے حلقہ منتخب کریں۔",
         modal_add_pays: "ملک شامل کریں", modal_add_ville: "شہر شامل کریں", modal_add_halaka: "ذیلی حلقہ شامل کریں", modal_structure: "ڈھانچہ کا انتظام",
-        modal_add_mosque: "مسجد شامل کریں", modal_edit_mosque: "مسجد میں ترمیم کریں", modal_jamaat: "جماعت کی تفصیلات",
+        modal_add_mosque: "مسجد شامل کریں", modal_edit_mosque: "مسجد میں ترمیم کریں", modal_jamaat: "جماعت کی تفصیلات", modal_edit_ville: "شہر میں ترمیم کریں",
         label_statut: "حالت", label_heure: "خروج کا وقت", label_dest: "منزل", label_nb: "بھائیوں کی تعداد", label_liste: "بھائیوں کے نام",
         label_emir: "امیر کا نام", label_emir_tel: "امیر کا فون", label_h_aller: "ہدایت (روانگی)", label_h_retour: "ہدایت (واپسی)", label_lieu_heure: "جگہ اور وقت",
         stat_aucune: "کوئی نہیں", stat_mosque: "مسجد میں بھائی", stat_sortie: "خروج میں جماعت",
@@ -364,6 +378,7 @@
         stat_so_40j: "40 دن خروج کرنے والی بہنوں کی تعداد",
         stat_so_15j: "15 دن خروج کرنے والی بہنوں کی تعداد",
         stat_so_3j: "3 دن خروج کرنے والی بہنوں کی تعداد",
+        global_stats: "مجموعی اعداد و شمار",
         mois: ['جنوری','فروری','مارچ','اپریل','مئی','جون','جولائی','اگست','ستمبر','اکتوبر','نومبر','دسمبر']
       }
     };
@@ -550,7 +565,7 @@
         }
     }
 
-    // === NOUVEAU : Bandeau Mosquées en sortie (ville sélectionnée) ===
+    // Bandeau Mosquées en sortie
     window.renderJamaatsEnSortie = function() {
         const container = document.getElementById('jamaats-banner-container');
         const list = document.getElementById('jamaats-banner-list');
@@ -585,7 +600,6 @@
             </li>
         `).join('');
     };
-    // === FIN NOUVEAU ===
 
     window.renderEventsBanner = function() {
         const container = document.getElementById('event-banner-container');
@@ -706,8 +720,24 @@
     }
 
     function renderStats(villeId) {
-        if (!villeId) { document.getElementById('stats-view-container').classList.add('hidden'); return; }
+        if (!villeId) { 
+            document.getElementById('stats-view-container').classList.add('hidden'); 
+            document.getElementById('ahwal-banner-container').classList.add('hidden');
+            return; 
+        }
         const ville = dataCache.villes.find(v => String(v.id) === villeId); if(!ville) return;
+        
+        // Affichage du bandeau Ahwal (Violet)
+        const ahwalContainer = document.getElementById('ahwal-banner-container');
+        const ahwalContent = document.getElementById('ahwal-banner-content');
+        if (ville.ahwal && ville.ahwal.trim() !== '') {
+            ahwalContent.textContent = ville.ahwal;
+            ahwalContainer.classList.remove('hidden');
+        } else {
+            ahwalContainer.classList.add('hidden');
+            ahwalContent.textContent = '';
+        }
+
         const halakas = dataCache.halakat.filter(h => String(h.ville_id) === villeId).map(h => String(h.id));
         const mosquees = dataCache.mosquees.filter(m => halakas.includes(String(m.halaka_id)));
         const sum = (f) => mosquees.reduce((t, m) => t + (m[f] || 0), 0);
@@ -754,13 +784,29 @@
         else if (type === 'villes') {
             html = `
                 <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">🏙️ ${dict.add_ville}</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4 bg-slate-50 dark:bg-slate-700/30 p-3 rounded border dark:border-slate-600">
                     <select id="m-v-pays" class="border rounded px-2 py-2 text-sm">${dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('')}</select>
-                    <input id="m-v-nom" type="text" class="border rounded px-2 py-2 text-sm" placeholder="Ex: Douala">
-                    <button onclick="doAddVille()" class="bg-emerald-600 text-white px-4 py-2 rounded text-sm">${dict.btn_add}</button>
+                    <input id="m-v-nom" type="text" class="border rounded px-2 py-2 text-sm" placeholder="Nom de la ville (Ex: Douala)">
+                    <textarea id="m-v-ahwal" class="border rounded px-2 py-2 text-sm col-span-1 sm:col-span-2" rows="2" placeholder="${dict.form_ahwal}..."></textarea>
+                    <button onclick="doSaveVille()" class="bg-emerald-600 text-white px-4 py-2 rounded text-sm col-span-1 sm:col-span-2 font-bold">${dict.btn_add}</button>
                 </div>
                 <div class="max-h-60 overflow-y-auto space-y-2 border-t pt-2 dark:border-slate-700">
-                    ${dataCache.villes.map(v => { const p = dataCache.pays.find(x=>x.id===v.pays_id); return `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-2 rounded"><span>${escapeHtml(v.nom)} <span class="text-xs text-gray-500">(${escapeHtml(p?.nom || '?')})</span></span><button onclick="deleteVille(${v.id})" class="text-red-600 text-sm">${dict.btn_delete}</button></div>`; }).join('') || '<p class="text-sm text-gray-500">-</p>'}
+                    ${dataCache.villes.map(v => { 
+                        const p = dataCache.pays.find(x=>x.id===v.pays_id); 
+                        return `
+                        <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-2 rounded">
+                            <div>
+                                <span class="font-bold">${escapeHtml(v.nom)}</span> 
+                                <span class="text-xs text-gray-500 ml-1">(${escapeHtml(p?.nom || '?')})</span>
+                                ${v.ahwal ? `<br><span class="text-[10px] text-violet-600 dark:text-violet-400 truncate block max-w-[200px]">📢 ${escapeHtml(v.ahwal)}</span>` : ''}
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="openEditVilleModal(${v.id})" class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">✏️</button>
+                                <button onclick="deleteVille(${v.id})" class="text-red-600 text-sm font-bold px-1">${dict.btn_delete}</button>
+                            </div>
+                        </div>
+                        `; 
+                    }).join('') || '<p class="text-sm text-gray-500">-</p>'}
                 </div>
             `;
         }
@@ -837,6 +883,47 @@
         document.getElementById('modal').classList.remove('hidden');
     }
 
+    // GESTION DES VILLES (NOUVEAU)
+    window.openEditVilleModal = function(id) {
+        const v = dataCache.villes.find(x => x.id === id); if(!v) return;
+        const dict = translations[currentLang];
+        let html = `
+            <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">🏙️ ${dict.modal_edit_ville}</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4 bg-slate-50 dark:bg-slate-700/30 p-3 rounded border dark:border-slate-600">
+                <select id="m-v-pays-edit" class="border rounded px-2 py-2 text-sm">${dataCache.pays.map(p => `<option value="${p.id}" ${p.id === v.pays_id ? 'selected' : ''}>${escapeHtml(p.nom)}</option>`).join('')}</select>
+                <input id="m-v-nom-edit" type="text" class="border rounded px-2 py-2 text-sm" value="${escapeHtml(v.nom)}">
+                <textarea id="m-v-ahwal-edit" class="border rounded px-2 py-2 text-sm col-span-1 sm:col-span-2" rows="3" placeholder="${dict.form_ahwal}...">${escapeHtml(v.ahwal || '')}</textarea>
+                <button onclick="doSaveVille(${v.id})" class="bg-emerald-600 text-white px-4 py-2 rounded text-sm col-span-1 sm:col-span-2 font-bold">${dict.btn_save}</button>
+            </div>
+        `;
+        document.getElementById('modal-content').innerHTML = html;
+        document.getElementById('modal').classList.remove('hidden');
+    }
+
+    window.doSaveVille = async (id = null) => {
+        const pays_id = id ? document.getElementById('m-v-pays-edit').value : document.getElementById('m-v-pays').value;
+        const nom = id ? document.getElementById('m-v-nom-edit').value.trim() : document.getElementById('m-v-nom').value.trim();
+        const ahwal = id ? document.getElementById('m-v-ahwal-edit').value.trim() : document.getElementById('m-v-ahwal').value.trim();
+        
+        if (!pays_id || !nom) { alert("Veuillez sélectionner un pays et saisir un nom."); return; }
+        
+        try {
+            if (!id && dataCache.villes.some(v => String(v.pays_id) === String(pays_id) && v.nom.toLowerCase() === nom.toLowerCase())) { 
+                alert("Cette ville existe déjà !"); return; 
+            }
+            
+            if (id) {
+                const { error } = await supabase.from('villes').update({ nom, pays_id, ahwal }).eq('id', id);
+                if (error) throw error;
+            } else {
+                const { error } = await supabase.from('villes').insert({ nom, pays_id, ahwal, nb_mosquees_total: 0 });
+                if (error) throw error;
+            }
+            closeModal(); await syncData();
+        } catch (err) { alert("Erreur : " + err.message); }
+    };
+    window.deleteVille = async (id) => { if(!confirm("Supprimer ?")) return; try { const { error } = await supabase.from('villes').delete().eq('id', id); if(error) throw error; closeModal(); await syncData(); } catch (err) { alert("Erreur : " + err.message); } };
+
     // GESTION DES ÉVÉNEMENTS
     window.checkEventPassword = async function() {
         const pass = document.getElementById('m-ev-pass').value;
@@ -881,7 +968,7 @@
         if(data === true) { await syncData(); openManageModal('evenements'); }
     }
 
-    // GESTION PAYS, VILLES, HALAKAT, MOSQUÉES (CRUD)
+    // GESTION PAYS, HALAKAT, MOSQUÉES (CRUD)
     window.doAddPays = async () => {
         const nom = document.getElementById('m-p-nom').value.trim();
         if (!nom) return;
@@ -894,18 +981,6 @@
         } catch (err) { alert("Erreur lors de l'ajout du pays : " + err.message); }
     };
     window.deletePays = async (id) => { if(!confirm("Supprimer ?")) return; try { const { error } = await supabase.from('pays').delete().eq('id', id); if(error) throw error; closeModal(); await syncData(); } catch (err) { alert("Erreur : " + err.message); } };
-
-    window.doAddVille = async () => {
-        const pays_id = document.getElementById('m-v-pays').value; const nom = document.getElementById('m-v-nom').value.trim();
-        if (!pays_id || !nom) { alert("Veuillez sélectionner un pays et saisir un nom."); return; }
-        try {
-            if (dataCache.villes.some(v => String(v.pays_id) === String(pays_id) && v.nom.toLowerCase() === nom.toLowerCase())) { alert("Cette ville existe déjà !"); return; }
-            const { error } = await supabase.from('villes').insert({ nom, pays_id, nb_mosquees_total: 0 });
-            if (error) throw error;
-            closeModal(); await syncData();
-        } catch (err) { alert("Erreur lors de l'ajout de la ville : " + err.message); }
-    };
-    window.deleteVille = async (id) => { if(!confirm("Supprimer ?")) return; try { const { error } = await supabase.from('villes').delete().eq('id', id); if(error) throw error; closeModal(); await syncData(); } catch (err) { alert("Erreur : " + err.message); } };
 
     window.doAddHalaka = async () => {
         const ville_id = document.getElementById('m-h-ville').value; const nom = document.getElementById('m-h-nom').value.trim();
