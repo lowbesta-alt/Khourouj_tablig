@@ -127,7 +127,7 @@
         <select id="sel-stats-ville" class="w-full border rounded px-3 py-2" onchange="renderStats(this.value)"></select>
       </div>
 
-      <!-- Bandeau Violet : Ahwal de la ville -->
+      <!-- Bandeau Violet : Ahwal de la ville (Lecture seule) -->
       <div id="ahwal-banner-container" class="hidden mb-6">
         <div class="bg-violet-100 dark:bg-violet-900/40 border-l-4 border-violet-500 rounded-lg p-4 shadow-md transition-colors">
           <h3 class="text-violet-800 dark:text-violet-300 font-bold mb-2 flex items-center gap-2">📢 <span data-i18n="ahwal_ville">Ahwal de la ville</span></h3>
@@ -171,7 +171,7 @@
       <div class="mb-6">
         <h2 class="text-xl font-bold text-emerald-800 dark:text-emerald-400 mb-4 text-center" data-i18n="manage_title">Gestion</h2>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div onclick="openManageModal('pays')" class="bg-white dark:bg-slate-800 rounded-xl shadow border-2 border-transparent hover:border-emerald-500 cursor-pointer p-4 flex flex-col items-center justify-center transition-all hover:scale-105">
             <div class="text-4xl mb-2">🌍</div>
             <h3 class="text-base font-bold text-slate-800 dark:text-slate-100" data-i18n="add_pays">Pays</h3>
@@ -191,6 +191,12 @@
             <div class="absolute top-2 right-2 flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span></div>
             <div class="text-4xl mb-2">🕌</div>
             <h3 class="text-base font-bold text-slate-800 dark:text-slate-100" data-i18n="add_mosquee">Mosquées</h3>
+          </div>
+
+          <!-- NOUVELLE CARTE AHWAL DANS LE GESTIONNAIRE -->
+          <div onclick="openManageModal('ahwal')" class="bg-white dark:bg-slate-800 rounded-xl shadow border-2 border-violet-500 cursor-pointer p-4 flex flex-col items-center justify-center transition-all hover:scale-105 relative">
+            <div class="text-4xl mb-2">📢</div>
+            <h3 class="text-base font-bold text-slate-800 dark:text-slate-100">Ahwal</h3>
           </div>
 
           <div onclick="openManageModal('evenements')" class="bg-white dark:bg-slate-800 rounded-xl shadow border-2 border-amber-500 cursor-pointer p-4 flex flex-col items-center justify-center transition-all hover:scale-105 relative">
@@ -216,6 +222,9 @@
     // ==========================================
     const SUPABASE_URL = 'https://rhtaqusrkgqawtbqysgw.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_JIjs3oxZszYHTaON8iH06g_-mnoCVfl'; // <-- LA CLÉ EST ICI
+    
+    // CODE POUR ACCÉDER AUX AHWAL (Modifiable)
+    const CODE_AHWAL = "admin"; 
 
     // ==========================================
     // DICTIONNAIRE DE TRADUCTION COMPLET
@@ -784,29 +793,13 @@
         else if (type === 'villes') {
             html = `
                 <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">🏙️ ${dict.add_ville}</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4 bg-slate-50 dark:bg-slate-700/30 p-3 rounded border dark:border-slate-600">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
                     <select id="m-v-pays" class="border rounded px-2 py-2 text-sm">${dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('')}</select>
-                    <input id="m-v-nom" type="text" class="border rounded px-2 py-2 text-sm" placeholder="Nom de la ville (Ex: Douala)">
-                    <textarea id="m-v-ahwal" class="border rounded px-2 py-2 text-sm col-span-1 sm:col-span-2" rows="2" placeholder="${dict.form_ahwal}..."></textarea>
-                    <button onclick="doSaveVille()" class="bg-emerald-600 text-white px-4 py-2 rounded text-sm col-span-1 sm:col-span-2 font-bold">${dict.btn_add}</button>
+                    <input id="m-v-nom" type="text" class="border rounded px-2 py-2 text-sm" placeholder="Ex: Douala">
+                    <button onclick="doAddVille()" class="bg-emerald-600 text-white px-4 py-2 rounded text-sm">${dict.btn_add}</button>
                 </div>
                 <div class="max-h-60 overflow-y-auto space-y-2 border-t pt-2 dark:border-slate-700">
-                    ${dataCache.villes.map(v => { 
-                        const p = dataCache.pays.find(x=>x.id===v.pays_id); 
-                        return `
-                        <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-2 rounded">
-                            <div>
-                                <span class="font-bold">${escapeHtml(v.nom)}</span> 
-                                <span class="text-xs text-gray-500 ml-1">(${escapeHtml(p?.nom || '?')})</span>
-                                ${v.ahwal ? `<br><span class="text-[10px] text-violet-600 dark:text-violet-400 truncate block max-w-[200px]">📢 ${escapeHtml(v.ahwal)}</span>` : ''}
-                            </div>
-                            <div class="flex gap-2">
-                                <button onclick="openEditVilleModal(${v.id})" class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">✏️</button>
-                                <button onclick="deleteVille(${v.id})" class="text-red-600 text-sm font-bold px-1">${dict.btn_delete}</button>
-                            </div>
-                        </div>
-                        `; 
-                    }).join('') || '<p class="text-sm text-gray-500">-</p>'}
+                    ${dataCache.villes.map(v => { const p = dataCache.pays.find(x=>x.id===v.pays_id); return `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-2 rounded"><span>${escapeHtml(v.nom)} <span class="text-xs text-gray-500">(${escapeHtml(p?.nom || '?')})</span></span><button onclick="deleteVille(${v.id})" class="text-red-600 text-sm">${dict.btn_delete}</button></div>`; }).join('') || '<p class="text-sm text-gray-500">-</p>'}
                 </div>
             `;
         }
@@ -839,6 +832,28 @@
                 <div id="modal-admin-mosquees-list" class="max-h-60 overflow-y-auto space-y-2"></div>
             `;
             setTimeout(() => { if(firstHalaka) renderAdminMosqueesInModal(firstHalaka); }, 100);
+        }
+        else if (type === 'ahwal') {
+            html = `
+                <h3 class="text-xl font-bold mb-4 text-violet-800 dark:text-violet-400">📢 Gestion des Ahwal</h3>
+                <div class="bg-violet-50 dark:bg-violet-900/20 p-3 rounded-lg mb-4 border border-violet-200 dark:border-violet-700">
+                    <label class="text-xs font-bold mb-1 block">Sélectionner la ville :</label>
+                    <select id="m-ahwal-ville" onchange="loadAhwalForEdit(this.value)" class="w-full border rounded px-2 py-1 text-sm mb-3">
+                        <option value="">-- Choisir une ville --</option>
+                        ${dataCache.villes.map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join('')}
+                    </select>
+                    
+                    <div id="m-ahwal-editor" class="hidden">
+                        <label class="text-xs font-bold mb-1 block text-violet-700 dark:text-violet-300">Code d'accès (Mot de passe) :</label>
+                        <input id="m-ahwal-pass" type="password" class="w-full border rounded px-2 py-1 text-sm mb-3 bg-white dark:bg-slate-800" placeholder="Entrez le code pour modifier">
+                        
+                        <label class="text-xs font-bold mb-1 block">Informations (Ahwal) :</label>
+                        <textarea id="m-ahwal-text" class="w-full border rounded px-2 py-1 text-sm" rows="5" placeholder="Écrivez les informations..."></textarea>
+                        
+                        <button onclick="doSaveAhwalAdmin()" class="bg-violet-600 text-white w-full py-2 rounded font-bold text-sm mt-3">Enregistrer</button>
+                    </div>
+                </div>
+            `;
         }
         else if (type === 'evenements') {
             if (!eventPassword) {
@@ -883,46 +898,44 @@
         document.getElementById('modal').classList.remove('hidden');
     }
 
-    // GESTION DES VILLES (NOUVEAU)
-    window.openEditVilleModal = function(id) {
-        const v = dataCache.villes.find(x => x.id === id); if(!v) return;
-        const dict = translations[currentLang];
-        let html = `
-            <h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">🏙️ ${dict.modal_edit_ville}</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4 bg-slate-50 dark:bg-slate-700/30 p-3 rounded border dark:border-slate-600">
-                <select id="m-v-pays-edit" class="border rounded px-2 py-2 text-sm">${dataCache.pays.map(p => `<option value="${p.id}" ${p.id === v.pays_id ? 'selected' : ''}>${escapeHtml(p.nom)}</option>`).join('')}</select>
-                <input id="m-v-nom-edit" type="text" class="border rounded px-2 py-2 text-sm" value="${escapeHtml(v.nom)}">
-                <textarea id="m-v-ahwal-edit" class="border rounded px-2 py-2 text-sm col-span-1 sm:col-span-2" rows="3" placeholder="${dict.form_ahwal}...">${escapeHtml(v.ahwal || '')}</textarea>
-                <button onclick="doSaveVille(${v.id})" class="bg-emerald-600 text-white px-4 py-2 rounded text-sm col-span-1 sm:col-span-2 font-bold">${dict.btn_save}</button>
-            </div>
-        `;
-        document.getElementById('modal-content').innerHTML = html;
-        document.getElementById('modal').classList.remove('hidden');
+    // GESTION DES AHWAL (NOUVEAU)
+    window.loadAhwalForEdit = function(villeId) {
+        const editor = document.getElementById('m-ahwal-editor');
+        const text = document.getElementById('m-ahwal-text');
+        if (!villeId) { editor.classList.add('hidden'); return; }
+        const ville = dataCache.villes.find(v => String(v.id) === String(villeId));
+        if (!ville) return;
+        text.value = ville.ahwal || '';
+        editor.classList.remove('hidden');
     }
 
-    window.doSaveVille = async (id = null) => {
-        const pays_id = id ? document.getElementById('m-v-pays-edit').value : document.getElementById('m-v-pays').value;
-        const nom = id ? document.getElementById('m-v-nom-edit').value.trim() : document.getElementById('m-v-nom').value.trim();
-        const ahwal = id ? document.getElementById('m-v-ahwal-edit').value.trim() : document.getElementById('m-v-ahwal').value.trim();
+    window.doSaveAhwalAdmin = async function() {
+        const villeId = document.getElementById('m-ahwal-ville').value;
+        const pass = document.getElementById('m-ahwal-pass').value;
+        const text = document.getElementById('m-ahwal-text').value.trim();
+
+        if (!villeId) return;
         
-        if (!pays_id || !nom) { alert("Veuillez sélectionner un pays et saisir un nom."); return; }
-        
+        // Vérification du code
+        if (pass !== CODE_AHWAL) {
+            alert("Code d'accès incorrect !");
+            return;
+        }
+
         try {
-            if (!id && dataCache.villes.some(v => String(v.pays_id) === String(pays_id) && v.nom.toLowerCase() === nom.toLowerCase())) { 
-                alert("Cette ville existe déjà !"); return; 
-            }
+            const { error } = await supabase.from('villes').update({ ahwal: text }).eq('id', villeId);
+            if (error) throw error;
             
-            if (id) {
-                const { error } = await supabase.from('villes').update({ nom, pays_id, ahwal }).eq('id', id);
-                if (error) throw error;
-            } else {
-                const { error } = await supabase.from('villes').insert({ nom, pays_id, ahwal, nb_mosquees_total: 0 });
-                if (error) throw error;
+            alert("Ahwal enregistré avec succès !");
+            closeModal();
+            await syncData();
+            
+            // Si on est sur la page stats, on rafraîchit
+            if (!document.getElementById('view-stats').classList.contains('hidden')) {
+                renderStats(document.getElementById('sel-stats-ville').value);
             }
-            closeModal(); await syncData();
         } catch (err) { alert("Erreur : " + err.message); }
-    };
-    window.deleteVille = async (id) => { if(!confirm("Supprimer ?")) return; try { const { error } = await supabase.from('villes').delete().eq('id', id); if(error) throw error; closeModal(); await syncData(); } catch (err) { alert("Erreur : " + err.message); } };
+    }
 
     // GESTION DES ÉVÉNEMENTS
     window.checkEventPassword = async function() {
@@ -968,7 +981,7 @@
         if(data === true) { await syncData(); openManageModal('evenements'); }
     }
 
-    // GESTION PAYS, HALAKAT, MOSQUÉES (CRUD)
+    // GESTION PAYS, VILLES, HALAKAT, MOSQUÉES (CRUD)
     window.doAddPays = async () => {
         const nom = document.getElementById('m-p-nom').value.trim();
         if (!nom) return;
@@ -981,6 +994,18 @@
         } catch (err) { alert("Erreur lors de l'ajout du pays : " + err.message); }
     };
     window.deletePays = async (id) => { if(!confirm("Supprimer ?")) return; try { const { error } = await supabase.from('pays').delete().eq('id', id); if(error) throw error; closeModal(); await syncData(); } catch (err) { alert("Erreur : " + err.message); } };
+
+    window.doAddVille = async () => {
+        const pays_id = document.getElementById('m-v-pays').value; const nom = document.getElementById('m-v-nom').value.trim();
+        if (!pays_id || !nom) { alert("Veuillez sélectionner un pays et saisir un nom."); return; }
+        try {
+            if (dataCache.villes.some(v => String(v.pays_id) === String(pays_id) && v.nom.toLowerCase() === nom.toLowerCase())) { alert("Cette ville existe déjà !"); return; }
+            const { error } = await supabase.from('villes').insert({ nom, pays_id, nb_mosquees_total: 0, ahwal: null });
+            if (error) throw error;
+            closeModal(); await syncData();
+        } catch (err) { alert("Erreur lors de l'ajout de la ville : " + err.message); }
+    };
+    window.deleteVille = async (id) => { if(!confirm("Supprimer ?")) return; try { const { error } = await supabase.from('villes').delete().eq('id', id); if(error) throw error; closeModal(); await syncData(); } catch (err) { alert("Erreur : " + err.message); } };
 
     window.doAddHalaka = async () => {
         const ville_id = document.getElementById('m-h-ville').value; const nom = document.getElementById('m-h-nom').value.trim();
