@@ -16,6 +16,7 @@
     @media print { .no-print { display: none !important; } body { background: white !important; } }
     .debug-box { display: none; background: #dc2626; color: white; padding: 15px; font-weight: bold; text-align: center; font-family: sans-serif; position: fixed; top: 0; width: 100%; z-index: 9999;}
     [dir="rtl"] th, [dir="rtl"] td { text-align: right; }
+    
     input, select, textarea { color: #1e293b !important; background-color: #ffffff !important; }
     .dark input, .dark select, .dark textarea { color: #f8fafc !important; background-color: #334155 !important; border-color: #475569 !important; }
   </style>
@@ -83,9 +84,7 @@
       </div>
 
       <div class="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden border border-slate-300 dark:border-slate-700 transition-colors">
-        <div id="planning-empty" class="p-8 text-center text-slate-500 dark:text-slate-400 font-medium">
-            Veuillez ajouter des données dans le Gestionnaire pour commencer.
-        </div>
+        <div id="planning-empty" class="p-8 text-center text-slate-500 dark:text-slate-400 font-medium" data-i18n="no_data_hint">Veuillez ajouter des données dans le Gestionnaire pour commencer.</div>
         <div id="planning-content" class="hidden">
           <div class="p-4 border-b dark:border-slate-700 bg-emerald-50 dark:bg-emerald-900/30 transition-colors flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <div>
@@ -196,9 +195,19 @@
   </div>
 
   <script>
+    // ==========================================
+    // CONFIGURATION SUPABASE (VOS CLÉS ICI)
+    // ==========================================
+    const SUPABASE_URL = 'https://rhtaqusrkgqawtbqysgw.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_JIjs3oxZszYHTaON8iH06g_-mnoCVfl'; // <-- LA CLÉ EST ICI
+
+    // ==========================================
+    // DICTIONNAIRE DE TRADUCTION COMPLET
+    // ==========================================
     const translations = {
       fr: { 
         loading: "Chargement...", loading_error: "Connexion lente ou bloquée.", btn_retry: "Réessayer",
+        no_data_hint: "Veuillez ajouter des données dans le Gestionnaire pour commencer.",
         app_title: "Khourouj Tabligh", app_subtitle: "Gestion des sorties", tab_consult: "📖 Consultation", tab_stats: "📊 Statistiques", tab_admin: "⚙️ Gestionnaire",
         tab_events: "📅 Événements", event_upcoming: "Événements à venir", event_none: "Aucun événement à venir.",
         event_add: "Ajouter un événement", event_title: "Titre de l'événement", event_date_start: "Date de début", event_date_end: "Date de fin",
@@ -235,6 +244,7 @@
       },
       en: { 
         loading: "Loading...", loading_error: "Connection slow or blocked.", btn_retry: "Retry",
+        no_data_hint: "Please add data in the Manager to start.",
         app_title: "Khourouj Tabligh", app_subtitle: "Sorties Management", tab_consult: "📖 Consult", tab_stats: "📊 Stats", tab_admin: "⚙️ Admin",
         tab_events: "📅 Events", event_upcoming: "Upcoming Events", event_none: "No upcoming events.",
         event_add: "Add an event", event_title: "Event Title", event_date_start: "Start Date", event_date_end: "End Date",
@@ -271,6 +281,7 @@
       },
       ar: { 
         loading: "جاري التحميل...", loading_error: "الاتصال بطيء أو محظور.", btn_retry: "إعادة المحاولة",
+        no_data_hint: "يرجى إضافة بيانات في الإدارة للبدء.",
         app_title: "خروج تبليغ", app_subtitle: "إدارة الخروج", tab_consult: "📖 استشارة", tab_stats: "📊 إحصائيات", tab_admin: "⚙️ إدارة",
         tab_events: "📅 الأحداث", event_upcoming: "الأحداث القادمة", event_none: "لا توجد أحداث قادمة.",
         event_add: "إضافة حدث", event_title: "عنوان الحدث", event_date_start: "تاريخ البداية", event_date_end: "تاريخ النهاية",
@@ -307,6 +318,7 @@
       },
       ur: { 
         loading: "لوڈ ہو رہا ہے...", loading_error: "کنکشن سست ہے یا بلاک ہے۔", btn_retry: "دوبارہ کوشش کریں",
+        no_data_hint: "شروع کرنے کے لیے منتظم میں ڈیٹا شامل کریں۔",
         app_title: "خروج تبلیغ", app_subtitle: "خروج کا انتظام", tab_consult: "📖 مشورہ", tab_stats: "📊 اعداد", tab_admin: "⚙️ منتظم",
         tab_events: "📅 تقریبات", event_upcoming: "آنے والی تقریبات", event_none: "کوئی آنے والی تقریب نہیں۔",
         event_add: "تقریب شامل کریں", event_title: "تقریب کا عنوان", event_date_start: "شروع کی تاریخ", event_date_end: "اختتام کی تاریخ",
@@ -373,14 +385,18 @@
         });
     }
 
+    // ==========================================
+    // SÉCURITÉ & THEME
+    // ==========================================
     let loadTimeout = setTimeout(() => {
         const loader = document.getElementById('loading-screen');
         if (loader && loader.style.display !== 'none') {
-            document.getElementById('loading-error').classList.remove('hidden');
-            document.querySelector('#loading-screen h2').textContent = "Instable";
+            document.getElementById('debug-box').style.display = 'block';
+            document.getElementById('debug-box').innerHTML = "⚠️ Impossible de contacter Supabase. Vérifiez la clé API ou la connexion.";
+            document.querySelector('#loading-screen h2').textContent = "Erreur";
             document.querySelector('#loading-screen .animate-spin').style.display = 'none';
         }
-    }, 4000);
+    }, 5000);
 
     window.onerror = function(message) { const box = document.getElementById('debug-box'); if(box) { box.style.display = 'block'; box.innerHTML = "⚠️ Erreur JS : " + message; } clearTimeout(loadTimeout); document.getElementById('loading-screen').style.display = 'none'; };
 
@@ -394,6 +410,9 @@
 
     if (localStorage.getItem('khourouj_theme') === 'dark') { document.documentElement.classList.add('dark'); document.getElementById('dark-mode-btn').textContent = '☀️'; }
 
+    // ==========================================
+    // UTILS & CALENDRIER
+    // ==========================================
     function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
     function getNthFriday(year, month, n) { const first = new Date(year, month - 1, 1); const firstDow = first.getDay(); const daysUntilFri = (5 - firstDow + 7) % 7; const day = 1 + daysUntilFri + (n - 1) * 7; return new Date(year, month - 1, day); }
     function getOusboueDates(year, month, ousboue) { const friday = getNthFriday(year, month, ousboue); const sunday = new Date(friday); sunday.setDate(friday.getDate() + 2); return { friday, sunday }; }
@@ -424,6 +443,9 @@
         monthSel.appendChild(o);
     });
 
+    // ==========================================
+    // SUPABASE & CHARGEMENT
+    // ==========================================
     let dataCache = { pays: [], villes: [], halakat: [], mosquees: [], evenements: [] };
     let eventPassword = sessionStorage.getItem('khourouj_event_pass') || '';
 
@@ -431,12 +453,13 @@
     script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
     script.onload = async () => {
         try {
-            const SUPABASE_URL = 'https://rhtaqusrkgqawtbqysgw.supabase.co';
-            const SUPABASE_ANON_KEY = 'sb_publishable_JIjs3oxZszYHTaON8iH6g_-mnoCVfl';
+            if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === 'VOTRE_CLE_ANON_ICI') {
+                throw new Error("La clé API n'est pas configurée.");
+            }
+
             window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             
             applyTranslations();
-            
             await loadData(); 
             
             clearTimeout(loadTimeout);
@@ -445,37 +468,38 @@
             switchTab('consult');
             autoSelectFirst();
         } catch(err) {
-            document.getElementById('loading-error').classList.remove('hidden');
+            document.getElementById('debug-box').style.display = 'block';
+            document.getElementById('debug-box').innerHTML = "⚠️ Erreur de connexion : " + err.message;
             document.querySelector('#loading-screen h2').textContent = "Erreur";
             document.querySelector('#loading-screen .animate-spin').style.display = 'none';
             console.error(err);
         }
     };
     script.onerror = () => {
-        document.getElementById('loading-error').classList.remove('hidden');
+        document.getElementById('debug-box').style.display = 'block';
+        document.getElementById('debug-box').innerHTML = "⚠️ Le réseau bloque le chargement de Supabase.";
         document.querySelector('#loading-screen h2').textContent = "Réseau bloqué";
         document.querySelector('#loading-screen .animate-spin').style.display = 'none';
     };
     document.body.appendChild(script);
 
     async function loadData() {
-        try {
-            const { data: pays } = await supabase.from('pays').select('*');
-            const { data: villes } = await supabase.from('villes').select('*');
-            const { data: halakat } = await supabase.from('halakat').select('*');
-            const { data: mosquees } = await supabase.from('mosquees').select('*');
-            
-            let evenements = [];
-            try {
-                const { data: ev } = await supabase.from('evenements').select('*').gte('date_fin', new Date().toISOString().split('T')[0]).order('date_debut', { ascending: true });
-                if(ev) evenements = ev;
-            } catch(e) { console.log("Events table not ready"); }
-
-            dataCache = { pays: pays || [], villes: villes || [], halakat: halakat || [], mosquees: mosquees || [], evenements: evenements };
-        } catch(err) {
-            console.error(err);
-            dataCache = { pays: dataCache.pays || [], villes: dataCache.villes || [], halakat: dataCache.halakat || [], mosquees: dataCache.mosquees || [], evenements: dataCache.evenements || [] };
+        const { data: pays, error: e1 } = await supabase.from('pays').select('*');
+        const { data: villes, error: e2 } = await supabase.from('villes').select('*');
+        const { data: halakat, error: e3 } = await supabase.from('halakat').select('*');
+        const { data: mosquees, error: e4 } = await supabase.from('mosquees').select('*');
+        
+        if (e1 || e2 || e3 || e4) {
+            throw new Error("Impossible de lire les tables. Avez-vous exécuté le SQL ?");
         }
+
+        let evenements = [];
+        try {
+            const { data: ev } = await supabase.from('evenements').select('*').gte('date_fin', new Date().toISOString().split('T')[0]).order('date_debut', { ascending: true });
+            if(ev) evenements = ev;
+        } catch(e) { console.log("Events table not ready"); }
+
+        dataCache = { pays: pays || [], villes: villes || [], halakat: halakat || [], mosquees: mosquees || [], evenements: evenements };
     }
 
     function autoSelectFirst() {
@@ -519,8 +543,7 @@
         const dict = translations[currentLang];
         
         if (!dataCache.evenements || dataCache.evenements.length === 0) {
-            container.classList.add('hidden');
-            return;
+            container.classList.add('hidden'); return;
         }
 
         container.classList.remove('hidden');
@@ -529,10 +552,7 @@
             if (e.date_debut !== e.date_fin) dateText += ` au ${formatDateEvent(e.date_fin)}`;
             
             return `<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-sm border-b border-amber-200 dark:border-amber-800 pb-2 last:border-0 last:pb-0">
-                <div>
-                    <span class="font-bold text-amber-900 dark:text-amber-200">${escapeHtml(e.titre)}</span>
-                    <span class="text-amber-800 dark:text-amber-300 ml-1">(${escapeHtml(e.lieu || '')})</span>
-                </div>
+                <div><span class="font-bold text-amber-900 dark:text-amber-200">${escapeHtml(e.titre)}</span><span class="text-amber-800 dark:text-amber-300 ml-1">(${escapeHtml(e.lieu || '')})</span></div>
                 <div class="text-amber-700 dark:text-amber-400 font-medium whitespace-nowrap">📅 ${dateText}</div>
             </div>`;
         }).join('');
@@ -809,104 +829,43 @@
         if(data === true) { await syncData(); openManageModal('evenements'); }
     }
 
-    // GESTION PAYS, VILLES, HALAKAT, MOSQUÉES
+    // GESTION PAYS, VILLES, HALAKAT, MOSQUÉES (CRUD)
     window.doAddPays = async () => {
         const nom = document.getElementById('m-p-nom').value.trim();
         if (!nom) return;
 
         try {
-            if (dataCache.pays.some(p => p.nom.toLowerCase() === nom.toLowerCase())) {
-                alert("Ce pays existe déjà !");
-                return;
-            }
+            if (dataCache.pays.some(p => p.nom.toLowerCase() === nom.toLowerCase())) { alert("Ce pays existe déjà !"); return; }
             const { error } = await supabase.from('pays').insert({ nom });
             if (error) throw error;
-            closeModal();
-            await syncData();
-        } catch (err) {
-            alert("Erreur lors de l'ajout du pays : " + err.message);
-        }
+            closeModal(); await syncData();
+        } catch (err) { alert("Erreur lors de l'ajout du pays : " + err.message); }
     };
-
-    window.deletePays = async (id) => {
-        if (!confirm("Supprimer ?")) return;
-        try {
-            const { error } = await supabase.from('pays').delete().eq('id', id);
-            if (error) throw error;
-            closeModal();
-            await syncData();
-        } catch (err) {
-            alert("Erreur lors de la suppression : " + err.message);
-        }
-    };
+    window.deletePays = async (id) => { if(!confirm("Supprimer ?")) return; try { const { error } = await supabase.from('pays').delete().eq('id', id); if(error) throw error; closeModal(); await syncData(); } catch (err) { alert("Erreur : " + err.message); } };
 
     window.doAddVille = async () => {
-        const pays_id = document.getElementById('m-v-pays').value;
-        const nom = document.getElementById('m-v-nom').value.trim();
-        if (!pays_id || !nom) {
-            alert("Veuillez sélectionner un pays et saisir un nom de ville.");
-            return;
-        }
-
+        const pays_id = document.getElementById('m-v-pays').value; const nom = document.getElementById('m-v-nom').value.trim();
+        if (!pays_id || !nom) { alert("Veuillez sélectionner un pays et saisir un nom."); return; }
         try {
-            if (dataCache.villes.some(v => String(v.pays_id) === String(pays_id) && v.nom.toLowerCase() === nom.toLowerCase())) {
-                alert("Cette ville existe déjà dans ce pays !");
-                return;
-            }
+            if (dataCache.villes.some(v => String(v.pays_id) === String(pays_id) && v.nom.toLowerCase() === nom.toLowerCase())) { alert("Cette ville existe déjà !"); return; }
             const { error } = await supabase.from('villes').insert({ nom, pays_id, nb_mosquees_total: 0 });
             if (error) throw error;
-            closeModal();
-            await syncData();
-        } catch (err) {
-            alert("Erreur lors de l'ajout de la ville : " + err.message);
-        }
+            closeModal(); await syncData();
+        } catch (err) { alert("Erreur lors de l'ajout de la ville : " + err.message); }
     };
-
-    window.deleteVille = async (id) => {
-        if (!confirm("Supprimer ?")) return;
-        try {
-            const { error } = await supabase.from('villes').delete().eq('id', id);
-            if (error) throw error;
-            closeModal();
-            await syncData();
-        } catch (err) {
-            alert("Erreur lors de la suppression : " + err.message);
-        }
-    };
+    window.deleteVille = async (id) => { if(!confirm("Supprimer ?")) return; try { const { error } = await supabase.from('villes').delete().eq('id', id); if(error) throw error; closeModal(); await syncData(); } catch (err) { alert("Erreur : " + err.message); } };
 
     window.doAddHalaka = async () => {
-        const ville_id = document.getElementById('m-h-ville').value;
-        const nom = document.getElementById('m-h-nom').value.trim();
-        if (!ville_id || !nom) {
-            alert("Veuillez sélectionner une ville et saisir un nom de halaka.");
-            return;
-        }
-
+        const ville_id = document.getElementById('m-h-ville').value; const nom = document.getElementById('m-h-nom').value.trim();
+        if (!ville_id || !nom) { alert("Veuillez sélectionner une ville et saisir un nom."); return; }
         try {
-            if (dataCache.halakat.some(h => String(h.ville_id) === String(ville_id) && h.nom.toLowerCase() === nom.toLowerCase())) {
-                alert("Ce sous-halaka existe déjà dans cette ville !");
-                return;
-            }
+            if (dataCache.halakat.some(h => String(h.ville_id) === String(ville_id) && h.nom.toLowerCase() === nom.toLowerCase())) { alert("Ce sous-halaka existe déjà !"); return; }
             const { error } = await supabase.from('halakat').insert({ nom, ville_id });
             if (error) throw error;
-            closeModal();
-            await syncData();
-        } catch (err) {
-            alert("Erreur lors de l'ajout de la halaka : " + err.message);
-        }
+            closeModal(); await syncData();
+        } catch (err) { alert("Erreur lors de l'ajout de la halaka : " + err.message); }
     };
-
-    window.deleteHalaka = async (id) => {
-        if (!confirm("Supprimer ?")) return;
-        try {
-            const { error } = await supabase.from('halakat').delete().eq('id', id);
-            if (error) throw error;
-            closeModal();
-            await syncData();
-        } catch (err) {
-            alert("Erreur lors de la suppression : " + err.message);
-        }
-    };
+    window.deleteHalaka = async (id) => { if(!confirm("Supprimer ?")) return; try { const { error } = await supabase.from('halakat').delete().eq('id', id); if(error) throw error; closeModal(); await syncData(); } catch (err) { alert("Erreur : " + err.message); } };
 
     window.openAddMosqueeModal = function() {
         const filterSel = document.getElementById('m-filter-halaka');
@@ -917,13 +876,10 @@
     window.openEditMosqueeModal = function(id) { const m = dataCache.mosquees.find(x => x.id === id); if(!m) return; openMosqueeForm(m, m.halaka_id); }
 
     window.renderAdminMosqueesInModal = function(hid) {
-        const list = document.getElementById('modal-admin-mosquees-list');
-        const dict = translations[currentLang];
-        if(!list) return;
+        const list = document.getElementById('modal-admin-mosquees-list'); const dict = translations[currentLang]; if(!list) return;
         if(!hid) { list.innerHTML = `<p class="text-center text-gray-500 mt-2">${dict.select_halaka_hint}</p>`; return; }
         const mosquees = dataCache.mosquees.filter(m => String(m.halaka_id) === String(hid));
         if(mosquees.length === 0) { list.innerHTML = `<p class="text-center text-gray-500 mt-2">${dict.no_mosque}</p>`; return; }
-        
         list.innerHTML = mosquees.map(m => `<div class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded p-3 flex justify-between items-center shadow-sm mb-2"><div><p class="font-bold text-sm">${escapeHtml(m.nom)} <span class="text-xs font-normal text-gray-500">(Ousboue ${m.ousboue})</span></p><p class="text-xs text-emerald-600 dark:text-emerald-400">${m.jamaat_statut || dict.stat_aucune}</p></div><div class="flex gap-2"><button onclick="openEditMosqueeModal(${m.id})" class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-xs font-bold">✏️</button><button onclick="promptDeleteMosquee(${m.id})" class="bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 px-2 py-1 rounded text-xs font-bold">🗑️</button></div></div>`).join('');
     }
 
@@ -1087,9 +1043,7 @@
                 }
             }, 100);
 
-        } catch (err) {
-            alert("Erreur lors de l'enregistrement : " + err.message);
-        }
+        } catch (err) { alert("Erreur lors de l'enregistrement : " + err.message); }
     }
 
     window.promptDeleteMosquee = function(id) {
