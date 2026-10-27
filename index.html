@@ -495,21 +495,14 @@
     // ==========================================
     let dataCache = { pays: [], villes: [], halakat: [], mosquees: [], evenements: [] };
     
-    // Fonction pour charger depuis la mémoire du téléphone si pas de réseau
     function loadFromLocalStorage() {
         const cached = localStorage.getItem('khourouj_data_cache');
-        if (cached) {
-            try { dataCache = JSON.parse(cached); return true; } catch(e) { return false; }
-        }
+        if (cached) { try { dataCache = JSON.parse(cached); return true; } catch(e) { return false; } }
         return false;
     }
 
-    // Fonction pour sauvegarder dans la mémoire du téléphone
-    function saveToLocalStorage() {
-        localStorage.setItem('khourouj_data_cache', JSON.stringify(dataCache));
-    }
+    function saveToLocalStorage() { localStorage.setItem('khourouj_data_cache', JSON.stringify(dataCache)); }
 
-    // Détecter si on est hors ligne
     window.addEventListener('offline', () => { document.getElementById('offline-banner').style.display = 'block'; });
     window.addEventListener('online', () => { document.getElementById('offline-banner').style.display = 'none'; });
     if (!navigator.onLine) document.getElementById('offline-banner').style.display = 'block';
@@ -530,7 +523,6 @@
             switchTab('consult');
             autoSelectFirst();
         } catch(err) {
-            // Si erreur réseau, on charge depuis le cache
             if (loadFromLocalStorage()) {
                 document.getElementById('offline-banner').style.display = 'block';
                 document.getElementById('loading-screen').style.display = 'none';
@@ -546,7 +538,6 @@
         }
     };
     script.onerror = () => {
-        // Si le script Supabase ne charge pas (pas de réseau), on utilise le cache
         if (loadFromLocalStorage()) {
             document.getElementById('offline-banner').style.display = 'block';
             document.getElementById('loading-screen').style.display = 'none';
@@ -567,9 +558,7 @@
         const { data: halakat, error: e3 } = await supabase.from('halakat').select('*');
         const { data: mosquees, error: e4 } = await supabase.from('mosquees').select('*');
         
-        if (e1 || e2 || e3 || e4) {
-            throw new Error("Impossible de lire les tables. Avez-vous exécuté le SQL ?");
-        }
+        if (e1 || e2 || e3 || e4) { throw new Error("Impossible de lire les tables. Avez-vous exécuté le SQL ?"); }
 
         let evenements = [];
         try {
@@ -578,7 +567,7 @@
         } catch(e) { console.log("Events table not ready"); }
 
         dataCache = { pays: pays || [], villes: villes || [], halakat: halakat || [], mosquees: mosquees || [], evenements: evenements };
-        saveToLocalStorage(); // On sauvegarde en mémoire locale !
+        saveToLocalStorage(); 
     }
 
     function autoSelectFirst() {
@@ -706,6 +695,10 @@
         const paysId = document.getElementById('sel-pays').value; const villeSel = document.getElementById('sel-ville');
         villeSel.innerHTML = '<option value="">--</option>'; document.getElementById('sel-halaka').innerHTML = '<option value="">--</option>';
         document.getElementById('planning-empty').classList.remove('hidden'); document.getElementById('planning-content').classList.add('hidden');
+        
+        // Vider le tableau quand on change de pays
+        document.getElementById('planning-tbody').innerHTML = ''; 
+
         if (!paysId) { renderJamaatsEnSortie(); return; }
         const villes = dataCache.villes.filter(v => String(v.pays_id) === paysId);
         villes.forEach(v => { villeSel.insertAdjacentHTML('beforeend', `<option value="${v.id}">${escapeHtml(v.nom)}</option>`); });
@@ -715,7 +708,14 @@
 
     window.onVilleChange = function() {
         const villeId = document.getElementById('sel-ville').value; const halakaSel = document.getElementById('sel-halaka');
-        halakaSel.innerHTML = '<option value="">--</option>'; document.getElementById('planning-empty').classList.remove('hidden'); document.getElementById('planning-content').classList.add('hidden');
+        halakaSel.innerHTML = '<option value="">--</option>'; 
+        document.getElementById('planning-empty').classList.remove('hidden'); 
+        document.getElementById('planning-content').classList.add('hidden');
+        
+        // VIDER LE TABLEAU IMMÉDIATEMENT quand on change de ville
+        document.getElementById('planning-tbody').innerHTML = ''; 
+        document.getElementById('planning-title').textContent = '';
+
         renderJamaatsEnSortie();
         if (!villeId) return;
         const halakas = dataCache.halakat.filter(h => String(h.ville_id) === villeId);
@@ -737,7 +737,9 @@
             const dict = translations[currentLang];
             document.getElementById('planning-subtitle').textContent = `${dict.mois[month - 1]} ${year}`;
             
-            const tbody = document.getElementById('planning-tbody'); tbody.innerHTML = '';
+            const tbody = document.getElementById('planning-tbody'); 
+            tbody.innerHTML = ''; // NETTOYAGE DU TABLEAU ICI
+            
             if(mosquees.length === 0) { tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center">${dict.no_mosque}</td></tr>`; return; }
             mosquees.forEach(m => {
                 const { friday, sunday } = getOusboueDates(year, month, m.ousboue); const st = getStatus(friday, sunday);
@@ -967,7 +969,7 @@
         document.getElementById('modal').classList.remove('hidden');
     }
 
-    // GESTION DES AHWAL (Avec la RPC pour contourner la sécurité)
+    // GESTION DES AHWAL
     window.loadAhwalForEdit = function(villeId) {
         const editor = document.getElementById('m-ahwal-editor');
         const text = document.getElementById('m-ahwal-text');
@@ -990,7 +992,7 @@
             
             const villeCache = dataCache.villes.find(v => String(v.id) === String(villeId));
             if (villeCache) villeCache.ahwal = text;
-            saveToLocalStorage(); // Mise à jour locale
+            saveToLocalStorage(); 
 
             alert("Ahwal enregistré avec succès !");
             closeModal();
