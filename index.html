@@ -258,13 +258,13 @@
     // GESTION DE LA SESSION UTILISATEUR
     // ==========================================
     let currentUser = JSON.parse(sessionStorage.getItem('khourouj_user') || 'null');
+    let dataCache = { pays: [], villes: [], halakat: [], mosquees: [], evenements: [] };
 
     function saveUserSession(user) {
         currentUser = user;
         if (user) sessionStorage.setItem('khourouj_user', JSON.stringify(user));
         else sessionStorage.removeItem('khourouj_user');
         updateUserBanner();
-        updateUIBasedOnRole();
     }
 
     function updateUserBanner() {
@@ -503,7 +503,7 @@
 
     window.onerror = function(message) { const box = document.getElementById('debug-box'); if(box) { box.style.display = 'block'; box.innerHTML = "⚠️ Erreur JS : " + message; } clearTimeout(loadTimeout); document.getElementById('loading-screen').style.display = 'none'; };
 
-    function clearCache() { localStorage.clear(); window.location.reload(); }
+    function clearCache() { localStorage.clear(); sessionStorage.clear(); window.location.reload(); }
 
     function toggleDarkMode() {
       const html = document.documentElement;
@@ -549,8 +549,6 @@
     // ==========================================
     // SUPABASE & CHARGEMENT (MODE HORS LIGNE)
     // ==========================================
-    let dataCache = { pays: [], villes: [], halakat: [], mosquees: [], evenements: [] };
-    
     function loadFromLocalStorage() {
         const cached = localStorage.getItem('khourouj_data_cache');
         if (cached) { try { dataCache = JSON.parse(cached); return true; } catch(e) { return false; } }
@@ -577,7 +575,6 @@
             document.getElementById('loading-screen').style.display = 'none';
             
             updateUserBanner();
-            updateUIBasedOnRole();
             switchTab('consult');
             autoSelectFirst();
         } catch(err) {
@@ -585,7 +582,6 @@
                 document.getElementById('offline-banner').style.display = 'block';
                 document.getElementById('loading-screen').style.display = 'none';
                 updateUserBanner();
-                updateUIBasedOnRole();
                 switchTab('consult');
                 autoSelectFirst();
             } else {
@@ -602,7 +598,6 @@
             document.getElementById('offline-banner').style.display = 'block';
             document.getElementById('loading-screen').style.display = 'none';
             updateUserBanner();
-            updateUIBasedOnRole();
             switchTab('consult');
             autoSelectFirst();
         } else {
@@ -649,14 +644,6 @@
             renderEventsBanner(); 
             renderJamaatsEnSortie(); 
         } catch(e) { alert("Impossible de synchroniser, vous êtes hors ligne."); }
-    }
-
-    // ==========================================
-    // MISE À JOUR DE L'INTERFACE SELON LE RÔLE
-    // ==========================================
-    function updateUIBasedOnRole() {
-        // On ne peut pas tout cacher, mais on gère les autorisations dans les fonctions de sauvegarde
-        // Ceci est un hook pour les futures modifications
     }
 
     // ==========================================
