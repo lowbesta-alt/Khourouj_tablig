@@ -127,7 +127,13 @@
     <section id="view-stats" class="hidden">
       <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4 mb-6 border border-slate-300 dark:border-slate-700 transition-colors">
         <label class="block text-sm font-bold mb-2" data-i18n="filter_stats">Choisir une ville :</label>
-        <select id="sel-stats-ville" class="w-full border rounded px-3 py-2" onchange="renderStats(this.value)"></select>
+        <select id="sel-stats-ville" class="w-full border rounded px-3 py-2 mb-3" onchange="renderStats(this.value)"></select>
+
+        <!-- LES 2 NOUVEAUX BOUTONS SUR LA PAGE STATISTIQUES -->
+        <div class="flex gap-2" id="stats-buttons-container">
+            <button onclick="openStatsHalakaFromStats()" class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-800 text-sm font-bold py-2 rounded border border-blue-300 shadow-sm transition">⭕ Infos Halaka</button>
+            <button onclick="openStatsVillePaysFromStats()" class="flex-1 bg-purple-100 hover:bg-purple-200 text-purple-800 text-sm font-bold py-2 rounded border border-purple-300 shadow-sm transition">🏙️ Infos Ville & Pays</button>
+        </div>
       </div>
 
       <div id="ahwal-banner-container" class="hidden mb-6">
@@ -742,7 +748,6 @@
         } catch(e) { console.error(e); }
     };
 
-    // FENÊTRE DÉTAILS JAMAAT (AVEC LES 2 NOUVEAUX BOUTONS)
     window.openJamaatModal = function(id) {
         const m = dataCache.mosquees.find(x => x.id === id); if(!m) return;
         const dict = translations[currentLang];
@@ -752,12 +757,6 @@
         let html = `
             <h3 class="text-xl font-bold mb-1 text-emerald-800 dark:text-emerald-400">${dict.modal_jamaat}</h3>
             <p class="text-lg font-bold text-slate-700 dark:text-slate-200 mb-3">${escapeHtml(m.nom)}</p>
-
-            <!-- LES 2 NOUVEAUX BOUTONS (PORTES) -->
-            <div class="flex gap-2 mb-4">
-                <button onclick="openStatsHalaka(${m.halaka_id})" class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-800 text-sm font-bold py-2 rounded border border-blue-300 shadow-sm transition">⭕ Infos Halaka</button>
-                <button onclick="openStatsVillePays(${m.halaka_id})" class="flex-1 bg-purple-100 hover:bg-purple-200 text-purple-800 text-sm font-bold py-2 rounded border border-purple-300 shadow-sm transition">🏙️ Infos Ville & Pays</button>
-            </div>
             
             <div class="mb-4">
                 <span class="inline-block px-3 py-1 rounded-full text-sm font-bold ${statutColor}">${m.jamaat_statut || dict.stat_aucune}</span>
@@ -842,23 +841,32 @@
         `;
     }
 
-    window.openStatsHalaka = function(halakaId) {
-        const halaka = dataCache.halakat.find(h => h.id === halakaId); if(!halaka) return;
-        const mosquees = dataCache.mosquees.filter(m => String(m.halaka_id) === String(halakaId));
+    // Boutons depuis la page Statistiques
+    window.openStatsHalakaFromStats = function() {
+        const villeId = document.getElementById('sel-stats-ville').value;
+        if (!villeId) { alert("Veuillez sélectionner une ville."); return; }
+        const ville = dataCache.villes.find(v => String(v.id) === String(villeId));
+        if (!ville) return;
+
+        const halakas = dataCache.halakat.filter(h => String(h.ville_id) === String(villeId)).map(h => String(h.id));
+        const mosquees = dataCache.mosquees.filter(m => halakas.includes(String(m.halaka_id)));
         const stats = calculateStatsForMosquees(mosquees);
 
         let html = `
-            <h3 class="text-xl font-bold mb-1 text-blue-800 dark:text-blue-400">⭕ Cumul de la Halaka</h3>
-            <p class="text-sm mb-4 text-gray-600 dark:text-gray-300">${escapeHtml(halaka.nom)}</p>
+            <h3 class="text-xl font-bold mb-1 text-blue-800 dark:text-blue-400">⭕ Cumul de la Ville</h3>
+            <p class="text-sm mb-4 text-gray-600 dark:text-gray-300">${escapeHtml(ville.nom)}</p>
             ${generateStatsHTML(stats)}
-            <button onclick="openJamaatModalFromHalaka(${halakaId})" class="mt-4 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 w-full py-2 rounded font-bold">Retour</button>
+            <button onclick="closeModal()" class="mt-4 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 w-full py-2 rounded font-bold">Fermer</button>
         `;
         document.getElementById('modal-content').innerHTML = html;
+        document.getElementById('modal').classList.remove('hidden');
     }
 
-    window.openStatsVillePays = function(halakaId) {
-        const halaka = dataCache.halakat.find(h => h.id === halakaId); if(!halaka) return;
-        const ville = dataCache.villes.find(v => String(v.id) === String(halaka.ville_id)); if(!ville) return;
+    window.openStatsVillePaysFromStats = function() {
+        const villeId = document.getElementById('sel-stats-ville').value;
+        if (!villeId) { alert("Veuillez sélectionner une ville."); return; }
+        const ville = dataCache.villes.find(v => String(v.id) === String(villeId));
+        if (!ville) return;
         const pays = dataCache.pays.find(p => String(p.id) === String(ville.pays_id));
 
         // Cumul Ville
@@ -874,7 +882,7 @@
 
         let html = `
             <h3 class="text-xl font-bold mb-1 text-purple-800 dark:text-purple-400">🏙️ Cumul Ville & Pays</h3>
-            <p class="text-sm mb-2 text-gray-600 dark:text-gray-300">Halaka : ${escapeHtml(halaka.nom)}</p>
+            <p class="text-sm mb-2 text-gray-600 dark:text-gray-300">Ville : ${escapeHtml(ville.nom)}</p>
             
             <div class="mb-6 border-b pb-4 dark:border-slate-700">
                 <h4 class="font-bold text-purple-700 dark:text-purple-300 mb-3 text-lg">Ville : ${escapeHtml(ville.nom)}</h4>
@@ -886,19 +894,10 @@
                 ${generateStatsHTML(statsPays)}
             </div>
 
-            <button onclick="openJamaatModalFromHalaka(${halakaId})" class="mt-4 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 w-full py-2 rounded font-bold">Retour</button>
+            <button onclick="closeModal()" class="mt-4 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 w-full py-2 rounded font-bold">Fermer</button>
         `;
         document.getElementById('modal-content').innerHTML = html;
-    }
-
-    window.openJamaatModalFromHalaka = function(halakaId) {
-        // Retourne vers la liste des mosquées de la halaka pour rouvrir un détail
-        const mosquees = dataCache.mosquees.filter(m => String(m.halaka_id) === String(halakaId));
-        if (mosquees.length > 0) {
-            openJamaatModal(mosquees[0].id);
-        } else {
-            closeModal();
-        }
+        document.getElementById('modal').classList.remove('hidden');
     }
 
     function refreshStatsSelect() {
