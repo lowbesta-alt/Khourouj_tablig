@@ -869,30 +869,17 @@
         if (!ville) return;
         const pays = dataCache.pays.find(p => String(p.id) === String(ville.pays_id));
 
-        // Cumul Ville
-        const halakasVille = dataCache.halakat.filter(h => String(h.ville_id) === String(ville.id)).map(h => String(h.id));
-        const mosqueesVille = dataCache.mosquees.filter(m => halakasVille.includes(String(m.halaka_id)));
-        const statsVille = calculateStatsForMosquees(mosqueesVille);
-
-        // Cumul Pays
+        // Cumul Pays UNIQUEMENT (Comme demandé)
         const villesPays = dataCache.villes.filter(v => String(v.pays_id) === String(ville.pays_id)).map(v => String(v.id));
         const halakasPays = dataCache.halakat.filter(h => villesPays.includes(String(h.ville_id))).map(h => String(h.id));
         const mosqueesPays = dataCache.mosquees.filter(m => halakasPays.includes(String(m.halaka_id)));
         const statsPays = calculateStatsForMosquees(mosqueesPays);
 
         let html = `
-            <h3 class="text-xl font-bold mb-1 text-purple-800 dark:text-purple-400">🏙️ Cumul Ville & Pays</h3>
-            <p class="text-sm mb-2 text-gray-600 dark:text-gray-300">Ville : ${escapeHtml(ville.nom)}</p>
+            <h3 class="text-xl font-bold mb-1 text-emerald-800 dark:text-emerald-400">🌍 Cumul du Pays</h3>
+            <p class="text-sm mb-4 text-gray-600 dark:text-gray-300">${escapeHtml(pays ? pays.nom : 'Inconnu')}</p>
             
-            <div class="mb-6 border-b pb-4 dark:border-slate-700">
-                <h4 class="font-bold text-purple-700 dark:text-purple-300 mb-3 text-lg">Ville : ${escapeHtml(ville.nom)}</h4>
-                ${generateStatsHTML(statsVille)}
-            </div>
-
-            <div>
-                <h4 class="font-bold text-emerald-700 dark:text-emerald-300 mb-3 text-lg">Pays : ${escapeHtml(pays ? pays.nom : 'Inconnu')}</h4>
-                ${generateStatsHTML(statsPays)}
-            </div>
+            ${generateStatsHTML(statsPays)}
 
             <button onclick="closeModal()" class="mt-4 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 w-full py-2 rounded font-bold">Fermer</button>
         `;
