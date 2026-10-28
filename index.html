@@ -255,11 +255,14 @@
     const MASTER_PASSWORD = "admin2024"; 
 
     // ==========================================
-    // GESTION DE LA SESSION UTILISATEUR
+    // VARIABLES GLOBALES (Déclarées UNE SEULE FOIS)
     // ==========================================
     let currentUser = JSON.parse(sessionStorage.getItem('khourouj_user') || 'null');
     let dataCache = { pays: [], villes: [], halakat: [], mosquees: [], evenements: [] };
 
+    // ==========================================
+    // GESTION DE LA SESSION UTILISATEUR
+    // ==========================================
     function saveUserSession(user) {
         currentUser = user;
         if (user) sessionStorage.setItem('khourouj_user', JSON.stringify(user));
@@ -547,7 +550,7 @@
     });
 
     // ==========================================
-    // SUPABASE & CHARGEMENT (MODE HORS LIGNE)
+    // CHARGEMENT SUPABASE & MODE HORS LIGNE
     // ==========================================
     function loadFromLocalStorage() {
         const cached = localStorage.getItem('khourouj_data_cache');
