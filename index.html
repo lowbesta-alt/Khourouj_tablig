@@ -559,7 +559,9 @@
 
     window.addEventListener('offline', () => { document.getElementById('offline-banner').style.display = 'block'; });
     window.addEventListener('online', () => { document.getElementById('offline-banner').style.display = 'none'; });
-    if (!navigator.onLine) document.getElementById('offline-banner').style.display = 'block';
+    
+    // On n'affiche le bandeau "Hors-ligne" QUE si le téléphone est vraiment sans réseau
+    if (navigator.onLine === false) { document.getElementById('offline-banner').style.display = 'block'; }
 
     const script = document.createElement('script');
     script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
