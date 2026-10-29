@@ -62,12 +62,13 @@
   </header>
 
   <nav class="bg-white dark:bg-slate-800 border-b dark:border-slate-700 shadow-sm no-print transition-colors">
-    <div class="max-w-6xl mx-auto px-4 flex overflow-x-auto">
+    <div class="max-w-6xl mx-auto px-4 flex overflow-x-auto items-center">
       <button id="tab-consult" onclick="switchTab('consult')" class="px-4 py-3 font-medium border-b-2 whitespace-nowrap" data-i18n="tab_consult">📖 Consultation</button>
       <button id="tab-stats" onclick="switchTab('stats')" class="px-4 py-3 font-medium border-b-2 whitespace-nowrap" data-i18n="tab_stats">📊 Statistiques</button>
       <button id="tab-admin" onclick="switchTab('admin')" class="px-4 py-3 font-medium border-b-2 whitespace-nowrap" data-i18n="tab_admin">⚙️ Gestionnaire</button>
-      <!-- NOUVEAU BOUTON CRÉER -->
-      <button id="tab-create" onclick="openCreateSpaceModal()" class="px-4 py-3 font-medium border-b-2 whitespace-nowrap text-emerald-600 hover:text-emerald-800 font-bold ml-auto">➕ Créer mon espace</button>
+      
+      <!-- NOUVEAU : Bouton Créer mon espace -->
+      <button onclick="openCreateSpaceModal()" class="px-4 py-3 font-medium border-b-2 whitespace-nowrap text-emerald-600 hover:text-emerald-800 font-bold ml-auto">➕ Créer mon espace</button>
     </div>
   </nav>
 
@@ -127,7 +128,6 @@
     </section>
 
     <section id="view-stats" class="hidden">
-      <!-- Menu Ville + Boutons -->
       <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4 mb-6 border border-slate-300 dark:border-slate-700 transition-colors">
         <label class="block text-sm font-bold mb-2" data-i18n="filter_stats">Choisir une ville :</label>
         <select id="sel-stats-ville" class="w-full border rounded px-3 py-2 mb-3" onchange="renderStats(this.value)"></select>
@@ -646,7 +646,7 @@
     }
 
     // ==========================================
-    // NOUVELLE FONCTION : CRÉER MON ESPACE
+    // NOUVELLE FONCTION : CRÉER MON ESPACE (Point 1 + 2)
     // ==========================================
     function generateRandomCode(cityName) {
         const cleanName = cityName.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Z0-9]/g, '').substring(0, 6);
@@ -663,7 +663,7 @@
             
             <div class="mb-4">
                 <label class="block text-sm font-bold mb-1">Pays :</label>
-                <select id="create-pays-select" class="w-full border rounded px-3 py-2 mb-2">
+                <select id="create-pays-select" onchange="document.getElementById('create-pays-nom').classList.toggle('hidden', this.value !== 'new')" class="w-full border rounded px-3 py-2 mb-2">
                     <option value="new">-- Créer un nouveau pays --</option>
                     ${paysExistants}
                 </select>
@@ -693,7 +693,6 @@
             // Gérer le pays
             if (paysSelect === 'new') {
                 if (!paysNom) { alert("Veuillez saisir le nom de votre pays."); return; }
-                // Vérifier si le pays existe déjà
                 const paysExistant = dataCache.pays.find(p => p.nom.toLowerCase() === paysNom.toLowerCase());
                 if (paysExistant) {
                     paysId = paysExistant.id;
