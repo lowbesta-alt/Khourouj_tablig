@@ -377,14 +377,13 @@ window.renderEventsBanner = function() {
 
     const selPays = document.getElementById('sel-pays');
     const selVille = document.getElementById('sel-ville');
-    const paysTexte = selPays && selPays.selectedIndex >= 0 ? selPays.options[selPays.selectedIndex].text : '';
-    const villeTexte = selVille && selVille.selectedIndex >= 0 ? selVille.options[selVille.selectedIndex].text : '';
+    const paysTexte = (selPays && selPays.selectedIndex > 0) ? selPays.options[selPays.selectedIndex].text : '';
+    const villeTexte = (selVille && selVille.selectedIndex > 0) ? selVille.options[selVille.selectedIndex].text : '';
 
     const paysNorm = normalizeText(paysTexte);
     const villeNorm = normalizeText(villeTexte);
 
-    // Si rien n'est sélectionné (ou seulement "--"), on cache tout
-    if (!paysNorm || paysNorm === '--') {
+    if (!paysNorm || paysNorm === '--' || paysNorm === '') {
         container.classList.add('hidden');
         list.innerHTML = '';
         return;
@@ -392,7 +391,7 @@ window.renderEventsBanner = function() {
 
     const evenementsFiltres = dataCache.evenements.filter(e => {
         const lieuNorm = normalizeText(e.lieu || '');
-        if (!lieuNorm) return false; // événement sans lieu → masqué
+        if (!lieuNorm) return false;
         const matchPays = paysNorm && paysNorm !== '--' && lieuNorm.includes(paysNorm);
         const matchVille = villeNorm && villeNorm !== '--' && lieuNorm.includes(villeNorm);
         return matchPays || matchVille;
@@ -403,6 +402,14 @@ window.renderEventsBanner = function() {
         list.innerHTML = '';
         return;
     }
+
+    container.classList.remove('hidden');
+    list.innerHTML = evenementsFiltres.map(e => {
+        let dateText = formatDateEvent(e.date_debut);
+        if (e.date_debut !== e.date_fin) dateText += ' au ' + formatDateEvent(e.date_fin);
+        return '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-sm border-b border-amber-200 dark:border-amber-800 pb-2 last:border-0 last:pb-0"><div><span class="font-bold text-amber-900 dark:text-amber-200">' + escapeHtml(e.titre) + '</span><span class="text-amber-800 dark:text-amber-300 ml-1">(' + escapeHtml(e.lieu || '') + ')</span></div><div class="text-amber-700 dark:text-amber-400 font-medium whitespace-nowrap">📅 ' + dateText + '</div></div>';
+    }).join('');
+};
 
     container.classList.remove('hidden');
     list.innerHTML = evenementsFiltres.map(e => {
