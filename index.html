@@ -396,11 +396,50 @@
     };
 
     window.renderEventsBanner = function() {
-        const container = document.getElementById('event-banner-container'); const list = document.getElementById('event-list-banner');
-        if (!dataCache.evenements || dataCache.evenements.length === 0) { container.classList.add('hidden'); return; }
-        container.classList.remove('hidden');
-        list.innerHTML = dataCache.evenements.map(e => { let dateText = formatDateEvent(e.date_debut); if (e.date_debut !== e.date_fin) dateText += ` au ${formatDateEvent(e.date_fin)}`; return `<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-sm border-b border-amber-200 dark:border-amber-800 pb-2 last:border-0 last:pb-0"><div><span class="font-bold text-amber-900 dark:text-amber-200">${escapeHtml(e.titre)}</span><span class="text-amber-800 dark:text-amber-300 ml-1">(${escapeHtml(e.lieu || '')})</span></div><div class="text-amber-700 dark:text-amber-400 font-medium whitespace-nowrap">📅 ${dateText}</div></div>`; }).join('');
+    const container = document.getElementById('event-banner-container'); 
+    const list = document.getElementById('event-list-banner');
+    
+    // Si pas d'événements, on cache
+    if (!dataCache.evenements || dataCache.evenements.length === 0) { 
+        container.classList.add('hidden'); 
+        return; 
     }
+
+    // On regarde quel pays et quelle ville sont sélectionnés
+    const selPays = document.getElementById('sel-pays');
+    const selVille = document.getElementById('sel-ville');
+    const paysSelectionne = selPays && selPays.selectedIndex > 0 ? selPays.options[selPays.selectedIndex].text : '';
+    const villeSelectionnee = selVille && selVille.selectedIndex > 0 ? selVille.options[selVille.selectedIndex].text : '';
+
+    // On filtre les événements : on ne garde que ceux qui mentionnent le pays ou la ville sélectionnée
+    const evenementsFiltres = dataCache.evenements.filter(e => {
+        const lieu = (e.lieu || '').toLowerCase();
+        const pays = paysSelectionne.toLowerCase();
+        const ville = villeSelectionnee.toLowerCase();
+        
+        // Si l'événement n'a pas de lieu spécifié, on l'affiche pour tout le monde (ou on le cache, selon votre choix)
+        if (lieu.trim() === '') return true; 
+        
+        // Si le lieu de l'événement contient le nom du pays ou de la ville sélectionnée
+        return (pays && lieu.includes(pays)) || (ville && lieu.includes(ville));
+    });
+
+    // S'il n'y a pas d'événement pour cette sélection, on cache le bandeau
+    if (evenementsFiltres.length === 0) { 
+        container.classList.add('hidden'); 
+        return; 
+    }
+
+    container.classList.remove('hidden');
+    list.innerHTML = evenementsFiltres.map(e => { 
+        let dateText = formatDateEvent(e.date_debut); 
+        if (e.date_debut !== e.date_fin) dateText += ` au ${formatDateEvent(e.date_fin)}`; 
+        return `<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-sm border-b border-amber-200 dark:border-amber-800 pb-2 last:border-0 last:pb-0">
+            <div><span class="font-bold text-amber-900 dark:text-amber-200">${escapeHtml(e.titre)}</span><span class="text-amber-800 dark:text-amber-300 ml-1">(${escapeHtml(e.lieu || '')})</span></div>
+            <div class="text-amber-700 dark:text-amber-400 font-medium whitespace-nowrap">📅 ${dateText}</div>
+        </div>`; 
+    }).join('');
+}
 
     window.onPaysChange = function() {
         const paysId = document.getElementById('sel-pays').value; const villeSel = document.getElementById('sel-ville'); villeSel.innerHTML = '<option value="">--</option>'; document.getElementById('sel-halaka').innerHTML = '<option value="">--</option>'; document.getElementById('planning-empty').classList.remove('hidden'); document.getElementById('planning-content').classList.add('hidden'); document.getElementById('planning-tbody').innerHTML = ''; 
