@@ -568,6 +568,66 @@
     window.promptDeleteMosquee = function(id) { const dict = translations[currentLang]; if(!confirm(dict.btn_delete)) return; const pass = sessionStorage.getItem('khourouj_admin_pass'); const role = sessionStorage.getItem('khourouj_role'); if (role !== 'admin') { alert(dict.login_admin); return; } if (!pass) { alert(dict.login_admin); return; } doDeleteMosquee(id, pass); }
     window.doDeleteMosquee = async (id, p) => { const dict = translations[currentLang]; const { data, error } = await supabase.rpc('delete_mosquee_rpc', { p_id: id, p_password: p }); if(error) { alert(dict.erreur + " : " + error.message); return; } if(data === true) { closeModal(); await syncData(); openManageModal('mosquees'); } else alert(dict.erreur); }
     window.closeModal = function() { document.getElementById('modal').classList.add('hidden'); };
-  </script>
+    
+  </script    // ===== ÉVÉNEMENTS PAR PAYS =====
+    window.renderEventsBanner = function() {
+        const container = document.getElementById('event-banner-container'); const list = document.getElementById('event-list-banner'); const dict = translations[currentLang];
+        const paysId = document.getElementById('sel-pays').value;
+        const evs = (dataCache.evenements || []).filter(e => paysId && String(e.pays_id) === String(paysId));
+        if (evs.length === 0) { container.classList.add('hidden'); list.innerHTML = ''; return; }
+        container.classList.remove('hidden');
+        list.innerHTML = evs.map(e => { let dateText = formatDateEvent(e.date_debut); if (e.date_debut !== e.date_fin) dateText += ` ${dict.date_to} ${formatDateEvent(e.date_fin)}`; return `<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-sm border-b border-amber-200 dark:border-amber-800 pb-2 last:border-0 last:pb-0"><div><span class="font-bold text-amber-900 dark:text-amber-200">${escapeHtml(e.titre)}</span><span class="text-amber-800 dark:text-amber-300 ml-1">(${escapeHtml(e.lieu || '')})</span></div><div class="text-amber-700 dark:text-amber-400 font-medium whitespace-nowrap">📅 ${dateText}</div></div>`; }).join('');
+    };
+
+    const _onPaysChangeOrig = window.onPaysChange;
+    window.onPaysChange = function(keep) { _onPaysChangeOrig(keep); renderEventsBanner(); };
+
+    const _openManageOrig = window.openManageModal;
+    window.openManageModal = function(type) {
+        if (type !== 'evenements') return _openManageOrig(type);
+        const dict = translations[currentLang]; const selPays = document.getElementById('sel-pays').value;
+        const paysOpts = dataCache.pays.map(p => `<option value="${p.id}" ${String(p.id) === String(selPays) ? 'selected' : ''}>${escapeHtml(p.nom)}</option>`).join('');
+        const paysNom = id => escapeHtml((dataCache.pays.find(p => String(p.id) === String(id)) || {}).nom || '—');
+        const html = `<h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">📅 ${dict.tab_events}</h3><div class="bg-slate-100 dark:bg-slate-700/50 p-3 rounded-lg mb-4"><h4 class="font-bold text-sm mb-2 text-slate-700 dark:text-slate-200">${dict.event_add}</h4><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2"><div class="sm:col-span-2"><label class="text-xs">${dict.country}</label><select id="ev-pays" class="w-full border rounded px-2 py-1 text-sm">${paysOpts}</select></div><div class="sm:col-span-2"><label class="text-xs">${dict.event_title}</label><input id="ev-titre" type="text" class="w-full border rounded px-2 py-1 text-sm"></div><div><label class="text-xs">${dict.event_date_start}</label><input id="ev-date-start" type="date" class="w-full border rounded px-2 py-1 text-sm"></div><div><label class="text-xs">${dict.event_date_end}</label><input id="ev-date-end" type="date" class="w-full border rounded px-2 py-1 text-sm"></div><div class="sm:col-span-2"><label class="text-xs">${dict.event_place}</label><input id="ev-lieu" type="text" class="w-full border rounded px-2 py-1 text-sm"></div><div class="sm:col-span-2"><label class="text-xs">${dict.event_desc}</label><textarea id="ev-desc" class="w-full border rounded px-2 py-1 text-sm" rows="2"></textarea></div></div><button onclick="doAddEvenement()" class="bg-amber-600 text-white w-full py-2 rounded font-bold text-sm mt-2">${dict.event_save}</button></div><div class="max-h-60 overflow-y-auto space-y-2 border-t pt-2 dark:border-slate-700">${dataCache.evenements.map(e => `<div class="flex justify-between items-start bg-slate-50 dark:bg-slate-700/50 p-2 rounded border dark:border-slate-600"><div><p class="font-bold text-sm">${escapeHtml(e.titre)} <span class="text-xs font-normal text-emerald-700 dark:text-emerald-400">🌍 ${paysNom(e.pays_id)}</span></p><p class="text-xs text-gray-500">${formatDateEvent(e.date_debut)} ${dict.date_to} ${formatDateEvent(e.date_fin)} - ${escapeHtml(e.lieu || '')}</p></div><button onclick="deleteEvenement(${e.id})" class="text-red-600 text-sm ml-2">${dict.btn_delete}</button></div>`).join('') || `<p class="text-sm text-gray-500">${dict.event_none}</p>`}</div>`;
+        document.getElementById('modal-content').innerHTML = html; document.getElementById('modal').classList.remove('hidden');
+    };
+
+    window.doAddEvenement = async function() {
+        const dict = translations[currentLang]; const titre = document.getElementById('ev-titre').value.trim(); const ds = document.getElementById('ev-date-start').value; const df = document.getElementById('ev-date-end').value; const lieu = document.getElementById('ev-lieu').value.trim(); const desc = document.getElementById('ev-desc').value.trim(); const paysId = document.getElementById('ev-pays').value; const pass = sessionStorage.getItem('khourouj_admin_pass');
+        if (!titre || !ds || !df || !paysId) { alert(dict.event_title); return; } if (!pass) { alert(dict.login_admin); return; }
+        const { error } = await supabase.rpc('add_evenement_pays_rpc', { p_password: pass, p_pays_id: parseInt(paysId), p_titre: titre, p_date_debut: ds, p_date_fin: df, p_lieu: lieu, p_description: desc });
+        if (error) { alert(dict.erreur + " : " + error.message); return; }
+        await syncData(); openManageModal('evenements');
+   };>
+          // ===== ÉVÉNEMENTS PAR PAYS =====
+    window.renderEventsBanner = function() {
+        const container = document.getElementById('event-banner-container'); const list = document.getElementById('event-list-banner'); const dict = translations[currentLang];
+        const paysId = document.getElementById('sel-pays').value;
+        const evs = (dataCache.evenements || []).filter(e => paysId && String(e.pays_id) === String(paysId));
+        if (evs.length === 0) { container.classList.add('hidden'); list.innerHTML = ''; return; }
+        container.classList.remove('hidden');
+        list.innerHTML = evs.map(e => { let dateText = formatDateEvent(e.date_debut); if (e.date_debut !== e.date_fin) dateText += ` ${dict.date_to} ${formatDateEvent(e.date_fin)}`; return `<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-sm border-b border-amber-200 dark:border-amber-800 pb-2 last:border-0 last:pb-0"><div><span class="font-bold text-amber-900 dark:text-amber-200">${escapeHtml(e.titre)}</span><span class="text-amber-800 dark:text-amber-300 ml-1">(${escapeHtml(e.lieu || '')})</span></div><div class="text-amber-700 dark:text-amber-400 font-medium whitespace-nowrap">📅 ${dateText}</div></div>`; }).join('');
+    };
+
+    const _onPaysChangeOrig = window.onPaysChange;
+    window.onPaysChange = function(keep) { _onPaysChangeOrig(keep); renderEventsBanner(); };
+
+    const _openManageOrig = window.openManageModal;
+    window.openManageModal = function(type) {
+        if (type !== 'evenements') return _openManageOrig(type);
+        const dict = translations[currentLang]; const selPays = document.getElementById('sel-pays').value;
+        const paysOpts = dataCache.pays.map(p => `<option value="${p.id}" ${String(p.id) === String(selPays) ? 'selected' : ''}>${escapeHtml(p.nom)}</option>`).join('');
+        const paysNom = id => escapeHtml((dataCache.pays.find(p => String(p.id) === String(id)) || {}).nom || '—');
+        const html = `<h3 class="text-xl font-bold mb-4 text-emerald-800 dark:text-emerald-400">📅 ${dict.tab_events}</h3><div class="bg-slate-100 dark:bg-slate-700/50 p-3 rounded-lg mb-4"><h4 class="font-bold text-sm mb-2 text-slate-700 dark:text-slate-200">${dict.event_add}</h4><div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2"><div class="sm:col-span-2"><label class="text-xs">${dict.country}</label><select id="ev-pays" class="w-full border rounded px-2 py-1 text-sm">${paysOpts}</select></div><div class="sm:col-span-2"><label class="text-xs">${dict.event_title}</label><input id="ev-titre" type="text" class="w-full border rounded px-2 py-1 text-sm"></div><div><label class="text-xs">${dict.event_date_start}</label><input id="ev-date-start" type="date" class="w-full border rounded px-2 py-1 text-sm"></div><div><label class="text-xs">${dict.event_date_end}</label><input id="ev-date-end" type="date" class="w-full border rounded px-2 py-1 text-sm"></div><div class="sm:col-span-2"><label class="text-xs">${dict.event_place}</label><input id="ev-lieu" type="text" class="w-full border rounded px-2 py-1 text-sm"></div><div class="sm:col-span-2"><label class="text-xs">${dict.event_desc}</label><textarea id="ev-desc" class="w-full border rounded px-2 py-1 text-sm" rows="2"></textarea></div></div><button onclick="doAddEvenement()" class="bg-amber-600 text-white w-full py-2 rounded font-bold text-sm mt-2">${dict.event_save}</button></div><div class="max-h-60 overflow-y-auto space-y-2 border-t pt-2 dark:border-slate-700">${dataCache.evenements.map(e => `<div class="flex justify-between items-start bg-slate-50 dark:bg-slate-700/50 p-2 rounded border dark:border-slate-600"><div><p class="font-bold text-sm">${escapeHtml(e.titre)} <span class="text-xs font-normal text-emerald-700 dark:text-emerald-400">🌍 ${paysNom(e.pays_id)}</span></p><p class="text-xs text-gray-500">${formatDateEvent(e.date_debut)} ${dict.date_to} ${formatDateEvent(e.date_fin)} - ${escapeHtml(e.lieu || '')}</p></div><button onclick="deleteEvenement(${e.id})" class="text-red-600 text-sm ml-2">${dict.btn_delete}</button></div>`).join('') || `<p class="text-sm text-gray-500">${dict.event_none}</p>`}</div>`;
+        document.getElementById('modal-content').innerHTML = html; document.getElementById('modal').classList.remove('hidden');
+    };
+
+    window.doAddEvenement = async function() {
+        const dict = translations[currentLang]; const titre = document.getElementById('ev-titre').value.trim(); const ds = document.getElementById('ev-date-start').value; const df = document.getElementById('ev-date-end').value; const lieu = document.getElementById('ev-lieu').value.trim(); const desc = document.getElementById('ev-desc').value.trim(); const paysId = document.getElementById('ev-pays').value; const pass = sessionStorage.getItem('khourouj_admin_pass');
+        if (!titre || !ds || !df || !paysId) { alert(dict.event_title); return; } if (!pass) { alert(dict.login_admin); return; }
+        const { error } = await supabase.rpc('add_evenement_pays_rpc', { p_password: pass, p_pays_id: parseInt(paysId), p_titre: titre, p_date_debut: ds, p_date_fin: df, p_lieu: lieu, p_description: desc });
+        if (error) { alert(dict.erreur + " : " + error.message); return; }
+        await syncData(); openManageModal('evenements');
+    };
 </body>
 </html>
