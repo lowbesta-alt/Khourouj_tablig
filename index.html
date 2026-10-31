@@ -579,6 +579,38 @@
             setTimeout(() => { const f = document.getElementById('m-filter-halaka'); if (f) { f.value = halakaId; renderAdminMosqueesInModal(halakaId); } }, 100);
         } catch (err) { alert(dict.erreur + ' : ' + err.message + (err.hint ? '\n' + err.hint : '')); }
     };
+        // ===== CORRECTIF CODE MOSQUÉE v31-10-c =====
+    window.addEventListener('unhandledrejection', e => { alert('Erreur cachée : ' + (e.reason && e.reason.message ? e.reason.message : e.reason)); });
+    (function(){ const b = document.createElement('div'); b.textContent = 'v31-10-c'; b.style.cssText = 'position:fixed;bottom:2px;right:4px;font-size:10px;opacity:.6;z-index:9999;color:#888'; document.body.appendChild(b); })();
+
+    window.doSaveMosquee = async (halakaId, id) => {
+        const dict = translations[currentLang];
+        try {
+            const el = s => document.getElementById(s);
+            const v = s => el(s) ? el(s).value.trim() : '';
+            const n = s => el(s) ? (+el(s).value || 0) : 0;
+            const pass = sessionStorage.getItem('khourouj_admin_pass'); const role = sessionStorage.getItem('khourouj_role');
+            const nom = v('m-m-nom'); if (!nom) { alert(dict.form_nom); return; }
+            if (!id && role === 'mosquee') { alert(dict.login_mosquee); return; }
+            if (!id && dataCache.mosquees.some(m => String(m.halaka_id) === String(halakaId) && m.nom.toLowerCase() === nom.toLowerCase())) { alert('Cette mosquée existe déjà dans cette halaka.'); return; }
+            const P = { p_nom: nom, p_ousboue: n('m-m-ousboue'), p_responsable: v('m-m-resp'), p_contact: v('m-m-tel'), p_est_5amal: el('m-m-5amal') ? el('m-m-5amal').checked : false, p_nb_maisons_autour: n('m-m-maisons'), p_nb_maisons_5amal: n('m-m-maisons5a'), p_nb_freres_4mois: n('m-m-fr4m'), p_nb_freres_4mois_an: n('m-m-fr4ma'), p_nb_freres_40jours: n('m-m-fr40j'), p_nb_jamaats_3jours: n('m-m-jamaats'), p_nb_freres_ziara_2h30: n('m-m-z2h30'), p_nb_freres_ziara_moins: n('m-m-zmoins'), p_nb_soeurs_2mois: n('m-m-so2m'), p_nb_soeurs_40jours: n('m-m-so40j'), p_nb_soeurs_15jours: n('m-m-so15j'), p_nb_soeurs_3jours: n('m-m-so3j'), p_jamaat_statut: v('m-m-jstatut'), p_jamaat_heure: v('m-m-heure'), p_jamaat_destination: v('m-m-dest'), p_jamaat_nb_freres: n('m-m-nbfreres'), p_jamaat_emir_nom: v('m-m-emir'), p_jamaat_emir_tel: v('m-m-emirtel'), p_jamaat_freres_liste: v('m-m-liste'), p_hidayat_aller_nom: v('m-m-hanom'), p_hidayat_aller_tel: v('m-m-hatel'), p_hidayat_aller_info: v('m-m-hainfo'), p_hidayat_retour_nom: v('m-m-hrnom'), p_hidayat_retour_tel: v('m-m-hrtel'), p_hidayat_retour_info: v('m-m-hrinfo') };
+            if (id) {
+                const { data: res, error } = await supabase.rpc('update_mosquee_rpc', { p_id: id, p_password: pass, ...P });
+                if (error) throw error; if (res === false) throw new Error(dict.erreur);
+            } else {
+                const codeMosquee = String(generateRandomCode(nom) || '');
+                const A = { p_halaka_id: Number(halakaId), p_password: pass, p_code_mosquee: codeMosquee, ...P };
+                const nb = Object.keys(A).length;
+                if (nb !== 33 || !codeMosquee) { alert('Diagnostic : ' + nb + ' paramètres (33 attendus), code = "' + codeMosquee + '"'); return; }
+                const { error } = await supabase.rpc('add_mosquee_v3', A);
+                if (error) throw error;
+                document.getElementById('modal-content').innerHTML = `<div class="text-center"><h3 class="text-xl font-bold mb-4 text-emerald-600">${dict.add_mosquee_success}</h3><p class="mb-4">${dict.add_mosquee_code} <b>${escapeHtml(nom)}</b> :</p><div class="bg-emerald-100 dark:bg-emerald-900/50 p-4 rounded-lg mb-4"><span id="code-mosquee-genere" class="text-2xl font-mono font-bold text-emerald-800 dark:text-emerald-300 tracking-widest">${escapeHtml(codeMosquee)}</span></div><p class="text-sm text-gray-600 dark:text-gray-300 mb-4">${dict.add_mosquee_keep}</p><button onclick="copyCode('code-mosquee-genere')" class="bg-blue-600 text-white w-full py-2 rounded font-bold mb-2">${dict.copy_btn}</button><button onclick="closeModal(); syncData(); openManageModal('mosquees');" class="bg-emerald-600 text-white w-full py-2 rounded font-bold">${dict.understood_btn}</button></div>`;
+                return;
+            }
+            await syncData(); openManageModal('mosquees');
+            setTimeout(() => { const f = document.getElementById('m-filter-halaka'); if (f) { f.value = halakaId; renderAdminMosqueesInModal(halakaId); } }, 100);
+        } catch (err) { alert(dict.erreur + ' : ' + err.message + (err.hint ? '\n' + err.hint : '')); }
+    };
   </script>
 </body>
 </html>
