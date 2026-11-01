@@ -157,13 +157,20 @@ window.doAddHalaka = async function() {
     closeModal(); await syncData();
 }
 
-window.doAddMosquee = async function() {
-    const nom = document.getElementById('new-mosq-nom').value.trim();
-    const ousboue = document.getElementById('new-mosq-ousboue').value;
-    const halakaId = document.getElementById('new-mosq-halaka').value;
-    if(!nom || !halakaId) return;
-    const code = generateRandomCode(nom);
-    await supabase.from('mosquees').insert({ nom, ousboue, halaka_id: halakaId, password: code });
-    alert("Mosquée créée ! Code : " + code);
-    closeModal(); await syncData();
+window.doAddPays = async function() {
+    const nom = document.getElementById('new-pays-nom').value.trim();
+    if(!nom) return;
+    
+    try {
+        const { data, error } = await supabase.from('pays').insert({ nom });
+        if (error) {
+            alert("ERREUR SUPABASE : " + error.message);
+            console.error(error);
+            return;
+        }
+        alert("Pays ajouté avec succès !");
+        closeModal(); await syncData();
+    } catch (err) {
+        alert("ERREUR JS : " + err.message);
+    }
 }
