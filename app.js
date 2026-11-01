@@ -243,21 +243,18 @@ window.doAddMosquee = async function() {
     } catch (err) { alert("Erreur : " + err.message); }
 }
 // ==========================================
-// FONCTIONS POUR LES STATISTIQUES ET DÉTAILS
+// STATISTIQUES DE LA VILLE (Cumul)
 // ==========================================
-
-// 1. Remplir la liste des villes dans la page Statistiques
 window.refreshStats = function() {
     const sel = document.getElementById('sel-stats-ville');
     if (!sel) return;
     sel.innerHTML = dataCache.villes.map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join('');
     if (dataCache.villes.length > 0) {
         sel.value = dataCache.villes[0].id;
-        renderStats(sel.value);
+        window.renderStats(sel.value);
     }
 }
 
-// 2. Afficher les stats de la ville sélectionnée
 window.renderStats = function(villeId) {
     if (!villeId) return;
     const ville = dataCache.villes.find(v => String(v.id) === String(villeId));
@@ -273,29 +270,13 @@ window.renderStats = function(villeId) {
         ahwalContainer.classList.add('hidden');
     }
 
-    // Remplir la liste des Sous-Halakat
-    const sousHalakaSel = document.getElementById('sel-stats-soushalaka');
-    const halakas = dataCache.halakat.filter(h => String(h.ville_id) === String(villeId));
-    sousHalakaSel.innerHTML = halakas.map(h => `<option value="${h.id}">${escapeHtml(h.nom)}</option>`).join('');
-    
-    if (halakas.length > 0) {
-        document.getElementById('stats-view-container').classList.remove('hidden');
-        renderStatsTable(halakas[0].id);
-    } else {
-        document.getElementById('stats-view-container').classList.add('hidden');
-    }
-}
-
-// 3. Afficher les stats pour un sous-halaka spécifique
-window.renderStatsTable = function(sousHalakaId) {
-    if (!sousHalakaId) return;
-    const sousHalaka = dataCache.halakat.find(h => String(h.id) === String(sousHalakaId));
-    if (!sousHalaka) return;
-
-    const mosquees = dataCache.mosquees.filter(m => String(m.halaka_id) === String(sousHalakaId));
+    // Calcul du cumul de la ville
+    const halakas = dataCache.halakat.filter(h => String(h.ville_id) === String(villeId)).map(h => String(h.id));
+    const mosquees = dataCache.mosquees.filter(m => halakas.includes(String(m.halaka_id)));
     const sum = (f) => mosquees.reduce((t, m) => t + (m[f] || 0), 0);
 
-    document.getElementById('stats-title').textContent = `Statistiques : ${sousHalaka.nom}`;
+    document.getElementById('stats-view-container').classList.remove('hidden');
+    document.getElementById('stats-title').textContent = `Cumul de la ville : ${ville.nom}`;
     document.getElementById('st-mosquees-total').textContent = mosquees.length;
     document.getElementById('st-mosquees-5amal').textContent = mosquees.filter(m => m.est_5amal).length;
     document.getElementById('st-maisons-autour').textContent = sum('nb_maisons_autour');
@@ -312,26 +293,55 @@ window.renderStatsTable = function(sousHalakaId) {
     document.getElementById('st-so-3j').textContent = sum('nb_soeurs_3jours');
 }
 
-// 4. Ouvrir la fenêtre de détails d'une mosquée (appelée depuis le bandeau rose)
-window.openJamaatModal = function(id) {
-    const m = dataCache.mosquees.find(x => String(x.id) === String(id));
-    if (!m) return;
-
-    let html = `<h3 class="text-xl font-bold mb-3">🕌 ${escapeHtml(m.nom)}</h3>`;
-    html += `<div class="mb-4"><span class="inline-block px-3 py-1 rounded-full text-sm font-bold bg-orange-100 text-orange-800">${escapeHtml(m.jamaat_statut || 'Aucune')}</span></div>`;
+// ==========================================
+// BOUTONS INFOS VILLE / PAYS
+// ==========================================
+window.openStatsVille = function() {
+    const villeId = document.getElementById('sel-stats-ville').value;
+    if (!villeId) return;
+    const ville = dataCache.villes.find(v => String(v.id) === String(villeId));
+    if (!ville) return;
+    const halakas = dataCache.halakat.filter(h => String(h.ville_id) === String(villeId)).map(h => String(h.id));
+    const mosquees = dataCache.mosquees.filter(m => halakas.includes(String(m.halaka_id)));
+    const sum = (f) => mosquees.reduce((t, m) => t + (m[f] || 0), 0);
     
-    if (m.jamaat_destination) html += `<div class="mb-2"><b>Destination :</b> ${escapeHtml(m.jamaat_destination)}</div>`;
-    if (m.jamaat_heure) html += `<div class="mb-2"><b>Heure :</b> ${escapeHtml(m.jamaat_heure)}</div>`;
-    if (m.jamaat_emir_nom) html += `<div class="mb-2 bg-green-50 p-2 rounded"><b>Émir :</b> ${escapeHtml(m.jamaat_emir_nom)}<br>`;
-    if (m.jamaat_emir_tel) html += `<a href="https://wa.me/${m.jamaat_emir_tel.replace(/\D/g, '')}" class="text-green-600 underline">📞 Contacter l'Émir</a></div>`;
-    
-    html += `<button onclick="closeModal()" class="bg-slate-200 w-full py-2 rounded mt-4">Fermer</button>`;
+    let html = `<h3 class="text-xl font-bold mb-3">⭕ Infos de la ville</h3>`;
+    html += `<p class="font-bold text-lg mb-2">${escapeHtml(ville.nom)}</p>`;
+    html += `<p>Total Mosquées : <b>${mosquees.length}</b></p>`;
+    html += `<p>Mosquées 5 Amal : <b>${mosquees.filter(m => m.est_5amal).length}</b></p>`;
+    html += `<p>Maisons autour : <b>${sum('nb_maisons_autour')}</b></p>`;
+    html += `<button onclick="closeModal()" class="bg-slate-200 w-full py-2 rounded mt-4 font-bold">Fermer</button>`;
 
     document.getElementById('modal-content').innerHTML = html;
     document.getElementById('modal').classList.remove('hidden');
 }
 
-// 5. Bandeau rose "Mosquées en sortie" (à chaque changement de ville)
+window.openStatsPays = function() {
+    const villeId = document.getElementById('sel-stats-ville').value;
+    if (!villeId) return;
+    const ville = dataCache.villes.find(v => String(v.id) === String(villeId));
+    if (!ville) return;
+    const pays = dataCache.pays.find(p => String(p.id) === String(ville.pays_id));
+    if (!pays) return;
+    const villesPays = dataCache.villes.filter(v => String(v.pays_id) === String(ville.pays_id)).map(v => String(v.id));
+    const halakas = dataCache.halakat.filter(h => villesPays.includes(String(h.ville_id))).map(h => String(h.id));
+    const mosquees = dataCache.mosquees.filter(m => halakas.includes(String(m.halaka_id)));
+    const sum = (f) => mosquees.reduce((t, m) => t + (m[f] || 0), 0);
+
+    let html = `<h3 class="text-xl font-bold mb-3">🌍 Infos du Pays</h3>`;
+    html += `<p class="font-bold text-lg mb-2">${escapeHtml(pays.nom)}</p>`;
+    html += `<p>Total Mosquées : <b>${mosquees.length}</b></p>`;
+    html += `<p>Mosquées 5 Amal : <b>${mosquees.filter(m => m.est_5amal).length}</b></p>`;
+    html += `<p>Maisons autour : <b>${sum('nb_maisons_autour')}</b></p>`;
+    html += `<button onclick="closeModal()" class="bg-slate-200 w-full py-2 rounded mt-4 font-bold">Fermer</button>`;
+
+    document.getElementById('modal-content').innerHTML = html;
+    document.getElementById('modal').classList.remove('hidden');
+}
+
+// ==========================================
+// BANDEAU ROSE (Mosquées en sortie)
+// ==========================================
 window.renderJamaatsEnSortie = function() {
     const container = document.getElementById('jamaats-banner-container');
     const list = document.getElementById('jamaats-banner-list');
@@ -355,46 +365,22 @@ window.renderJamaatsEnSortie = function() {
         </li>
     `).join('');
 }
-// Infos de la ville
-window.openStatsVille = function() {
-    const villeId = document.getElementById('sel-stats-ville').value;
-    if (!villeId) { alert("Sélectionnez une ville."); return; }
-    const ville = dataCache.villes.find(v => String(v.id) === String(villeId));
-    if (!ville) return;
 
-    const halakas = dataCache.halakat.filter(h => String(h.ville_id) === String(villeId)).map(h => String(h.id));
-    const mosquees = dataCache.mosquees.filter(m => halakas.includes(String(m.halaka_id)));
-    
-    let html = `<h3 class="text-xl font-bold mb-3">⭕ Infos de la ville</h3>`;
-    html += `<p class="font-bold text-lg mb-3">${escapeHtml(ville.nom)}</p>`;
-    html += `<p class="mb-2"><b>Total Mosquées :</b> ${mosquees.length}</p>`;
-    html += `<p class="mb-2"><b>Mosquées 5 Amal :</b> ${mosquees.filter(m => m.est_5amal).length}</p>`;
-    html += `<p class="mb-2"><b>Maisons autour :</b> ${mosquees.reduce((t, m) => t + (m.nb_maisons_autour || 0), 0)}</p>`;
-    html += `<button onclick="closeModal()" class="bg-slate-200 w-full py-2 rounded mt-4 font-bold">Fermer</button>`;
+window.openJamaatModal = function(id) {
+    const m = dataCache.mosquees.find(x => String(x.id) === String(id));
+    if (!m) return;
+
+    let html = `<h3 class="text-xl font-bold mb-3">🕌 ${escapeHtml(m.nom)}</h3>`;
+    html += `<div class="mb-4"><span class="inline-block px-3 py-1 rounded-full text-sm font-bold bg-orange-100 text-orange-800">${escapeHtml(m.jamaat_statut || 'Aucune')}</span></div>`;
+    if (m.jamaat_destination) html += `<div class="mb-2"><b>Destination :</b> ${escapeHtml(m.jamaat_destination)}</div>`;
+    if (m.jamaat_heure) html += `<div class="mb-2"><b>Heure :</b> ${escapeHtml(m.jamaat_heure)}</div>`;
+    if (m.jamaat_emir_nom) html += `<div class="mb-2 bg-green-50 p-2 rounded"><b>Émir :</b> ${escapeHtml(m.jamaat_emir_nom)}<br>`;
+    if (m.jamaat_emir_tel) html += `<a href="https://wa.me/${m.jamaat_emir_tel.replace(/\D/g, '')}" class="text-green-600 underline">📞 Contacter l'Émir</a></div>`;
+    html += `<button onclick="closeModal()" class="bg-slate-200 w-full py-2 rounded mt-4">Fermer</button>`;
 
     document.getElementById('modal-content').innerHTML = html;
     document.getElementById('modal').classList.remove('hidden');
 }
-// Infos du pays
-window.openStatsPays = function() {
-    const villeId = document.getElementById('sel-stats-ville').value;
-    if (!villeId) { alert("Sélectionnez une ville."); return; }
-    const ville = dataCache.villes.find(v => String(v.id) === String(villeId));
-    if (!ville) return;
-    const pays = dataCache.pays.find(p => String(p.id) === String(ville.pays_id));
-    if (!pays) return;
 
-    const villesPays = dataCache.villes.filter(v => String(v.pays_id) === String(ville.pays_id)).map(v => String(v.id));
-    const halakas = dataCache.halakat.filter(h => villesPays.includes(String(h.ville_id))).map(h => String(h.id));
-    const mosquees = dataCache.mosquees.filter(m => halakas.includes(String(m.halaka_id)));
 
-    let html = `<h3 class="text-xl font-bold mb-3">🌍 Infos du Pays</h3>`;
-    html += `<p class="font-bold text-lg mb-3">${escapeHtml(pays.nom)}</p>`;
-    html += `<p class="mb-2"><b>Total Mosquées :</b> ${mosquees.length}</p>`;
-    html += `<p class="mb-2"><b>Mosquées 5 Amal :</b> ${mosquees.filter(m => m.est_5amal).length}</p>`;
-    html += `<p class="mb-2"><b>Maisons autour :</b> ${mosquees.reduce((t, m) => t + (m.nb_maisons_autour || 0), 0)}</p>`;
-    html += `<button onclick="closeModal()" class="bg-slate-200 w-full py-2 rounded mt-4 font-bold">Fermer</button>`;
 
-    document.getElementById('modal-content').innerHTML = html;
-    document.getElementById('modal').classList.remove('hidden');
-}
