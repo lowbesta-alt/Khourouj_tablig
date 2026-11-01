@@ -85,46 +85,60 @@
     </section>
 
     <section id="view-stats" class="hidden">
-      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4 mb-6 border border-slate-300 dark:border-slate-700">
-        <label class="block text-sm font-bold mb-2">Choisir une ville :</label>
-        <select id="sel-stats-ville" class="w-full border rounded px-3 py-2 mb-3" onchange="renderStats(this.value)"></select>
-        <div class="flex gap-2">
-    <button id="btn-info-ville" onclick="openStatsVille()" class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-800 text-sm font-bold py-2 rounded border border-blue-300 shadow-sm transition">⭕ Infos de la ville</button>
-    <button id="btn-info-pays" onclick="openStatsPays()" class="flex-1 bg-purple-100 hover:bg-purple-200 text-purple-800 text-sm font-bold py-2 rounded border border-purple-300 shadow-sm transition">🌍 Infos du Pays</button>
-</div>
+  <!-- Bloc 1 : Choix de la ville + boutons -->
+  <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4 mb-6 border border-slate-300 dark:border-slate-700">
+    <label class="block text-sm font-bold mb-2">Choisir une ville :</label>
+    <select id="sel-stats-ville" class="w-full border rounded px-3 py-2 mb-3" onchange="renderStats(this.value)"></select>
+    
+    <div class="flex gap-2">
+        <button id="btn-info-ville" onclick="openStatsVille()" class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-800 text-sm font-bold py-2 rounded border border-blue-300 shadow-sm transition">⭕ Infos de la ville</button>
+        <button id="btn-info-pays" onclick="openStatsPays()" class="flex-1 bg-purple-100 hover:bg-purple-200 text-purple-800 text-sm font-bold py-2 rounded border border-purple-300 shadow-sm transition">🌍 Infos du Pays</button>
+    </div>
+  </div>
+
+  <!-- Bloc 2 : Bandeau Ahwal -->
+  <div id="ahwal-banner-container" class="hidden mb-6">
+    <div class="bg-violet-100 dark:bg-violet-900/40 border-l-4 border-violet-500 rounded-lg p-4 shadow-md">
+        <h3 class="text-violet-800 dark:text-violet-300 font-bold mb-2 flex items-center gap-2">📢 Ahwal de la ville</h3>
+        <div id="ahwal-banner-content" class="text-violet-900 dark:text-violet-200 whitespace-pre-wrap text-sm"></div>
+    </div>
+  </div>
+
+  <!-- Bloc 3 : Statistiques -->
+  <div id="stats-view-container" class="hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4 md:p-6 border-l-4 border-emerald-600 dark:border-emerald-500">
+      <div class="mb-6 bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-200 dark:border-slate-600">
+        <label class="block text-sm font-bold mb-2 text-slate-700 dark:text-slate-200">Choisir le Sous-Halaka :</label>
+        <select id="sel-stats-soushalaka" class="w-full border rounded px-3 py-2 text-sm" onchange="renderStatsTable(this.value)"></select>
       </div>
-      <div id="ahwal-banner-container" class="hidden mb-6"><div class="bg-violet-100 dark:bg-violet-900/40 border-l-4 border-violet-500 rounded-lg p-4 shadow-md"><h3 class="text-violet-800 dark:text-violet-300 font-bold mb-2 flex items-center gap-2">📢 <span>Ahwal de la ville</span></h3><div id="ahwal-banner-content" class="text-violet-900 dark:text-violet-200 whitespace-pre-wrap text-sm"></div></div></div>
-      <div id="stats-view-container" class="hidden">
-        <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4 md:p-6 border-l-4 border-emerald-600 dark:border-emerald-500">
-          <div class="mb-6 bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-200 dark:border-slate-600">
-            <label class="block text-sm font-bold mb-2 text-slate-700 dark:text-slate-200">Choisir le Sous-Halaka :</label>
-            <select id="sel-stats-soushalaka" class="w-full border rounded px-3 py-2 text-sm" onchange="renderStatsTable(this.value)"></select>
-          </div>
-          <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-            <h2 class="text-lg font-bold text-emerald-800 dark:text-emerald-400" id="stats-title"></h2>
-            <button onclick="shareCityStats()" class="mt-2 md:mt-0 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium flex items-center gap-1 shadow transition">📱 <span>Partager (WhatsApp)</span></button>
-          </div>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center mb-4">
-            <div class="bg-blue-100 dark:bg-blue-900/50 p-2 rounded-lg border border-blue-200 dark:border-blue-700"><div class="text-xs text-blue-800 dark:text-blue-300 font-semibold">Total Mosquées</div><div class="font-bold text-xl text-blue-900 dark:text-blue-200" id="st-mosquees-total">0</div></div>
-            <div class="bg-blue-50 dark:bg-slate-700 p-2 rounded-lg"><div class="text-xs text-gray-600 dark:text-gray-300">Mosquées 5 Amal</div><div class="font-bold text-xl text-blue-700 dark:text-blue-400" id="st-mosquees-5amal">0</div></div>
-            <div class="bg-amber-50 dark:bg-slate-700 p-2 rounded-lg"><div class="text-xs text-gray-600 dark:text-gray-300">Maisons autour</div><div class="font-bold text-xl text-amber-700 dark:text-amber-400" id="st-maisons-autour">0</div></div>
-            <div class="bg-amber-100 dark:bg-amber-900/50 p-2 rounded-lg border border-amber-200 dark:border-amber-700"><div class="text-xs text-amber-800 dark:text-amber-300 font-semibold">Maisons 5 Amal</div><div class="font-bold text-xl text-amber-900 dark:text-amber-200" id="st-maisons-5amal">0</div></div>
-          </div>
-          <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-center text-sm">
-            <div class="bg-green-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">Frères 4 mois</div><div class="font-bold text-lg text-green-700 dark:text-green-400" id="st-fr-4m">0</div></div>
-            <div class="bg-green-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">4 mois/an</div><div class="font-bold text-lg text-green-700 dark:text-green-400" id="st-fr-4ma">0</div></div>
-            <div class="bg-green-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">40 jours</div><div class="font-bold text-lg text-green-700 dark:text-green-400" id="st-fr-40j">0</div></div>
-            <div class="bg-teal-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">Jamaats 3 jours</div><div class="font-bold text-lg text-teal-700 dark:text-teal-400" id="st-jamaats-3j">0</div></div>
-            <div class="bg-purple-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">2h30/jour</div><div class="font-bold text-lg text-purple-700 dark:text-purple-400" id="st-ziara-2h30">0</div></div>
-            <div class="bg-purple-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">< 2h30/jour</div><div class="font-bold text-lg text-purple-700 dark:text-purple-400" id="st-ziara-moins">0</div></div>
-            <div class="bg-pink-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">Sœurs 2 mois</div><div class="font-bold text-lg text-pink-700 dark:text-pink-400" id="st-so-2m">0</div></div>
-            <div class="bg-pink-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">Sœurs 40 jours</div><div class="font-bold text-lg text-pink-700 dark:text-pink-400" id="st-so-40j">0</div></div>
-            <div class="bg-pink-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">Sœurs 15 jours</div><div class="font-bold text-lg text-pink-700 dark:text-pink-400" id="st-so-15j">0</div></div>
-            <div class="bg-pink-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">Sœurs 3 jours</div><div class="font-bold text-lg text-pink-700 dark:text-pink-400" id="st-so-3j">0</div></div>
-          </div>
-        </div>
+      
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <h2 class="text-lg font-bold text-emerald-800 dark:text-emerald-400" id="stats-title"></h2>
+        <button onclick="shareCityStats()" class="mt-2 md:mt-0 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium flex items-center gap-1 shadow transition">📱 Partager (WhatsApp)</button>
       </div>
-    </section>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center mb-4">
+        <div class="bg-blue-100 dark:bg-blue-900/50 p-2 rounded-lg border border-blue-200 dark:border-blue-700"><div class="text-xs text-blue-800 dark:text-blue-300 font-semibold">Total Mosquées</div><div class="font-bold text-xl text-blue-900 dark:text-blue-200" id="st-mosquees-total">0</div></div>
+        <div class="bg-blue-50 dark:bg-slate-700 p-2 rounded-lg"><div class="text-xs text-gray-600 dark:text-gray-300">Mosquées 5 Amal</div><div class="font-bold text-xl text-blue-700 dark:text-blue-400" id="st-mosquees-5amal">0</div></div>
+        <div class="bg-amber-50 dark:bg-slate-700 p-2 rounded-lg"><div class="text-xs text-gray-600 dark:text-gray-300">Maisons autour</div><div class="font-bold text-xl text-amber-700 dark:text-amber-400" id="st-maisons-autour">0</div></div>
+        <div class="bg-amber-100 dark:bg-amber-900/50 p-2 rounded-lg border border-amber-200 dark:border-amber-700"><div class="text-xs text-amber-800 dark:text-amber-300 font-semibold">Maisons 5 Amal</div><div class="font-bold text-xl text-amber-900 dark:text-amber-200" id="st-maisons-5amal">0</div></div>
+      </div>
+      
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-center text-sm">
+        <div class="bg-green-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">Frères 4 mois</div><div class="font-bold text-lg text-green-700 dark:text-green-400" id="st-fr-4m">0</div></div>
+        <div class="bg-green-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">4 mois/an</div><div class="font-bold text-lg text-green-700 dark:text-green-400" id="st-fr-4ma">0</div></div>
+        <div class="bg-green-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">40 jours</div><div class="font-bold text-lg text-green-700 dark:text-green-400" id="st-fr-40j">0</div></div>
+        <div class="bg-teal-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">Jamaats 3 jours</div><div class="font-bold text-lg text-teal-700 dark:text-teal-400" id="st-jamaats-3j">0</div></div>
+        <div class="bg-purple-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">2h30/jour</div><div class="font-bold text-lg text-purple-700 dark:text-purple-400" id="st-ziara-2h30">0</div></div>
+        <div class="bg-purple-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">< 2h30/jour</div><div class="font-bold text-lg text-purple-700 dark:text-purple-400" id="st-ziara-moins">0</div></div>
+        <div class="bg-pink-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">Sœurs 2 mois</div><div class="font-bold text-lg text-pink-700 dark:text-pink-400" id="st-so-2m">0</div></div>
+        <div class="bg-pink-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">Sœurs 40 jours</div><div class="font-bold text-lg text-pink-700 dark:text-pink-400" id="st-so-40j">0</div></div>
+        <div class="bg-pink-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">Sœurs 15 jours</div><div class="font-bold text-lg text-pink-700 dark:text-pink-400" id="st-so-15j">0</div></div>
+        <div class="bg-pink-50 dark:bg-slate-700 p-2 rounded"><div class="text-xs text-gray-600 dark:text-gray-300">Sœurs 3 jours</div><div class="font-bold text-lg text-pink-700 dark:text-pink-400" id="st-so-3j">0</div></div>
+      </div>
+    </div>
+  </div>
+</section>
 
     <section id="view-admin" class="hidden">
       <div class="mb-6">
