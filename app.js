@@ -156,21 +156,18 @@ window.doAddHalaka = async function() {
     await supabase.from('halakat').insert({ nom, ville_id: villeId });
     closeModal(); await syncData();
 }
-
 window.doAddPays = async function() {
+    alert("Le bouton a été cliqué !");
     const nom = document.getElementById('new-pays-nom').value.trim();
-    if(!nom) return;
+    if(!nom) { alert("Le champ est vide."); return; }
     
     try {
-        const { data, error } = await supabase.from('pays').insert({ nom });
-        if (error) {
-            alert("ERREUR SUPABASE : " + error.message);
-            console.error(error);
-            return;
-        }
-        alert("Pays ajouté avec succès !");
-        closeModal(); await syncData();
+        const { error } = await supabase.from('pays').insert({ nom });
+        if (error) { alert("Erreur Supabase : " + error.message); return; }
+        alert("Pays ajouté !");
+        closeModal(); 
+        await syncData();
     } catch (err) {
-        alert("ERREUR JS : " + err.message);
+        alert("Erreur : " + err.message);
     }
 }
