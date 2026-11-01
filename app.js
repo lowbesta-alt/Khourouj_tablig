@@ -77,7 +77,7 @@ window.onPaysChange = function() {
     const selVille = document.getElementById('sel-ville');
     const villes = dataCache.villes.filter(v => String(v.pays_id) === String(paysId));
     selVille.innerHTML = villes.map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join('');
-    if (villes.length > 0) { selVille.value = villes[0].id; onVilleChange(); }
+    if (villes.length > 0) { selVille.value = villes[0].id; onVilleChange();renderJamaatsEnSortie(); }
 }
 
 window.onVilleChange = function() {
