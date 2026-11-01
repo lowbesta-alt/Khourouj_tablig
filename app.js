@@ -355,3 +355,46 @@ window.renderJamaatsEnSortie = function() {
         </li>
     `).join('');
 }
+// Infos de la ville
+window.openStatsVille = function() {
+    const villeId = document.getElementById('sel-stats-ville').value;
+    if (!villeId) { alert("Sélectionnez une ville."); return; }
+    const ville = dataCache.villes.find(v => String(v.id) === String(villeId));
+    if (!ville) return;
+
+    const halakas = dataCache.halakat.filter(h => String(h.ville_id) === String(villeId)).map(h => String(h.id));
+    const mosquees = dataCache.mosquees.filter(m => halakas.includes(String(m.halaka_id)));
+    
+    let html = `<h3 class="text-xl font-bold mb-3">⭕ Infos de la ville</h3>`;
+    html += `<p class="font-bold text-lg mb-3">${escapeHtml(ville.nom)}</p>`;
+    html += `<p class="mb-2"><b>Total Mosquées :</b> ${mosquees.length}</p>`;
+    html += `<p class="mb-2"><b>Mosquées 5 Amal :</b> ${mosquees.filter(m => m.est_5amal).length}</p>`;
+    html += `<p class="mb-2"><b>Maisons autour :</b> ${mosquees.reduce((t, m) => t + (m.nb_maisons_autour || 0), 0)}</p>`;
+    html += `<button onclick="closeModal()" class="bg-slate-200 w-full py-2 rounded mt-4 font-bold">Fermer</button>`;
+
+    document.getElementById('modal-content').innerHTML = html;
+    document.getElementById('modal').classList.remove('hidden');
+}
+// Infos du pays
+window.openStatsPays = function() {
+    const villeId = document.getElementById('sel-stats-ville').value;
+    if (!villeId) { alert("Sélectionnez une ville."); return; }
+    const ville = dataCache.villes.find(v => String(v.id) === String(villeId));
+    if (!ville) return;
+    const pays = dataCache.pays.find(p => String(p.id) === String(ville.pays_id));
+    if (!pays) return;
+
+    const villesPays = dataCache.villes.filter(v => String(v.pays_id) === String(ville.pays_id)).map(v => String(v.id));
+    const halakas = dataCache.halakat.filter(h => villesPays.includes(String(h.ville_id))).map(h => String(h.id));
+    const mosquees = dataCache.mosquees.filter(m => halakas.includes(String(m.halaka_id)));
+
+    let html = `<h3 class="text-xl font-bold mb-3">🌍 Infos du Pays</h3>`;
+    html += `<p class="font-bold text-lg mb-3">${escapeHtml(pays.nom)}</p>`;
+    html += `<p class="mb-2"><b>Total Mosquées :</b> ${mosquees.length}</p>`;
+    html += `<p class="mb-2"><b>Mosquées 5 Amal :</b> ${mosquees.filter(m => m.est_5amal).length}</p>`;
+    html += `<p class="mb-2"><b>Maisons autour :</b> ${mosquees.reduce((t, m) => t + (m.nb_maisons_autour || 0), 0)}</p>`;
+    html += `<button onclick="closeModal()" class="bg-slate-200 w-full py-2 rounded mt-4 font-bold">Fermer</button>`;
+
+    document.getElementById('modal-content').innerHTML = html;
+    document.getElementById('modal').classList.remove('hidden');
+}
