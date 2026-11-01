@@ -37,7 +37,9 @@ window.switchTab = function(tab) {
     document.getElementById('view-stats').classList.add('hidden'); 
     document.getElementById('view-admin').classList.add('hidden');
     document.getElementById('view-' + tab).classList.remove('hidden');
+    
     if (tab === 'consult') refreshConsult();
+    if (tab === 'stats') refreshStats(); // <--- LIGNE AJOUTÉE
 }
 
 window.closeModal = function() { document.getElementById('modal').classList.add('hidden'); };
