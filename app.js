@@ -1,15 +1,21 @@
+// ==========================================
 // CONFIGURATION
+// ==========================================
 const SUPABASE_URL = 'https://rhtaqusrkgqawtbqysgw.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_JIjs3oxZszYHTaON8iH06g_-mnoCVfl'; 
 const MASTER_PASSWORD = "admin2024"; 
 let dataCache = { pays: [], villes: [], halakat: [], mosquees: [] };
 
+// ==========================================
 // OUTILS
+// ==========================================
 function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 function generateRandomCode(name) { return name.toUpperCase().substring(0,6) + "-" + Math.random().toString(36).substring(2,6).toUpperCase(); }
 function saveToLocalStorage() { localStorage.setItem('khourouj_cache', JSON.stringify(dataCache)); }
 
-// INITIALISATION
+// ==========================================
+// INITIALISATION SUPABASE
+// ==========================================
 const script = document.createElement('script'); 
 script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 script.onload = async () => {
@@ -27,59 +33,111 @@ async function loadData() {
     try { const { data } = await supabase.from('mosquees').select('*'); dataCache.mosquees = data || []; } catch(e) {}
     saveToLocalStorage();
 }
-async function syncData() { await loadData(); refreshConsult(); if (!document.getElementById('view-stats').classList.contains('hidden')) refreshStats(); }
 
+async function syncData() { 
+    await loadData(); 
+    refreshConsult(); 
+    if (!document.getElementById('view-stats').classList.contains('hidden')) refreshStats(); 
+    if (!document.getElementById('view-admin').classList.contains('hidden')) renderAdminSpace();
+}
+
+// ==========================================
 // NAVIGATION
+// ==========================================
 window.switchTab = function(tab) {
     document.getElementById('view-consult').classList.add('hidden'); 
     document.getElementById('view-stats').classList.add('hidden'); 
     document.getElementById('view-admin').classList.add('hidden');
     document.getElementById('view-' + tab).classList.remove('hidden');
+    
     if (tab === 'consult') refreshConsult();
     if (tab === 'stats') refreshStats();
-    if (tab === 'admin') renderAdminSpace();
+    if (tab === 'admin') {
+        if (!sessionStorage.getItem('khourouj_role')) {
+            openAdminLoginModal();
+            // On remet l'onglet consultation si pas connecté
+            document.getElementById('view-admin').classList.add('hidden');
+            document.getElementById('view-consult').classList.remove('hidden');
+            return;
+        }
+        renderAdminSpace();
+    }
 }
 window.closeModal = function() { document.getElementById('modal').classList.add('hidden'); };
 
+// ==========================================
 // CONNEXION
+// ==========================================
 window.openAdminLoginModal = function() {
     document.getElementById('modal-content').innerHTML = `
         <h3 class="text-xl font-bold mb-4">🔒 Accès Gestionnaire</h3>
-        <div class="mb-3"><input id="login-pass" type="password" placeholder="Code admin (admin2024)" class="w-full border rounded px-3 py-2 mb-2"></div>
-        <div class="mb-3"><input id="login-code" type="text" placeholder="Ou Code Mosquée" class="w-full border rounded px-3 py-2"></div>
+        <div class="mb-3">
+            <label class="text-xs font-bold">Code Admin</label>
+            <input id="login-pass" type="password" placeholder="admin2024" class="w-full border rounded px-3 py-2 mb-2">
+        </div>
+        <div class="mb-3">
+            <label class="text-xs font-bold">OU Code Mosquée</label>
+            <input id="login-code" type="text" placeholder="Ex: SIDIK-ABCD" class="w-full border rounded px-3 py-2 uppercase">
+        </div>
         <button onclick="checkLogin()" class="bg-emerald-600 text-white w-full py-2 rounded font-bold">Entrer</button>`;
     document.getElementById('modal').classList.remove('hidden');
 }
-window.checkLogin = async function() {
-    const pass = document.getElementById('login-pass').value;
+
+window.checkLogin = function() {
+    const pass = document.getElementById('login-pass').value.trim();
     const code = document.getElementById('login-code').value.trim().toUpperCase();
+    
+    // 1. Priorité : code admin
     if (pass === MASTER_PASSWORD) {
         sessionStorage.setItem('khourouj_role', 'admin');
-        closeModal(); switchTab('admin');
-    } else if (code) {
+        sessionStorage.removeItem('khourouj_cible_id');
+        closeModal(); 
+        switchTab('admin');
+        return;
+    }
+    
+    // 2. Ensuite : code mosquée
+    if (code) {
         const m = dataCache.mosquees.find(x => x.password && String(x.password).toUpperCase() === code);
         if (m) {
             sessionStorage.setItem('khourouj_role', 'mosquee');
             sessionStorage.setItem('khourouj_cible_id', m.id);
-            closeModal(); switchTab('admin');
-        } else { alert("Code Mosquée invalide !"); }
-    } else { alert("Code incorrect !"); }
+            closeModal(); 
+            switchTab('admin');
+            return;
+        } else { 
+            alert("Code Mosquée invalide !"); 
+            return; 
+        }
+    }
+    
+    // 3. Si rien n'est rempli
+    alert("Veuillez entrer un code (Admin ou Mosquée).");
 }
-window.logoutAdmin = function() { sessionStorage.removeItem('khourouj_role'); sessionStorage.removeItem('khourouj_cible_id'); switchTab('consult'); }
 
+window.logoutAdmin = function() { 
+    sessionStorage.removeItem('khourouj_role'); 
+    sessionStorage.removeItem('khourouj_cible_id'); 
+    switchTab('consult'); 
+}
+
+// ==========================================
 // CONSULTATION
+// ==========================================
 window.refreshConsult = function() {
     const selPays = document.getElementById('sel-pays');
     if (!selPays) return;
     selPays.innerHTML = dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('');
     if (dataCache.pays.length > 0) { selPays.value = dataCache.pays[0].id; onPaysChange(); }
 }
+
 window.onPaysChange = function() {
     const paysId = document.getElementById('sel-pays').value;
     const selVille = document.getElementById('sel-ville');
     selVille.innerHTML = dataCache.villes.filter(v => String(v.pays_id) === String(paysId)).map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join('');
     if (selVille.options.length > 0) { selVille.value = selVille.options[0].value; onVilleChange(); }
 }
+
 window.onVilleChange = function() {
     const villeId = document.getElementById('sel-ville').value;
     const selHalaka = document.getElementById('sel-halaka');
@@ -87,6 +145,7 @@ window.onVilleChange = function() {
     if (selHalaka.options.length > 0) { selHalaka.value = selHalaka.options[0].value; renderPlanning(); }
     renderJamaatsEnSortie();
 }
+
 window.renderPlanning = function() {
     const halakaId = document.getElementById('sel-halaka').value;
     const mosquees = dataCache.mosquees.filter(m => String(m.halaka_id) === String(halakaId));
@@ -103,6 +162,7 @@ window.renderPlanning = function() {
         </tr>
     `).join('');
 }
+
 window.renderJamaatsEnSortie = function() {
     const container = document.getElementById('jamaats-banner-container');
     const list = document.getElementById('jamaats-banner-list');
@@ -114,7 +174,6 @@ window.renderJamaatsEnSortie = function() {
     list.innerHTML = mosqueesEnSortie.map(m => `<li><button onclick="openReadOnlyDetails(${m.id})" class="text-rose-900 font-semibold hover:underline">${escapeHtml(m.nom)} ›</button></li>`).join('');
 }
 
-// VUE LECTURE SEULE (Consultation)
 window.openReadOnlyDetails = function(id) {
     const m = dataCache.mosquees.find(x => String(x.id) === String(id));
     if (!m) return;
@@ -126,22 +185,25 @@ window.openReadOnlyDetails = function(id) {
     document.getElementById('modal').classList.remove('hidden');
 }
 
-// GESTIONNAIRE (Espace Admin ou Mosquée)
+// ==========================================
+// GESTIONNAIRE (Espace Admin OU Mosquée)
+// ==========================================
 window.renderAdminSpace = function() {
     const role = sessionStorage.getItem('khourouj_role');
     const cibleId = sessionStorage.getItem('khourouj_cible_id');
     
     if (role === 'mosquee' && cibleId) {
-        // VUE RESPONSABLE MOSQUÉE
         const m = dataCache.mosquees.find(x => String(x.id) === String(cibleId));
         if (!m) return;
-        let html = `<h2 class="text-xl font-bold mb-4">🕌 Espace : ${escapeHtml(m.nom)}</h2>`;
-        html += `<div class="bg-violet-50 p-4 rounded mb-4"><label class="font-bold block mb-1">Ahwal</label><textarea id="edit-ahwal" rows="3" class="w-full border rounded p-2 mb-2">${escapeHtml(m.ahwal || '')}</textarea><button onclick="saveMosqueeData(${m.id})" class="bg-violet-600 text-white px-4 py-2 rounded font-bold">Enregistrer Ahwal</button></div>`;
-        html += `<div class="bg-emerald-50 p-4 rounded"><label class="font-bold block mb-1">Jamaat</label><select id="edit-jstatut" class="w-full border rounded p-2 mb-2"><option value="Aucune" ${m.jamaat_statut === 'Aucune' ? 'selected' : ''}>Aucune</option><option value="Frères à la mosquée" ${m.jamaat_statut === 'Frères à la mosquée' ? 'selected' : ''}>Frères à la mosquée</option><option value="Jamaat en sortie" ${m.jamaat_statut === 'Jamaat en sortie' ? 'selected' : ''}>Jamaat en sortie</option></select><input id="edit-jdest" type="text" placeholder="Destination" class="w-full border rounded p-2 mb-2" value="${escapeHtml(m.jamaat_destination || '')}"><input id="edit-jemir" type="text" placeholder="Émir" class="w-full border rounded p-2 mb-2" value="${escapeHtml(m.jamaat_emir_nom || '')}"><button onclick="saveMosqueeData(${m.id})" class="bg-emerald-600 text-white px-4 py-2 rounded font-bold">Enregistrer Jamaat</button></div>`;
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold">🕌 Espace Mosquée : ${escapeHtml(m.nom)}</h2><button onclick="logoutAdmin()" class="bg-red-600 text-white px-3 py-1 rounded text-sm font-bold">Déconnexion</button></div>`;
+        html += `<div class="bg-violet-50 p-4 rounded mb-4"><label class="font-bold block mb-1">Ahwal (infos)</label><textarea id="edit-ahwal" rows="3" class="w-full border rounded p-2 mb-2">${escapeHtml(m.ahwal || '')}</textarea></div>`;
+        html += `<div class="bg-emerald-50 p-4 rounded"><label class="font-bold block mb-1">Statut Jamaat</label><select id="edit-jstatut" class="w-full border rounded p-2 mb-2"><option value="Aucune" ${m.jamaat_statut === 'Aucune' ? 'selected' : ''}>Aucune</option><option value="Frères à la mosquée" ${m.jamaat_statut === 'Frères à la mosquée' ? 'selected' : ''}>Frères à la mosquée</option><option value="Jamaat en sortie" ${m.jamaat_statut === 'Jamaat en sortie' ? 'selected' : ''}>Jamaat en sortie</option></select>`;
+        html += `<label class="font-bold block mb-1">Destination</label><input id="edit-jdest" type="text" class="w-full border rounded p-2 mb-2" value="${escapeHtml(m.jamaat_destination || '')}">`;
+        html += `<label class="font-bold block mb-1">Émir</label><input id="edit-jemir" type="text" class="w-full border rounded p-2 mb-2" value="${escapeHtml(m.jamaat_emir_nom || '')}">`;
+        html += `<button onclick="saveMosqueeData(${m.id})" class="bg-emerald-600 text-white w-full py-2 rounded font-bold mt-2">Enregistrer</button></div>`;
         document.getElementById('view-admin').innerHTML = html;
     } else if (role === 'admin') {
-        // VUE ADMIN GLOBAL
-        let html = `<h2 class="text-xl font-bold mb-4">⚙️ Gestion Globale</h2>`;
+        let html = `<div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold">⚙️ Gestion Globale</h2><button onclick="logoutAdmin()" class="bg-red-600 text-white px-3 py-1 rounded text-sm font-bold">Déconnexion</button></div>`;
         html += `<div class="grid grid-cols-2 gap-3">
             <button onclick="openManageModal('pays')" class="bg-white p-4 rounded shadow font-bold">🌍 Pays</button>
             <button onclick="openManageModal('villes')" class="bg-white p-4 rounded shadow font-bold">🏙️ Villes</button>
@@ -153,8 +215,7 @@ window.renderAdminSpace = function() {
 }
 
 window.saveMosqueeData = async function(id) {
-    const data = {};
-    if (document.getElementById('edit-ahwal')) data.ahwal = document.getElementById('edit-ahwal').value;
+    const data = { ahwal: document.getElementById('edit-ahwal').value };
     if (document.getElementById('edit-jstatut')) {
         data.jamaat_statut = document.getElementById('edit-jstatut').value;
         data.jamaat_destination = document.getElementById('edit-jdest').value;
@@ -162,10 +223,13 @@ window.saveMosqueeData = async function(id) {
     }
     const { error } = await supabase.from('mosquees').update(data).eq('id', id);
     if (error) { alert("Erreur : " + error.message); return; }
-    await syncData(); alert("Enregistré !"); renderAdminSpace();
+    await syncData(); 
+    alert("Enregistré !");
 }
 
-// FORMULAIRES D'AJOUT (Admin)
+// ==========================================
+// FORMULAIRES D'AJOUT (Admin uniquement)
+// ==========================================
 window.openManageModal = function(type) {
     let html = '';
     if (type === 'mosquees') {
@@ -195,8 +259,10 @@ window.openManageModal = function(type) {
 
 window.doAddPays = async function() {
     const nom = document.getElementById('new-pays-nom').value.trim();
-    await supabase.from('pays').insert({ nom }); closeModal(); await syncData(); renderAdminSpace();
+    await supabase.from('pays').insert({ nom }); 
+    closeModal(); await syncData(); renderAdminSpace();
 }
+
 window.doAddVille = async function() {
     const nom = document.getElementById('new-ville-nom').value.trim();
     const paysId = document.getElementById('new-ville-pays').value;
@@ -204,12 +270,14 @@ window.doAddVille = async function() {
     await supabase.from('villes').insert({ nom, pays_id: parseInt(paysId), code_admin: code });
     alert("Code Ville : " + code); closeModal(); await syncData(); renderAdminSpace();
 }
+
 window.doAddHalaka = async function() {
     const nom = document.getElementById('new-halaka-nom').value.trim();
     const villeId = document.getElementById('new-halaka-ville').value;
     await supabase.from('halakat').insert({ nom, ville_id: parseInt(villeId) });
     closeModal(); await syncData(); renderAdminSpace();
 }
+
 window.doAddMosquee = async function() {
     const nom = document.getElementById('new-mosq-nom').value.trim();
     const ousboue = parseInt(document.getElementById('new-mosq-ousboue').value);
@@ -219,13 +287,16 @@ window.doAddMosquee = async function() {
     alert("Code Mosquée : " + code); closeModal(); await syncData(); renderAdminSpace();
 }
 
+// ==========================================
 // STATISTIQUES
+// ==========================================
 window.refreshStats = function() {
     const sel = document.getElementById('sel-stats-ville');
     if (!sel) return;
     sel.innerHTML = dataCache.villes.map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join('');
     if (dataCache.villes.length > 0) { sel.value = dataCache.villes[0].id; renderStats(sel.value); }
 }
+
 window.renderStats = function(villeId) {
     if (!villeId) return;
     const ville = dataCache.villes.find(v => String(v.id) === String(villeId));
@@ -252,6 +323,7 @@ window.renderStats = function(villeId) {
     document.getElementById('st-so-15j').textContent = sum('nb_soeurs_15jours');
     document.getElementById('st-so-3j').textContent = sum('nb_soeurs_3jours');
 }
+
 window.openStatsVille = function() {
     const villeId = document.getElementById('sel-stats-ville').value;
     const ville = dataCache.villes.find(v => String(v.id) === String(villeId));
@@ -261,6 +333,7 @@ window.openStatsVille = function() {
     let html = `<h3 class="text-xl font-bold mb-3">⭕ ${escapeHtml(ville.nom)}</h3><p>Mosquées : ${mosquees.length}</p><button onclick="closeModal()" class="bg-slate-200 w-full py-2 rounded mt-4 font-bold">Fermer</button>`;
     document.getElementById('modal-content').innerHTML = html; document.getElementById('modal').classList.remove('hidden');
 }
+
 window.openStatsPays = function() {
     const villeId = document.getElementById('sel-stats-ville').value;
     const ville = dataCache.villes.find(v => String(v.id) === String(villeId));
