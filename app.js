@@ -101,37 +101,44 @@ window.renderPlanning = function() {
 
 // GESTIONNAIRE
 window.openManageModal = function(type) {
-    if (type === 'mosquees') {
-        document.getElementById('modal-content').innerHTML = `
-            <h3 class="text-xl font-bold mb-4">🕌 Ajouter une Mosquée</h3>
-            <div class="mb-3"><label class="text-xs font-bold">Nom</label><input id="new-mosq-nom" type="text" class="w-full border rounded px-3 py-2"></div>
-            <div class="mb-3"><label class="text-xs font-bold">Ousboue</label><input id="new-mosq-ousboue" type="number" value="1" min="1" max="4" class="w-full border rounded px-3 py-2"></div>
-            <div class="mb-3"><label class="text-xs font-bold">Halaka</label><select id="new-mosq-halaka" class="w-full border rounded px-3 py-2">${dataCache.halakat.map(h => `<option value="${h.id}">${escapeHtml(h.nom)}</option>`).join('')}</select></div>
-            <button onclick="doAddMosquee()" class="bg-blue-600 text-white w-full py-3 rounded font-bold mt-3">Enregistrer</button>`;
-        document.getElementById('modal').classList.remove('hidden');
-    } else if (type === 'villes') {
-        document.getElementById('modal-content').innerHTML = `
-            <h3 class="text-xl font-bold mb-4">🏙️ Ajouter une Ville</h3>
-            <div class="mb-3"><label class="text-xs font-bold">Nom</label><input id="new-ville-nom" type="text" class="w-full border rounded px-3 py-2"></div>
-            <div class="mb-3"><label class="text-xs font-bold">Pays</label><select id="new-ville-pays" class="w-full border rounded px-3 py-2">${dataCache.pays.map(p => `<option value="${p.id}">${escapeHtml(p.nom)}</option>`).join('')}</select></div>
-            <button onclick="doAddVille()" class="bg-emerald-600 text-white w-full py-3 rounded font-bold mt-3">Enregistrer</button>`;
-        document.getElementById('modal').classList.remove('hidden');
-    } else if (type === 'pays') {
-        document.getElementById('modal-content').innerHTML = `
-            <h3 class="text-xl font-bold mb-4">🌍 Ajouter un Pays</h3>
-            <div class="mb-3"><label class="text-xs font-bold">Nom</label><input id="new-pays-nom" type="text" class="w-full border rounded px-3 py-2"></div>
-            <button onclick="doAddPays()" class="bg-emerald-600 text-white w-full py-3 rounded font-bold mt-3">Enregistrer</button>`;
-        document.getElementById('modal').classList.remove('hidden');
-    } else if (type === 'halakat') {
-        document.getElementById('modal-content').innerHTML = `
-            <h3 class="text-xl font-bold mb-4">⭕ Ajouter une Halaka</h3>
-            <div class="mb-3"><label class="text-xs font-bold">Nom</label><input id="new-halaka-nom" type="text" class="w-full border rounded px-3 py-2"></div>
-            <div class="mb-3"><label class="text-xs font-bold">Ville</label><select id="new-halaka-ville" class="w-full border rounded px-3 py-2">${dataCache.villes.map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join('')}</select></div>
-            <button onclick="doAddHalaka()" class="bg-emerald-600 text-white w-full py-3 rounded font-bold mt-3">Enregistrer</button>`;
-        document.getElementById('modal').classList.remove('hidden');
-    }
-}
+  if (type === 'mosquees') {
+    document.getElementById('modal-content').innerHTML = `
+        <h3 class="text-xl font-bold mb-4">🕌 Ajouter une Mosquée</h3>
+        <div class="mb-3"><label class="text-xs font-bold">Nom</label><input id="new-mosq-nom" type="text" class="w-full border rounded px-3 py-2"></div>
+        <div class="mb-3"><label class="text-xs font-bold">Ousboue (1-4)</label><input id="new-mosq-ousboue" type="number" value="1" min="1" max="4" class="w-full border rounded px-3 py-2"></div>
+        <div class="mb-3"><label class="text-xs font-bold">Halaka</label><select id="new-mosq-halaka" class="w-full border rounded px-3 py-2">${dataCache.halakat.map(h => `<option value="${h.id}">${escapeHtml(h.nom)}</option>`).join('')}</select></div>
+        
+        <details class="mb-3 bg-slate-100 p-3 rounded"><summary class="font-bold text-sm cursor-pointer">📊 Statistiques</summary>
+            <div class="mb-2 flex items-center gap-2"><input type="checkbox" id="new-mosq-5amal"><label class="text-sm font-bold">Mosquée 5 Amal ?</label></div>
+            <div class="grid grid-cols-2 gap-2 text-sm mt-2">
+                <div><label class="text-xs">Maisons autour</label><input id="new-mosq-maisons" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                <div><label class="text-xs">Maisons 5 Amal</label><input id="new-mosq-maisons5a" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                <div><label class="text-xs">Frères 4 mois</label><input id="new-mosq-fr4m" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                <div><label class="text-xs">Frères 4 mois/an</label><input id="new-mosq-fr4ma" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                <div><label class="text-xs">Frères 40 jours</label><input id="new-mosq-fr40j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                <div><label class="text-xs">Jamaats 3 jours</label><input id="new-mosq-jamaats" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                <div><label class="text-xs">2h30/jour</label><input id="new-mosq-z2h30" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                <div><label class="text-xs">< 2h30/jour</label><input id="new-mosq-zmoins" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                <div><label class="text-xs">Sœurs 2 mois</label><input id="new-mosq-so2m" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                <div><label class="text-xs">Sœurs 40 jours</label><input id="new-mosq-so40j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                <div><label class="text-xs">Sœurs 15 jours</label><input id="new-mosq-so15j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+                <div><label class="text-xs">Sœurs 3 jours</label><input id="new-mosq-so3j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>
+            </div>
+        </details>
 
+        <details class="mb-3 bg-emerald-50 p-3 rounded"><summary class="font-bold text-sm cursor-pointer">👁️ Détails Jamaat</summary>
+            <div class="grid grid-cols-1 gap-2 text-sm mt-2">
+                <div><label class="text-xs">Statut</label><select id="new-mosq-jstatut" class="w-full border rounded px-2 py-1"><option value="Aucune">Aucune</option><option value="Frères à la mosquée">Frères à la mosquée</option><option value="Jamaat en sortie">Jamaat en sortie</option></select></div>
+                <div><label class="text-xs">Destination</label><input id="new-mosq-dest" type="text" class="w-full border rounded px-2 py-1"></div>
+                <div><label class="text-xs">Heure</label><input id="new-mosq-heure" type="text" class="w-full border rounded px-2 py-1"></div>
+                <div><label class="text-xs">Émir</label><input id="new-mosq-emir" type="text" class="w-full border rounded px-2 py-1"></div>
+                <div><label class="text-xs">Tél Émir</label><input id="new-mosq-emirtel" type="tel" class="w-full border rounded px-2 py-1"></div>
+            </div>
+        </details>
+
+        <button onclick="doAddMosquee()" class="bg-blue-600 text-white w-full py-3 rounded font-bold mt-3">Enregistrer</button>`;
+    document.getElementById('modal').classList.remove('hidden');
+}
 window.doAddPays = async function() {
     const nom = document.getElementById('new-pays-nom').value.trim();
     if(!nom) { alert("Le nom est vide."); return; }
