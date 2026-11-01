@@ -100,9 +100,35 @@ window.renderPlanning = function() {
 }
 
 // GESTIONNAIRE
+// ==========================================
+// GESTIONNAIRE UNIFIÉ
+// ==========================================
 window.openManageModal = function(type) {
-    if (type === 'mosquees') {
-        let html = '<h3 class="text-xl font-bold mb-4">🕌 Ajouter une Mosquée</h3>';
+    let html = '';
+    
+    if (type === 'pays') {
+        html += '<h3 class="text-xl font-bold mb-4">🌍 Ajouter un Pays</h3>';
+        html += '<div class="mb-3"><input id="new-pays-nom" type="text" placeholder="Nom du pays" class="w-full border rounded px-3 py-2"></div>';
+        html += '<button onclick="doAddPays()" class="bg-emerald-600 text-white w-full py-3 rounded font-bold">Enregistrer</button>';
+    } 
+    else if (type === 'villes') {
+        html += '<h3 class="text-xl font-bold mb-4">🏙️ Ajouter une Ville</h3>';
+        html += '<div class="mb-3"><input id="new-ville-nom" type="text" placeholder="Nom de la ville" class="w-full border rounded px-3 py-2"></div>';
+        html += '<div class="mb-3"><select id="new-ville-pays" class="w-full border rounded px-3 py-2">';
+        dataCache.pays.forEach(p => { html += '<option value="' + p.id + '">' + escapeHtml(p.nom) + '</option>'; });
+        html += '</select></div>';
+        html += '<button onclick="doAddVille()" class="bg-emerald-600 text-white w-full py-3 rounded font-bold">Enregistrer</button>';
+    } 
+    else if (type === 'halakat') {
+        html += '<h3 class="text-xl font-bold mb-4">⭕ Ajouter une Halaka</h3>';
+        html += '<div class="mb-3"><input id="new-halaka-nom" type="text" placeholder="Nom de la halaka" class="w-full border rounded px-3 py-2"></div>';
+        html += '<div class="mb-3"><select id="new-halaka-ville" class="w-full border rounded px-3 py-2">';
+        dataCache.villes.forEach(v => { html += '<option value="' + v.id + '">' + escapeHtml(v.nom) + '</option>'; });
+        html += '</select></div>';
+        html += '<button onclick="doAddHalaka()" class="bg-emerald-600 text-white w-full py-3 rounded font-bold">Enregistrer</button>';
+    } 
+    else if (type === 'mosquees') {
+        html += '<h3 class="text-xl font-bold mb-4">🕌 Ajouter une Mosquée</h3>';
         
         html += '<div class="mb-3"><label class="text-xs font-bold">Nom</label><input id="new-mosq-nom" type="text" class="w-full border rounded px-3 py-2"></div>';
         html += '<div class="mb-3"><label class="text-xs font-bold">Ousboue (1-4)</label><input id="new-mosq-ousboue" type="number" value="1" min="1" max="4" class="w-full border rounded px-3 py-2"></div>';
@@ -110,93 +136,68 @@ window.openManageModal = function(type) {
         dataCache.halakat.forEach(h => { html += '<option value="' + h.id + '">' + escapeHtml(h.nom) + '</option>'; });
         html += '</select></div>';
         
-        html += '<details class="mb-3 bg-slate-100 p-3 rounded"><summary class="font-bold text-sm cursor-pointer">📊 Statistiques</summary>';
+        html += '<div class="mb-3 bg-slate-100 p-3 rounded"><h4 class="font-bold text-sm mb-2">📊 Statistiques</h4>';
         html += '<div class="mb-2 flex items-center gap-2"><input type="checkbox" id="new-mosq-5amal"><label class="text-sm font-bold">Mosquée 5 Amal ?</label></div>';
-        html += '<div class="grid grid-cols-2 gap-2 text-sm mt-2">';
+        html += '<div class="grid grid-cols-2 gap-2 text-sm">';
         html += '<div><label class="text-xs">Maisons autour</label><input id="new-mosq-maisons" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
         html += '<div><label class="text-xs">Maisons 5 Amal</label><input id="new-mosq-maisons5a" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
         html += '<div><label class="text-xs">Frères 4 mois</label><input id="new-mosq-fr4m" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
-        html += '<div><label class="text-xs">Frères 4 mois/an</label><input id="new-mosq-fr4ma" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
-        html += '<div><label class="text-xs">Frères 40 jours</label><input id="new-mosq-fr40j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
+        html += '<div><label class="text-xs">4 mois/an</label><input id="new-mosq-fr4ma" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
+        html += '<div><label class="text-xs">40 jours</label><input id="new-mosq-fr40j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
         html += '<div><label class="text-xs">Jamaats 3 jours</label><input id="new-mosq-jamaats" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
-        html += '<div><label class="text-xs">2h30/jour</label><input id="new-mosq-z2h30" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
-        html += '<div><label class="text-xs">< 2h30/jour</label><input id="new-mosq-zmoins" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
+        html += '<div><label class="text-xs">2h30/j</label><input id="new-mosq-z2h30" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
+        html += '<div><label class="text-xs">< 2h30/j</label><input id="new-mosq-zmoins" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
         html += '<div><label class="text-xs">Sœurs 2 mois</label><input id="new-mosq-so2m" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
-        html += '<div><label class="text-xs">Sœurs 40 jours</label><input id="new-mosq-so40j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
-        html += '<div><label class="text-xs">Sœurs 15 jours</label><input id="new-mosq-so15j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
-        html += '<div><label class="text-xs">Sœurs 3 jours</label><input id="new-mosq-so3j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
-        html += '</div></details>';
-        
-        html += '<details class="mb-3 bg-emerald-50 p-3 rounded"><summary class="font-bold text-sm cursor-pointer">👁️ Détails Jamaat</summary>';
-        html += '<div class="grid grid-cols-1 gap-2 text-sm mt-2">';
+        html += '<div><label class="text-xs">Sœurs 40j</label><input id="new-mosq-so40j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
+        html += '<div><label class="text-xs">Sœurs 15j</label><input id="new-mosq-so15j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
+        html += '<div><label class="text-xs">Sœurs 3j</label><input id="new-mosq-so3j" type="number" value="0" class="w-full border rounded px-2 py-1"></div>';
+        html += '</div></div>';
+
+        html += '<div class="mb-3 bg-emerald-50 p-3 rounded"><h4 class="font-bold text-sm mb-2">👁️ Détails Jamaat</h4>';
+        html += '<div class="grid grid-cols-1 gap-2 text-sm">';
         html += '<div><label class="text-xs">Statut</label><select id="new-mosq-jstatut" class="w-full border rounded px-2 py-1"><option value="Aucune">Aucune</option><option value="Frères à la mosquée">Frères à la mosquée</option><option value="Jamaat en sortie">Jamaat en sortie</option></select></div>';
         html += '<div><label class="text-xs">Destination</label><input id="new-mosq-dest" type="text" class="w-full border rounded px-2 py-1"></div>';
-        html += '<div><label class="text-xs">Heure</label><input id="new-mosq-heure" type="text" class="w-full border rounded px-2 py-1"></div>';
         html += '<div><label class="text-xs">Émir</label><input id="new-mosq-emir" type="text" class="w-full border rounded px-2 py-1"></div>';
         html += '<div><label class="text-xs">Tél Émir</label><input id="new-mosq-emirtel" type="tel" class="w-full border rounded px-2 py-1"></div>';
-        html += '</div></details>';
-        
-        html += '<button onclick="doAddMosquee()" class="bg-blue-600 text-white w-full py-3 rounded font-bold mt-3">Enregistrer</button>';
-        
-        document.getElementById('modal-content').innerHTML = html;
-        document.getElementById('modal').classList.remove('hidden');
+        html += '</div></div>';
+
+        html += '<button onclick="doAddMosquee()" class="bg-blue-600 text-white w-full py-3 rounded font-bold">Enregistrer</button>';
     }
-    // Les autres types (pays, villes, halakat) restent en dessous...
-}
-        <button onclick="doAddMosquee()" class="bg-blue-600 text-white w-full py-3 rounded font-bold mt-3">Enregistrer</button>`;
+ document.getElementById('modal-content').innerHTML = html;
     document.getElementById('modal').classList.remove('hidden');
 }
-window.doAddPays = async function() {
-    const nom = document.getElementById('new-pays-nom').value.trim();
-    if(!nom) { alert("Le nom est vide."); return; }
-    try {
-        const { error } = await supabase.from('pays').insert({ nom });
-        if (error) { alert("Erreur Supabase : " + error.message); return; }
-        closeModal(); await syncData();
-    } catch (err) { alert("Erreur : " + err.message); }
-}
-
-window.doAddVille = async function() {
-    const nom = document.getElementById('new-ville-nom').value.trim();
-    const paysId = document.getElementById('new-ville-pays').value;
-    if(!nom || !paysId) { alert("Remplissez tous les champs."); return; }
-    const code = generateRandomCode(nom);
-    try {
-        const { error } = await supabase.from('villes').insert({ nom, pays_id: parseInt(paysId), code_admin: code });
-        if (error) { alert("Erreur Supabase : " + error.message); return; }
-        alert("Ville créée ! Code : " + code);
-        closeModal(); await syncData();
-    } catch (err) { alert("Erreur : " + err.message); }
-}
-
-window.doAddHalaka = async function() {
-    const nom = document.getElementById('new-halaka-nom').value.trim();
-    const villeId = document.getElementById('new-halaka-ville').value;
-    if(!nom || !villeId) { alert("Remplissez tous les champs."); return; }
-    try {
-        const { error } = await supabase.from('halakat').insert({ nom, ville_id: parseInt(villeId) });
-        if (error) { alert("Erreur Supabase : " + error.message); return; }
-        closeModal(); await syncData();
-    } catch (err) { alert("Erreur : " + err.message); }
-}
-
 window.doAddMosquee = async function() {
     const nom = document.getElementById('new-mosq-nom').value.trim();
-    const ousboue = document.getElementById('new-mosq-ousboue').value;
-    const halakaId = document.getElementById('new-mosq-halaka').value;
-    
     if(!nom) { alert("Le nom est vide."); return; }
-    if(!halakaId) { alert("Aucune halaka sélectionnée."); return; }
     
     const code = generateRandomCode(nom);
     
+    const data = {
+        nom: nom,
+        ousboue: parseInt(document.getElementById('new-mosq-ousboue').value),
+        halaka_id: parseInt(document.getElementById('new-mosq-halaka').value),
+        password: code,
+        est_5amal: document.getElementById('new-mosq-5amal').checked,
+        nb_maisons_autour: parseInt(document.getElementById('new-mosq-maisons').value) || 0,
+        nb_maisons_5amal: parseInt(document.getElementById('new-mosq-maisons5a').value) || 0,
+        nb_freres_4mois: parseInt(document.getElementById('new-mosq-fr4m').value) || 0,
+        nb_freres_4mois_an: parseInt(document.getElementById('new-mosq-fr4ma').value) || 0,
+        nb_freres_40jours: parseInt(document.getElementById('new-mosq-fr40j').value) || 0,
+        nb_jamaats_3jours: parseInt(document.getElementById('new-mosq-jamaats').value) || 0,
+        nb_freres_ziara_2h30: parseInt(document.getElementById('new-mosq-z2h30').value) || 0,
+        nb_freres_ziara_moins: parseInt(document.getElementById('new-mosq-zmoins').value) || 0,
+        nb_soeurs_2mois: parseInt(document.getElementById('new-mosq-so2m').value) || 0,
+        nb_soeurs_40jours: parseInt(document.getElementById('new-mosq-so40j').value) || 0,
+        nb_soeurs_15jours: parseInt(document.getElementById('new-mosq-so15j').value) || 0,
+        nb_soeurs_3jours: parseInt(document.getElementById('new-mosq-so3j').value) || 0,
+        jamaat_statut: document.getElementById('new-mosq-jstatut').value,
+        jamaat_destination: document.getElementById('new-mosq-dest').value,
+        jamaat_emir_nom: document.getElementById('new-mosq-emir').value,
+        jamaat_emir_tel: document.getElementById('new-mosq-emirtel').value
+    };
+
     try {
-        const { error } = await supabase.from('mosquees').insert({ 
-            nom: nom, 
-            ousboue: parseInt(ousboue), 
-            halaka_id: parseInt(halakaId), 
-            password: code 
-        });
+        const { error } = await supabase.from('mosquees').insert(data);
         if (error) { alert("Erreur Supabase : " + error.message); return; }
         alert("Mosquée créée ! Code : " + code);
         closeModal(); await syncData();
