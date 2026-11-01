@@ -240,3 +240,116 @@ window.doAddMosquee = async function() {
         closeModal(); await syncData();
     } catch (err) { alert("Erreur : " + err.message); }
 }
+// ==========================================
+// FONCTIONS POUR LES STATISTIQUES ET DÉTAILS
+// ==========================================
+
+// 1. Remplir la liste des villes dans la page Statistiques
+window.refreshStats = function() {
+    const sel = document.getElementById('sel-stats-ville');
+    if (!sel) return;
+    sel.innerHTML = dataCache.villes.map(v => `<option value="${v.id}">${escapeHtml(v.nom)}</option>`).join('');
+    if (dataCache.villes.length > 0) {
+        sel.value = dataCache.villes[0].id;
+        renderStats(sel.value);
+    }
+}
+
+// 2. Afficher les stats de la ville sélectionnée
+window.renderStats = function(villeId) {
+    if (!villeId) return;
+    const ville = dataCache.villes.find(v => String(v.id) === String(villeId));
+    if (!ville) return;
+
+    // Bandeau Ahwal
+    const ahwalContainer = document.getElementById('ahwal-banner-container');
+    const ahwalContent = document.getElementById('ahwal-banner-content');
+    if (ville.ahwal && ville.ahwal.trim() !== '') {
+        ahwalContent.textContent = ville.ahwal;
+        ahwalContainer.classList.remove('hidden');
+    } else {
+        ahwalContainer.classList.add('hidden');
+    }
+
+    // Remplir la liste des Sous-Halakat
+    const sousHalakaSel = document.getElementById('sel-stats-soushalaka');
+    const halakas = dataCache.halakat.filter(h => String(h.ville_id) === String(villeId));
+    sousHalakaSel.innerHTML = halakas.map(h => `<option value="${h.id}">${escapeHtml(h.nom)}</option>`).join('');
+    
+    if (halakas.length > 0) {
+        document.getElementById('stats-view-container').classList.remove('hidden');
+        renderStatsTable(halakas[0].id);
+    } else {
+        document.getElementById('stats-view-container').classList.add('hidden');
+    }
+}
+
+// 3. Afficher les stats pour un sous-halaka spécifique
+window.renderStatsTable = function(sousHalakaId) {
+    if (!sousHalakaId) return;
+    const sousHalaka = dataCache.halakat.find(h => String(h.id) === String(sousHalakaId));
+    if (!sousHalaka) return;
+
+    const mosquees = dataCache.mosquees.filter(m => String(m.halaka_id) === String(sousHalakaId));
+    const sum = (f) => mosquees.reduce((t, m) => t + (m[f] || 0), 0);
+
+    document.getElementById('stats-title').textContent = `Statistiques : ${sousHalaka.nom}`;
+    document.getElementById('st-mosquees-total').textContent = mosquees.length;
+    document.getElementById('st-mosquees-5amal').textContent = mosquees.filter(m => m.est_5amal).length;
+    document.getElementById('st-maisons-autour').textContent = sum('nb_maisons_autour');
+    document.getElementById('st-maisons-5amal').textContent = sum('nb_maisons_5amal');
+    document.getElementById('st-fr-4m').textContent = sum('nb_freres_4mois');
+    document.getElementById('st-fr-4ma').textContent = sum('nb_freres_4mois_an');
+    document.getElementById('st-fr-40j').textContent = sum('nb_freres_40jours');
+    document.getElementById('st-jamaats-3j').textContent = sum('nb_jamaats_3jours');
+    document.getElementById('st-ziara-2h30').textContent = sum('nb_freres_ziara_2h30');
+    document.getElementById('st-ziara-moins').textContent = sum('nb_freres_ziara_moins');
+    document.getElementById('st-so-2m').textContent = sum('nb_soeurs_2mois');
+    document.getElementById('st-so-40j').textContent = sum('nb_soeurs_40jours');
+    document.getElementById('st-so-15j').textContent = sum('nb_soeurs_15jours');
+    document.getElementById('st-so-3j').textContent = sum('nb_soeurs_3jours');
+}
+
+// 4. Ouvrir la fenêtre de détails d'une mosquée (appelée depuis le bandeau rose)
+window.openJamaatModal = function(id) {
+    const m = dataCache.mosquees.find(x => String(x.id) === String(id));
+    if (!m) return;
+
+    let html = `<h3 class="text-xl font-bold mb-3">🕌 ${escapeHtml(m.nom)}</h3>`;
+    html += `<div class="mb-4"><span class="inline-block px-3 py-1 rounded-full text-sm font-bold bg-orange-100 text-orange-800">${escapeHtml(m.jamaat_statut || 'Aucune')}</span></div>`;
+    
+    if (m.jamaat_destination) html += `<div class="mb-2"><b>Destination :</b> ${escapeHtml(m.jamaat_destination)}</div>`;
+    if (m.jamaat_heure) html += `<div class="mb-2"><b>Heure :</b> ${escapeHtml(m.jamaat_heure)}</div>`;
+    if (m.jamaat_emir_nom) html += `<div class="mb-2 bg-green-50 p-2 rounded"><b>Émir :</b> ${escapeHtml(m.jamaat_emir_nom)}<br>`;
+    if (m.jamaat_emir_tel) html += `<a href="https://wa.me/${m.jamaat_emir_tel.replace(/\D/g, '')}" class="text-green-600 underline">📞 Contacter l'Émir</a></div>`;
+    
+    html += `<button onclick="closeModal()" class="bg-slate-200 w-full py-2 rounded mt-4">Fermer</button>`;
+
+    document.getElementById('modal-content').innerHTML = html;
+    document.getElementById('modal').classList.remove('hidden');
+}
+
+// 5. Bandeau rose "Mosquées en sortie" (à chaque changement de ville)
+window.renderJamaatsEnSortie = function() {
+    const container = document.getElementById('jamaats-banner-container');
+    const list = document.getElementById('jamaats-banner-list');
+    if (!container || !list) return;
+
+    const villeId = document.getElementById('sel-ville').value;
+    if (!villeId) { container.classList.add('hidden'); return; }
+
+    const halakasVille = dataCache.halakat.filter(h => String(h.ville_id) === String(villeId)).map(h => String(h.id));
+    const mosqueesEnSortie = dataCache.mosquees.filter(m => halakasVille.includes(String(m.halaka_id)) && m.jamaat_statut === 'Jamaat en sortie');
+
+    if (mosqueesEnSortie.length === 0) { container.classList.add('hidden'); list.innerHTML = ''; return; }
+
+    container.classList.remove('hidden');
+    list.innerHTML = mosqueesEnSortie.map(m => `
+        <li>
+            <button onclick="openJamaatModal(${m.id})" class="w-full text-left text-rose-900 font-semibold hover:underline flex items-center gap-1">
+                <span>${escapeHtml(m.nom)}</span>
+                <span class="text-rose-500 text-lg leading-none">›</span>
+            </button>
+        </li>
+    `).join('');
+}
