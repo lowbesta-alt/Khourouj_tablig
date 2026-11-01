@@ -134,40 +134,57 @@ window.openManageModal = function(type) {
 
 window.doAddPays = async function() {
     const nom = document.getElementById('new-pays-nom').value.trim();
-    if(!nom) return;
-    await supabase.from('pays').insert({ nom });
-    closeModal(); await syncData();
+    if(!nom) { alert("Le nom est vide."); return; }
+    try {
+        const { error } = await supabase.from('pays').insert({ nom });
+        if (error) { alert("Erreur Supabase : " + error.message); return; }
+        closeModal(); await syncData();
+    } catch (err) { alert("Erreur : " + err.message); }
 }
 
 window.doAddVille = async function() {
     const nom = document.getElementById('new-ville-nom').value.trim();
     const paysId = document.getElementById('new-ville-pays').value;
-    if(!nom || !paysId) return;
+    if(!nom || !paysId) { alert("Remplissez tous les champs."); return; }
     const code = generateRandomCode(nom);
-    await supabase.from('villes').insert({ nom, pays_id: paysId, code_admin: code });
-    alert("Ville créée ! Code : " + code);
-    closeModal(); await syncData();
+    try {
+        const { error } = await supabase.from('villes').insert({ nom, pays_id: parseInt(paysId), code_admin: code });
+        if (error) { alert("Erreur Supabase : " + error.message); return; }
+        alert("Ville créée ! Code : " + code);
+        closeModal(); await syncData();
+    } catch (err) { alert("Erreur : " + err.message); }
 }
 
 window.doAddHalaka = async function() {
     const nom = document.getElementById('new-halaka-nom').value.trim();
     const villeId = document.getElementById('new-halaka-ville').value;
-    if(!nom || !villeId) return;
-    await supabase.from('halakat').insert({ nom, ville_id: villeId });
-    closeModal(); await syncData();
+    if(!nom || !villeId) { alert("Remplissez tous les champs."); return; }
+    try {
+        const { error } = await supabase.from('halakat').insert({ nom, ville_id: parseInt(villeId) });
+        if (error) { alert("Erreur Supabase : " + error.message); return; }
+        closeModal(); await syncData();
+    } catch (err) { alert("Erreur : " + err.message); }
 }
-window.doAddPays = async function() {
-    alert("Le bouton a été cliqué !");
-    const nom = document.getElementById('new-pays-nom').value.trim();
-    if(!nom) { alert("Le champ est vide."); return; }
+
+window.doAddMosquee = async function() {
+    const nom = document.getElementById('new-mosq-nom').value.trim();
+    const ousboue = document.getElementById('new-mosq-ousboue').value;
+    const halakaId = document.getElementById('new-mosq-halaka').value;
+    
+    if(!nom) { alert("Le nom est vide."); return; }
+    if(!halakaId) { alert("Aucune halaka sélectionnée."); return; }
+    
+    const code = generateRandomCode(nom);
     
     try {
-        const { error } = await supabase.from('pays').insert({ nom });
+        const { error } = await supabase.from('mosquees').insert({ 
+            nom: nom, 
+            ousboue: parseInt(ousboue), 
+            halaka_id: parseInt(halakaId), 
+            password: code 
+        });
         if (error) { alert("Erreur Supabase : " + error.message); return; }
-        alert("Pays ajouté !");
-        closeModal(); 
-        await syncData();
-    } catch (err) {
-        alert("Erreur : " + err.message);
-    }
+        alert("Mosquée créée ! Code : " + code);
+        closeModal(); await syncData();
+    } catch (err) { alert("Erreur : " + err.message); }
 }
